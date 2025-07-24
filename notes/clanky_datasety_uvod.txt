@@ -66,5 +66,7 @@ Deep Learning Based Cloud Detection for Images of Different Sensors Z <https://g
 CloudSEN12 - a LARGE dataset (~1 TB) for cloud semantic understanding comprising of 49,400 image patches Z <https://github.com/cloudsen12> https://cloudsen12.github.io/ https://zenodo.org/records/7034410 
 CloudSEN12+: The largest collection of expert-labeled pixels for cloud and cloud shadow detection in Sentinel-2 Z <https://www.scidb.cn/en/detail?dataSetId=2036f4657b094edfbb099053d6024b08>
 
+https://huggingface.co/datasets/tacofoundation/sen2venus
+
 
 omnicloudmasck https://www.youtube.com/watch?v=eoKctlbsoMs
