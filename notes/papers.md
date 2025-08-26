@@ -74,3 +74,22 @@ performance of the model.
 
 ## Popis
 Autoři představují nový model pro detekci mraků, který se skládá z GAN a CDM (cloud distortion model). Hlavní výhodou je, že pro trénink nejsou potřeba detailní masky mraků, ale jen blokově označené mraky. Trénováno na L8 a testováno na L8 i S2. Nebyl použit fine-tuning, model byl rovnou aplikován na S2 data.
+
+# Transferring deep learning models for cloud detection between Landsat-8 and Proba-V (2020)
+
+**Článek:** https://doi.org/10.1016/j.isprsjprs.2019.11.024
+
+
+## základní info
+- **Architektura:** upravená U-Net
+
+
+## Popis
+Autoři popisují různé TL přístupy a aplikují je na data z L8 a Proba V. 
+>Three types of experiments are conducted to demonstrate that transfer learning can work in both directions: (a) from Landsat-8 to Proba-V, where we show that models trained only with Landsat-8 data produce cloud masks 5 points more accurate than the current operational Proba-V cloud masking method, (b) from Proba-V to Landsat-8, where models that use only Proba-V data for training have an accuracy similar to the operational FMask in the publicly available Biome dataset (87.79–89.77% vs 88.48%), and (c) jointly from Proba-V and Landsat-8 to Proba-V, where we demonstrate that using jointly both data sources the accuracy increases 1–10 points when few Proba-V labeled images are available.
+
+Zdůrazňují důležitost správně provést "Domain adaptation":
+>Our results suggest that it is important to use both the spatial and the spectral adaptation in order to fully exploit TL advantages.
+
+Možnost vylepšení při použití GAN právě na určení transformace mezi daty.
+>Our next steps are fostered to improve the cloud detection accuracy by using the generative adversarial networks (GANs) framework (Mateo-García et al., 2019) to learn a transformation between Landsat-8 and Proba-V data.
