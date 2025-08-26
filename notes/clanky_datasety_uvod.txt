@@ -10,25 +10,24 @@ Z <https://www.mdpi.com/2072-4292/16/6/973>
 
 
 
-Convolutional Neural Network-Driven Improvements in Global Cloud Detection for Landsat 8 and Transfer Learning on Sentinel-2 Imagery
+	Convolutional Neural Network-Driven Improvements in Global Cloud Detection for Landsat 8 and Transfer Learning on Sentinel-2 Imagery
 
-Z <https://www.mdpi.com/2072-4292/15/6/1706> 
-
-
-A hybrid generative adversarial network for weakly-supervised cloud detection in multispectral images
-
-Z <https://www.sciencedirect.com/science/article/pii/S0034425722003078> 
-
-	- Datasety
-
-Transferring deep learning models for cloud detection between Landsat-8 and Proba-V
-
-Z <https://www.sciencedirect.com/science/article/pii/S0924271619302801> 
+	Z <https://www.mdpi.com/2072-4292/15/6/1706> 
 
 
-CloudS2Mask: A novel deep learning approach for improved cloud and cloud shadow masking in Sentinel-2 imagery
+	A hybrid generative adversarial network for weakly-supervised cloud detection in multispectral images
 
-Z <https://www.sciencedirect.com/science/article/pii/S0034425724001330> 
+	Z <https://www.sciencedirect.com/science/article/pii/S0034425722003078> 
+
+
+	Transferring deep learning models for cloud detection between Landsat-8 and Proba-V
+
+	Z <https://www.sciencedirect.com/science/article/pii/S0924271619302801> 
+
+
+	CloudS2Mask: A novel deep learning approach for improved cloud and cloud shadow masking in Sentinel-2 imagery
+
+	Z <https://www.sciencedirect.com/science/article/pii/S0034425724001330> 
 
 
 Benchmarking Deep Learning Models for Cloud Detection in Landsat-8 and Sentinel-2 Images
@@ -71,3 +70,4 @@ https://huggingface.co/datasets/tacofoundation/sen2venus
 
 
 omnicloudmasck https://www.youtube.com/watch?v=eoKctlbsoMs
+
