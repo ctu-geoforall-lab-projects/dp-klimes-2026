@@ -30,9 +30,9 @@ Z <https://www.mdpi.com/2072-4292/16/6/973>
 	Z <https://www.sciencedirect.com/science/article/pii/S0034425724001330> 
 
 
-Benchmarking Deep Learning Models for Cloud Detection in Landsat-8 and Sentinel-2 Images
-
-Z <https://www.mdpi.com/2072-4292/13/5/992> 
+	Benchmarking Deep Learning Models for Cloud Detection in Landsat-8 and Sentinel-2 Images
+ 
+	Z <https://www.mdpi.com/2072-4292/13/5/992> 
 
 
 Deep learning based cloud detection for medium and high resolution remote sensing images of different sensors
@@ -70,4 +70,5 @@ https://huggingface.co/datasets/tacofoundation/sen2venus
 
 
 omnicloudmasck https://www.youtube.com/watch?v=eoKctlbsoMs
+
 
