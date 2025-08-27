@@ -93,3 +93,20 @@ Zdůrazňují důležitost správně provést "Domain adaptation":
 
 Možnost vylepšení při použití GAN právě na určení transformace mezi daty.
 >Our next steps are fostered to improve the cloud detection accuracy by using the generative adversarial networks (GANs) framework (Mateo-García et al., 2019) to learn a transformation between Landsat-8 and Proba-V data.
+
+# Benchmarking Deep Learning Models for Cloud Detection in Landsat-8 and Sentinel-2 Images (2021)
+
+**Článek:** https://doi.org/10.3390/rs13050992
+
+**Zdrojový kód** https://github.com/IPL-UV/DL-L8S2-UV
+
+
+## základní info
+- **Architektura:** UNet, SegNet, DeepLabv3
+- **Datasety:**
+  - L8: L8-Biome, L8-SPARCS, L8-38Clouds
+  - S2: S2-Hollstein, S2-BaetensHagolle
+   
+
+## Popis
+Autoři srovnávají DL metody a threshold-based metody pro detekci mraků. DL metody měly lepší výsledky. Využili L8 a S2, transfer learning z L8 na S2. Použili jen odpovídající si pásma a převzorkovali S2. Uvádí, že TL z L8 na S2 funguje dobře a výsledky jsou srovnatelné s ostatními metodami.
