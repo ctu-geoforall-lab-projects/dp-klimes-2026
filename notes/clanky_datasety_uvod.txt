@@ -50,9 +50,9 @@ SEnSeI: A Deep Learning Module for Creating Sensor Independent Cloud Masks
 
 Z <https://ieeexplore.ieee.org/document/9615070> 
 
-Cross-Sensor Adversarial Domain Adaptation of Landsat-8 and Proba-V images for Cloud Detection
+	Cross-Sensor Adversarial Domain Adaptation of Landsat-8 and Proba-V images for Cloud Detection
 
-https://doi.org/10.48550/arXiv.2006.05923
+	https://doi.org/10.48550/arXiv.2006.05923
 
 
 
@@ -70,5 +70,6 @@ https://huggingface.co/datasets/tacofoundation/sen2venus
 
 
 omnicloudmasck https://www.youtube.com/watch?v=eoKctlbsoMs
+
 
 
