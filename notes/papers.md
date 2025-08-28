@@ -136,3 +136,4 @@ detection algorithm. Results on original Proba-V images
 demonstrate that when using the proposed model for the
 adaptation a higher cloud detection accuracy is achieved.
 
+
