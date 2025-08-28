@@ -92,6 +92,7 @@ Zdůrazňují důležitost správně provést "Domain adaptation":
 >Our results suggest that it is important to use both the spatial and the spectral adaptation in order to fully exploit TL advantages.
 
 Možnost vylepšení při použití GAN právě na určení transformace mezi daty.
+- tomu se věnují v rámci článku Cross-Sensor Adversarial Domain Adaptation of Landsat-8 and Proba-V images for Cloud Detection (viz níže)
 >Our next steps are fostered to improve the cloud detection accuracy by using the generative adversarial networks (GANs) framework (Mateo-García et al., 2019) to learn a transformation between Landsat-8 and Proba-V data.
 
 # Benchmarking Deep Learning Models for Cloud Detection in Landsat-8 and Sentinel-2 Images (2021)
@@ -110,3 +111,28 @@ Možnost vylepšení při použití GAN právě na určení transformace mezi da
 
 ## Popis
 Autoři srovnávají DL metody a threshold-based metody pro detekci mraků. DL metody měly lepší výsledky. Využili L8 a S2, transfer learning z L8 na S2. Použili jen odpovídající si pásma a převzorkovali S2. Uvádí, že TL z L8 na S2 funguje dobře a výsledky jsou srovnatelné s ostatními metodami.
+
+# Cross-Sensor Adversarial Domain Adaptation of Landsat-8 and Proba-V images for Cloud Detection (2020)
+
+**Článek:** https://doi.org/10.48550/arXiv.2006.05923
+
+**Zdrojový kód** https://github.com/IPL-UV/pvl8dagans
+
+
+## základní info
+- **Architektura:** upravená UNet na detekci, GAN na Domain Adaptation
+- **Model:**
+  - Cycle-GAN, 2 generátory, 2 diskriminátory (popsáno podrobně v článku)
+- **Výkon:**
+  - lepší výsledky s DA
+
+## Popis
+>Summarizing, in this paper, a Cycle-GAN architecture
+has been proposed to train a domain adaptation method
+between Proba-V and upscaled Landsat images. The proposal includes two generators, two discriminators and four
+different penalties. The GAN generator is used to modify the Proba-V images to better resemble the upscaled
+Landsat images that have also been used to train a cloud
+detection algorithm. Results on original Proba-V images
+demonstrate that when using the proposed model for the
+adaptation a higher cloud detection accuracy is achieved.
+
