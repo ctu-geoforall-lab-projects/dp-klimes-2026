@@ -19,7 +19,7 @@ The dataset consists of 9251 labelled sub-tiles from 1038 Sentinel-2 (S2) Level-
 
 - Winter products: 29 austral and 142 boreal S2 products
 
-- Sprint products: 45 austral and 257 boreal S2 products
+- Spring products: 45 austral and 257 boreal S2 products
 
 - Summer products: 30 austral and 293 boreal S2 products
 
