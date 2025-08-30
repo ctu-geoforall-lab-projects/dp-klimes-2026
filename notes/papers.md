@@ -30,6 +30,24 @@ Autoři představují nový model pro detekci mraků na snímcích S2 natrénova
 ## Poznámka
 Od vydání článku došlo k vývoji modelu, který je nově vyvíjen pod názvem OmniCloudMask (viz jiný článek)
 
+# Training sensor-agnostic deep learning models for remote sensing: Achieving state-of-the-art cloud and cloud shadow identification with OmniCloudMask (2025)
+
+**Článek:** https://doi.org/10.1016/j.rse.2025.114694
+
+**Zdrojový kód** https://github.com/DPIRD-DMA/OmniCloudMask
+
+**Podcast** https://www.youtube.com/watch?v=3spUZ2xR8Fo
+
+## Popis
+Autoři navazují na svou předchozí práci (CloudS2Mask) a představují jak trénovat model, který bude schopný přesné detekce na více různých datech. Autoři dosáhli nejlepších výsledků ze všech porovnávaných metod.
+>OCM demonstrates robust state-of-the-art
+performance across various satellite platforms when classifying clear, cloud, and shadow classes, with balanced
+overall accuracy values across: Landsat (91.5 % clear, 91.5 % cloud, and 75.2 % shadow); Sentinel-2 (92.2 %
+clear, 91.2 % cloud, and 80.5 % shadow); and PlanetScope (96.9 % clear, 98.8 % cloud, and 97.4 % shadow).
+OCM achieves this accuracy while only being trained on a single Sentinel-2 dataset, employing spectral normalisation and mixed resolution training to address the spectral and spatial differences between satellite platforms. This approach allows the model to effectively handle imagery from different sensors within the 10 m to
+50 m resolution range, as well as higher resolution imagery that has been resampled to 10 m. The OCM library is
+available as an open source Python package on PyPI.
+
 # Convolutional Neural Network‑Driven Improvements in Global Cloud Detection for Landsat 8 and Transfer Learning on Sentinel‑2 Imagery (2023)
 
 **Článek:** https://www.mdpi.com/2072-4292/15/6/1706  
@@ -135,5 +153,6 @@ Landsat images that have also been used to train a cloud
 detection algorithm. Results on original Proba-V images
 demonstrate that when using the proposed model for the
 adaptation a higher cloud detection accuracy is achieved.
+
 
 
