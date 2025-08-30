@@ -23,3 +23,12 @@ https://github.com/sentinel-hub/sentinel2-cloud-detector
 **description:** 
 
 The s2cloudless Python package provides automated cloud detection in Sentinel-2 imagery. The classification is based on a single-scene pixel-based cloud detector developed by Sentinel Hub's research team and is described in more detail in this blog.
+
+### s2cloudmask
+
+**link:** 
+https://github.com/daleroberts/s2cloudmask
+
+**description:** 
+
+The s2cloudmask Python package provides machine learning classifiers for Cloud and Shadow Detection in Sentinel-2 observations. The aim of this package is to open-source and showcase some of the tools being developed as part of the Digital Earth Australia initiative, and further, to push the state-of-art in the area of cloud classification.
