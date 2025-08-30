@@ -15,7 +15,7 @@ CloudSEN12 is a LARGE dataset (~1 TB) for cloud semantic understanding comprisin
 
 **description:** 
 
-The dataset consists of 9251 labelled sub-tiles from 1038 Sentinel-2 (S2) Level-1C (L1C) products distributed over the globe. In terms of seasonal distribution, S2 products can be divided into the following groups:
+The dataset consists of 9251 labelled sub-tiles from 1038 Sentinel-2 (S2) Level-1C (L1C) products distributed over the globe.
 
 
 
