@@ -30,6 +30,8 @@ Autoři představují nový model pro detekci mraků na snímcích S2 natrénova
 ## Poznámka
 Od vydání článku došlo k vývoji modelu, který je nově vyvíjen pod názvem OmniCloudMask (viz jiný článek)
 
+---
+
 # Training sensor-agnostic deep learning models for remote sensing: Achieving state-of-the-art cloud and cloud shadow identification with OmniCloudMask (2025)
 
 **Článek:** https://doi.org/10.1016/j.rse.2025.114694
@@ -47,6 +49,8 @@ clear, 91.2 % cloud, and 80.5 % shadow); and PlanetScope (96.9 % clear, 98.8 % c
 OCM achieves this accuracy while only being trained on a single Sentinel-2 dataset, employing spectral normalisation and mixed resolution training to address the spectral and spatial differences between satellite platforms. This approach allows the model to effectively handle imagery from different sensors within the 10 m to
 50 m resolution range, as well as higher resolution imagery that has been resampled to 10 m. The OCM library is
 available as an open source Python package on PyPI.
+
+---
 
 # Convolutional Neural Network‑Driven Improvements in Global Cloud Detection for Landsat 8 and Transfer Learning on Sentinel‑2 Imagery (2023)
 
@@ -72,6 +76,7 @@ surface coverage map can be included as the additional bands by layer stack, whi
 design appropriate thresholds for different surface types and altitudes to improve the
 performance of the model. 
 
+---
 
 # A hybrid generative adversarial network for weakly-supervised cloud detection in multispectral images (2022)
 
@@ -93,6 +98,8 @@ performance of the model.
 ## Popis
 Autoři představují nový model pro detekci mraků, který se skládá z GAN a CDM (cloud distortion model). Hlavní výhodou je, že pro trénink nejsou potřeba detailní masky mraků, ale jen blokově označené mraky. Trénováno na L8 a testováno na L8 i S2. Nebyl použit fine-tuning, model byl rovnou aplikován na S2 data.
 
+---
+
 # Transferring deep learning models for cloud detection between Landsat-8 and Proba-V (2020)
 
 **Článek:** https://doi.org/10.1016/j.isprsjprs.2019.11.024
@@ -113,6 +120,8 @@ Možnost vylepšení při použití GAN právě na určení transformace mezi da
 - tomu se věnují v rámci článku Cross-Sensor Adversarial Domain Adaptation of Landsat-8 and Proba-V images for Cloud Detection (viz níže)
 >Our next steps are fostered to improve the cloud detection accuracy by using the generative adversarial networks (GANs) framework (Mateo-García et al., 2019) to learn a transformation between Landsat-8 and Proba-V data.
 
+---
+
 # Benchmarking Deep Learning Models for Cloud Detection in Landsat-8 and Sentinel-2 Images (2021)
 
 **Článek:** https://doi.org/10.3390/rs13050992
@@ -129,6 +138,8 @@ Možnost vylepšení při použití GAN právě na určení transformace mezi da
 
 ## Popis
 Autoři srovnávají DL metody a threshold-based metody pro detekci mraků. DL metody měly lepší výsledky. Využili L8 a S2, transfer learning z L8 na S2. Použili jen odpovídající si pásma a převzorkovali S2. Uvádí, že TL z L8 na S2 funguje dobře a výsledky jsou srovnatelné s ostatními metodami.
+
+***
 
 # Cross-Sensor Adversarial Domain Adaptation of Landsat-8 and Proba-V images for Cloud Detection (2020)
 
@@ -153,6 +164,7 @@ Landsat images that have also been used to train a cloud
 detection algorithm. Results on original Proba-V images
 demonstrate that when using the proposed model for the
 adaptation a higher cloud detection accuracy is achieved.
+
 
 
 
