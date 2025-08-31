@@ -76,6 +76,26 @@ surface coverage map can be included as the additional bands by layer stack, whi
 design appropriate thresholds for different surface types and altitudes to improve the
 performance of the model. 
 
+
+---
+
+# Using Convolutional Neural Networks for Cloud Detection on VENμS Images over Multiple Land-Cover Types (2022)
+
+**Článek:** https://doi.org/10.3390/rs14205210
+
+**Zdrojový kód** https://github.com/pesekon2/cloud-detection-venus
+
+
+## základní info
+- **Architektura:** UNet, SegNet, DeepLabv3
+- **Datasety:**
+  - VENuS cloud mask training dataset
+   
+
+## Popis
+Autoři porovnávají výkon tří CNN pro detekci mraků na snímcích družice VENuS z oblasti Izraele. Zároveň všechny použité CNN překonaly dosavadní používaný způsob maskování mraků této družice (MAJA algorithm). Nejlepších výsledků dosáhla UNet. Byla také testována různá nastavení a vstupní data:
+>Moreover, it investigates their performance over different settings, including diverse numbers of classes (binary vs. multiclass), diverse band and index variations (RGB vs. RGB + NIR vs. full-band), and the effect of overfitting avoidance strategies (dropout, data augmentation). 
+
 ---
 
 # A hybrid generative adversarial network for weakly-supervised cloud detection in multispectral images (2022)
@@ -97,6 +117,26 @@ performance of the model.
 
 ## Popis
 Autoři představují nový model pro detekci mraků, který se skládá z GAN a CDM (cloud distortion model). Hlavní výhodou je, že pro trénink nejsou potřeba detailní masky mraků, ale jen blokově označené mraky. Trénováno na L8 a testováno na L8 i S2. Nebyl použit fine-tuning, model byl rovnou aplikován na S2 data.
+
+
+---
+
+# Benchmarking Deep Learning Models for Cloud Detection in Landsat-8 and Sentinel-2 Images (2021)
+
+**Článek:** https://doi.org/10.3390/rs13050992
+
+**Zdrojový kód** https://github.com/IPL-UV/DL-L8S2-UV
+
+
+## základní info
+- **Architektura:** UNet, SegNet, DeepLabv3
+- **Datasety:**
+  - L8: L8-Biome, L8-SPARCS, L8-38Clouds
+  - S2: S2-Hollstein, S2-BaetensHagolle
+   
+
+## Popis
+Autoři srovnávají DL metody a threshold-based metody pro detekci mraků. DL metody měly lepší výsledky. Využili L8 a S2, transfer learning z L8 na S2. Použili jen odpovídající si pásma a převzorkovali S2. Uvádí, že TL z L8 na S2 funguje dobře a výsledky jsou srovnatelné s ostatními metodami.
 
 ---
 
@@ -120,26 +160,9 @@ Možnost vylepšení při použití GAN právě na určení transformace mezi da
 - tomu se věnují v rámci článku Cross-Sensor Adversarial Domain Adaptation of Landsat-8 and Proba-V images for Cloud Detection (viz níže)
 >Our next steps are fostered to improve the cloud detection accuracy by using the generative adversarial networks (GANs) framework (Mateo-García et al., 2019) to learn a transformation between Landsat-8 and Proba-V data.
 
+
+
 ---
-
-# Benchmarking Deep Learning Models for Cloud Detection in Landsat-8 and Sentinel-2 Images (2021)
-
-**Článek:** https://doi.org/10.3390/rs13050992
-
-**Zdrojový kód** https://github.com/IPL-UV/DL-L8S2-UV
-
-
-## základní info
-- **Architektura:** UNet, SegNet, DeepLabv3
-- **Datasety:**
-  - L8: L8-Biome, L8-SPARCS, L8-38Clouds
-  - S2: S2-Hollstein, S2-BaetensHagolle
-   
-
-## Popis
-Autoři srovnávají DL metody a threshold-based metody pro detekci mraků. DL metody měly lepší výsledky. Využili L8 a S2, transfer learning z L8 na S2. Použili jen odpovídající si pásma a převzorkovali S2. Uvádí, že TL z L8 na S2 funguje dobře a výsledky jsou srovnatelné s ostatními metodami.
-
-***
 
 # Cross-Sensor Adversarial Domain Adaptation of Landsat-8 and Proba-V images for Cloud Detection (2020)
 
@@ -166,7 +189,9 @@ demonstrate that when using the proposed model for the
 adaptation a higher cloud detection accuracy is achieved.
 
 ---
+
 různé věci k tématu: https://github.com/satellite-image-deep-learning
+
 
 
 
