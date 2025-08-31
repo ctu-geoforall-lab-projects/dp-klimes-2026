@@ -7,7 +7,7 @@
 **Podcast** https://www.youtube.com/watch?v=3spUZ2xR8Fo
 
 ## Popis
-Autoři navazují na svou předchozí práci (CloudS2Mask) a představují jak trénovat model, který bude schopný přesné detekce na více různých datech. Autoři dosáhli nejlepších výsledků ze všech porovnávaných metod.
+Autoři navazují na svou předchozí práci (CloudS2Mask) a představují jak trénovat model, který bude schopný přesné detekce na datech z více různých senzorů. Autoři dosáhli nejlepších výsledků ze všech porovnávaných metod.
 >OCM demonstrates robust state-of-the-art
 performance across various satellite platforms when classifying clear, cloud, and shadow classes, with balanced
 overall accuracy values across: Landsat (91.5 % clear, 91.5 % cloud, and 75.2 % shadow); Sentinel-2 (92.2 %
@@ -191,6 +191,7 @@ adaptation a higher cloud detection accuracy is achieved.
 ---
 
 různé věci k tématu: https://github.com/satellite-image-deep-learning
+
 
 
 
