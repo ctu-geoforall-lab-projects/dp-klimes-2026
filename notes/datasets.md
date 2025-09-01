@@ -6,14 +6,22 @@ next i will just mention some of those from papers i read
 
 # Sentinel-2
 
-### CloudSEN12
+### CloudSEN12 / CloudSEN12+
 
 **link:** 
+- CloudSEN12
 https://github.com/cloudsen12/
+- CloudSEN12+
+https://www.scidb.cn/en/detail?dataSetId=2036f4657b094edfbb099053d6024b08
 
 **description:** 
-
+- CloudSEN12
+  
 CloudSEN12 is a LARGE dataset (~1 TB) for cloud semantic understanding comprising of 49,400 image patches (IP) that are evenly spread throughout all continents except Antarctica. Each IP has an average size of 5090 x 5090 meters and contains data from Sentinel-2 optical levels 1C and 2A, Sentinel-1 Synthetic Aperture Radar (SAR), digital elevation model, surface water occurrence, land cover classes, and cloud mask results from eight cutting-edge cloud detection algorithms.
+
+- CloudSEN12+
+  
+Detecting and screening clouds is the first step in any optical remote sensing (RS) analysis. Cloud formation is diverse, presenting many shapes, thicknesses, and altitudes. This variety poses a significant challenge to developing effective cloud detection algorithms since most datasets shortfall an unbiased representation. To address this issue, we have built CloudSEN12+, a significant expansion of the CloudSEN12 dataset. This new dataset doubles the expert-labeled pixels, making it the largest cloud detection dataset for Sentinel-2 imagery up to date. We have carefully reviewed and refined previous human labels in this new release to ensure maximum trustworthiness. We hope CloudSEN12+ will be a valuable resource for the cloud detection research community.
 
 ### KappaSet
 
@@ -30,6 +38,16 @@ The dataset consists of 9251 labelled sub-tiles from 1038 Sentinel-2 (S2) Level-
 - Summer products: 30 austral and 293 boreal S2 products
 
 - Autumn products:  29 austral and 213 boreal S2 products
+
+### Sentinel-2 Cloud Mask Catalogue
+
+**link:** 
+https://zenodo.org/records/4172871#.YYI4BmBByUk
+
+**description:** 
+
+This dataset comprises cloud masks for 513 1022-by-1022 pixel subscenes, at 20m resolution, sampled random from the 2018 Level-1C Sentinel-2 archive. The design of this dataset follows from some observations about cloud masking: (i) performance over an entire product is highly correlated, thus subscenes provide more value per-pixel than full scenes, (ii) current cloud masking datasets often focus on specific regions, or hand-select the products used, which introduces a bias into the dataset that is not representative of the real-world data, (iii) cloud mask performance appears to be highly correlated to surface type and cloud structure, so testing should include analysis of failure modes in relation to these variables.
+
 
 ### S2-Hollstein
 
