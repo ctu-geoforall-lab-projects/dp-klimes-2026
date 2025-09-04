@@ -15,6 +15,7 @@ mám to zde v češtině (je to pro mě rychlejší)
 6. Pre-training na jiném datasetu (MS COCO, Pascal, ImageNet, ....)
     - otázka 3
 7. Porovnání transfer learning a training from scratch (see [here](https://proceedings.neurips.cc/paper/2020/file/27e9661e033a73a6ad8cefcde965c54d-Paper.pdf))
+   - zde porovnávají s self-training, otázka 8
 8. Deep learning vs jiné algoritmy
 
 # Otázky na konzultaci
@@ -26,3 +27,4 @@ mám to zde v češtině (je to pro mě rychlejší)
 5. Komunikace přes GitHub - mám čekat na review PR? dokážu si představit si je "schvalovat" sám
 6. Bylo by možné se domluvit na pravidelných konzultacích?
 7. Bylo by možné nějak zařídit přístup na server?
+8. Píšete porovnat TL a training from scratch. Autoři porovnávají pre-training a self-training. Myslel jste z tohoto článku využít zkušenosti s tím, kdy je pre-training vhodný a kdy nikoli, nebo i vyzkoušet self-training?
