@@ -1,0 +1,75 @@
+Using Convolutional Neural Networks for Cloud Detection on VENμS Images over Multiple Land-Cover Types
+
+Z <https://www.mdpi.com/2072-4292/14/20/5210> 
+
+
+Spatial–Temporal Approach and Dataset for Enhancing Cloud Detection in Sentinel-2 Imagery: A Case Study in China
+
+Z <https://www.mdpi.com/2072-4292/16/6/973> 
+
+
+
+
+	Convolutional Neural Network-Driven Improvements in Global Cloud Detection for Landsat 8 and Transfer Learning on Sentinel-2 Imagery
+
+	Z <https://www.mdpi.com/2072-4292/15/6/1706> 
+
+
+	A hybrid generative adversarial network for weakly-supervised cloud detection in multispectral images
+
+	Z <https://www.sciencedirect.com/science/article/pii/S0034425722003078> 
+
+
+	Transferring deep learning models for cloud detection between Landsat-8 and Proba-V
+
+	Z <https://www.sciencedirect.com/science/article/pii/S0924271619302801> 
+
+
+	CloudS2Mask: A novel deep learning approach for improved cloud and cloud shadow masking in Sentinel-2 imagery
+
+	Z <https://www.sciencedirect.com/science/article/pii/S0034425724001330> 
+
+
+	Benchmarking Deep Learning Models for Cloud Detection in Landsat-8 and Sentinel-2 Images
+ 
+	Z <https://www.mdpi.com/2072-4292/13/5/992> 
+
+
+Deep learning based cloud detection for medium and high resolution remote sensing images of different sensors
+
+Z <https://www.sciencedirect.com/science/article/pii/S0924271619300565> 
+
+
+
+CloudSEN12+: The largest dataset of expert-labeled pixels for cloud and cloud shadow detection in Sentinel-2
+
+Z <https://www.sciencedirect.com/science/article/pii/S2352340924008163> 
+
+
+SEnSeI: A Deep Learning Module for Creating Sensor Independent Cloud Masks
+
+Z <https://ieeexplore.ieee.org/document/9615070> 
+
+	Cross-Sensor Adversarial Domain Adaptation of Landsat-8 and Proba-V images for Cloud Detection
+
+	https://doi.org/10.48550/arXiv.2006.05923
+
+
+
+
+
+VENuS cloud mask training dataset Z <https://zenodo.org/records/7040177> 
+Dataset for "Enhancing Cloud Detection in Sentinel-2 Imagery: A Spatial-Temporal Approach and Dataset" Z <https://zenodo.org/records/10613705> 
+Sentinel-2 Cloud Mask Catalogue Z <https://zenodo.org/records/4172871#.YYI4BmBByUk> 
+Landsat 8 Cloud Cover Assessment Validation Data Z <https://landsat.usgs.gov/landsat-8-cloud-cover-assessment-validation-data>
+Deep Learning Based Cloud Detection for Images of Different Sensors Z <https://github.com/dr-lizhiwei/MSCFF?tab=readme-ov-file>
+CloudSEN12 - a LARGE dataset (~1 TB) for cloud semantic understanding comprising of 49,400 image patches Z <https://github.com/cloudsen12> https://cloudsen12.github.io/ https://zenodo.org/records/7034410 
+CloudSEN12+: The largest collection of expert-labeled pixels for cloud and cloud shadow detection in Sentinel-2 Z <https://www.scidb.cn/en/detail?dataSetId=2036f4657b094edfbb099053d6024b08>
+
+https://huggingface.co/datasets/tacofoundation/sen2venus
+
+
+omnicloudmasck https://www.youtube.com/watch?v=eoKctlbsoMs
+
+
+
