@@ -1,3 +1,9 @@
+# Data and output files
+data/
+*.tif
+.idea
+# QGIS projects
+qgis/
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
