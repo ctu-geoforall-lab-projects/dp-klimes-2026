@@ -151,7 +151,17 @@ They mention the potential for improvement using GANs to determine transformatio
 
 ## Description
 >Summarizing, in this paper, a Cycle-GAN architecture has been proposed to train a domain adaptation method between Proba-V and upscaled Landsat images. The proposal includes two generators, two discriminators and four different penalties. The GAN generator is used to modify the Proba-V images to better resemble the upscaled Landsat images that have also been used to train a cloud detection algorithm. Results on original Proba-V images demonstrate that when using the proposed model for the adaptation a higher cloud detection accuracy is achieved.
+---
+
+# Cloud and cloud shadow detection for optical satellite imagery: Features, algorithms, validation, and prospects (2022)
+
+**Article:** [https://doi.org/10.48550/arXiv.2006.05923](https://doi.org/10.1016/j.isprsjprs.2022.03.020)  
+ 
+
+## Description
+>This review first analyzes the trends of the field, summarizes the progress and achievements in the cloud and cloud shadow detection methods in terms of features, algorithms, and validationof results, and then discusses existing problems, and provides our prospects at the end 
 
 ---
 
 Various resources on the topic: https://github.com/satellite-image-deep-learning
+
