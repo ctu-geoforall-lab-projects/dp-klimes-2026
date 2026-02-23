@@ -160,8 +160,25 @@ They mention the potential for improvement using GANs to determine transformatio
 
 ## Description
 >This review first analyzes the trends of the field, summarizes the progress and achievements in the cloud and cloud shadow detection methods in terms of features, algorithms, and validationof results, and then discusses existing problems, and provides our prospects at the end 
-
 ---
 
+# A globally applicable deep learning model for Sentinel-2 cloud and shadow detection (2025)
+
+**Article:** https://doi.org/10.1016/j.srs.2025.100278
+ 
+
+## Description
+>This study presents and evaluates a globally applicable cloud and shadow masking model for Sentinel-2 top-of-atmosphere (TOA) reflectance using a state-of-the-art transformer-based U-Net model (Swin-Unet) trained with nearly 20 thousand globally distributed 512 × 512 20 m pixel patches to classify each pixel as cloud, cloud shadow, or clear. The training data were compiled from publicly available annotation data, that were refined for obvious annotation errors and supplemented with additional annotations to enhance representation of underrepresented cloud and surface conditions. 
+---
+# Deep Learning Based Domain Adaptation Methods in Remote Sensing: A Comprehensive Survey (2025)
+
+**Article:**  https://arxiv.org/html/2510.15615v1#S4
+ 
+
+## Description
+>In this paper, we present a comprehensive survey of significant advancements in deep learning based domain adaptation for remote sensing. We first introduce the preliminary knowledge to clarify key concepts, mathematical notations, and the taxonomy of methodologies. We then organize existing algorithms from multiple perspectives, including task categorization, input mode, supervision paradigm, and algorithmic granularity, providing readers with a structured understanding of the field. Next, we review widely used datasets and summarize the performance of state-of-the-art methods to provide an overview of current progress. We also identify open challenges and potential directions to guide future research in domain adaptation for remote sensing. Compared to previous surveys, this work addresses a broader range of domain adaptation tasks in remote sensing, rather than concentrating on a few subfields. It also presents a systematic taxonomy, providing a more comprehensive and organized understanding of the field. As a whole, this survey can inspire the research community, foster understanding, and guide future work in the field.
+
+---
 Various resources on the topic: https://github.com/satellite-image-deep-learning
+
 
