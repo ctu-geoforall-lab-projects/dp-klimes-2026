@@ -1,0 +1,836 @@
+@book{goodfellow2016,
+    title={Deep Learning},
+    author={Ian Goodfellow and Yoshua Bengio and Aaron Courville},
+    publisher={MIT Press},
+    note={\url{http://www.deeplearningbook.org}},
+    year={2016}
+}
+
+@ARTICLE{poterek,
+  author={Poterek, Quentin and Herrault, Pierre-Alexis and Skupinski, Grzegorz and Sheeren, David},
+  journal={IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing}, 
+  title={Deep Learning for Automatic Colorization of Legacy Grayscale Aerial Photographs}, 
+  year={2020},
+  volume={13},
+  number={},
+  pages={2899-2915},
+  keywords={Gray-scale;Image color analysis;Deep learning;Remote sensing;Generative adversarial networks;Sensors;Photography;Colorization;deep learning;generative adversarial network (GAN);grayscale imagery;historical aerial photograph;remote sensing},
+  doi={10.1109/JSTARS.2020.2992082}}
+
+@Article{farella,
+AUTHOR = {Farella, Elisa Mariarosaria and Malek, Salim and Remondino, Fabio},
+TITLE = {Colorizing the Past: Deep Learning for the Automatic Colorization of Historical Aerial Images},
+JOURNAL = {Journal of Imaging},
+VOLUME = {8},
+YEAR = {2022},
+NUMBER = {10},
+ARTICLE-NUMBER = {269},
+URL = {https://www.mdpi.com/2313-433X/8/10/269},
+PubMedID = {36286363},
+ISSN = {2313-433X},
+ABSTRACT = {The colorization of grayscale images can, nowadays, take advantage of recent progress and the automation of deep-learning techniques. From the media industry to medical or geospatial applications, image colorization is an attractive and investigated image processing practice, and it is also helpful for revitalizing historical photographs. After exploring some of the existing fully automatic learning methods, the article presents a new neural network architecture, Hyper-U-NET, which combines a U-NET-like architecture and HyperConnections to handle the colorization of historical black and white aerial images. The training dataset (about 10,000 colored aerial image patches) and the realized neural network are available on our GitHub page to boost further research investigations in this field.},
+DOI = {10.3390/jimaging8100269}
+}
+
+@article{dias2020,
+author = {Dias, Maria and Monteiro, João and Estima, Jacinto and Silva, Joel and Martins, Bruno},
+year = {2020},
+month = {09},
+pages = {},
+title = {Semantic segmentation and colorization of grayscale aerial imagery with W‐Net models},
+volume = {37},
+journal = {Expert Systems},
+url = {https://doi.org/10.1111/exsy.12622}
+}
+
+@ARTICLE{zeger,
+  author={Žeger, Ivana and Grgic, Sonja and Vuković, Josip and Šišul, Gordan},
+  journal={IEEE Access}, 
+  title={Grayscale Image Colorization Methods: Overview and Evaluation}, 
+  year={2021},
+  volume={9},
+  number={},
+  pages={113326-113346},
+  keywords={Image color analysis;Deep learning;Gray-scale;Image quality;Indexes;Image segmentation;Automatic methods;black-and-white image;colorfulness;colorization;deep learning methods;example-based methods;grayscale image;image quality assessment;scribble-based methods;user-guided methods},
+  doi={10.1109/ACCESS.2021.3104515}}
+
+@inproceedings{levin,
+author = {Levin, Anat and Lischinski, Dani and Weiss, Yair},
+title = {Colorization using optimization},
+year = {2004},
+isbn = {9781450378239},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1186562.1015780},
+doi = {10.1145/1186562.1015780},
+abstract = {Colorization is a computer-assisted process of adding color to a monochrome image or movie. The process typically involves segmenting images into regions and tracking these regions across image sequences. Neither of these tasks can be performed reliably in practice; consequently, colorization requires considerable user intervention and remains a tedious, time-consuming, and expensive task.In this paper we present a simple colorization method that requires neither precise image segmentation, nor accurate region tracking. Our method is based on a simple premise; neighboring pixels in space-time that have similar intensities should have similar colors. We formalize this premise using a quadratic cost function and obtain an optimization problem that can be solved efficiently using standard techniques. In our approach an artist only needs to annotate the image with a few color scribbles, and the indicated colors are automatically propagated in both space and time to produce a fully colorized image or sequence. We demonstrate that high quality colorizations of stills and movie clips may be obtained from a relatively modest amount of user input.},
+booktitle = {ACM SIGGRAPH 2004 Papers},
+pages = {689–694},
+numpages = {6},
+keywords = {segmentation, recoloring, colorization},
+location = {Los Angeles, California},
+series = {SIGGRAPH '04}
+}
+
+@article{welsh,
+author = {Welsh, Tomihisa and Ashikhmin, Michael and Mueller, Klaus},
+title = {Transferring color to greyscale images},
+year = {2002},
+issue_date = {July 2002},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {21},
+number = {3},
+issn = {0730-0301},
+url = {https://doi.org/10.1145/566654.566576},
+doi = {10.1145/566654.566576},
+abstract = {We introduce a general technique for "colorizing" greyscale images by transferring color between a source, color image and a destination, greyscale image. Although the general problem of adding chromatic values to a greyscale image has no exact, objective solution, the current approach attempts to provide a method to help minimize the amount of human labor required for this task. Rather than choosing RGB colors from a palette to color individual components, we transfer the entire color "mood" of the source to the target image by matching luminance and texture information between the images. We choose to transfer only chromatic information and retain the original luminance values of the target image. Further, the procedure is enhanced by allowing the user to match areas of the two images with rectangular swatches. We show that this simple technique can be successfully applied to a variety of images and video, provided that texture and luminance are sufficiently distinct. The images generated demonstrate the potential and utility of our technique in a diverse set of application domains.},
+journal = {ACM Trans. Graph.},
+month = {jul},
+pages = {277–280},
+numpages = {4},
+keywords = {video, texture synthesis, image processing, color}
+}
+
+@ARTICLE{cheng2017,
+  author={Cheng, Zezhou and Yang, Qingxiong and Sheng, Bin},
+  journal={IEEE Transactions on Image Processing}, 
+  title={Colorization Using Neural Network Ensemble}, 
+  year={2017},
+  volume={26},
+  number={11},
+  pages={5491-5505},
+  keywords={Neural networks;Image color analysis;Gray-scale;Training;Semantics;Internet;Feature extraction;Image colorization;neural networks},
+  doi={10.1109/TIP.2017.2740620}}
+
+@INPROCEEDINGS{cheng2015,
+  author={Cheng, Zezhou and Yang, Qingxiong and Sheng, Bin},
+  booktitle={2015 IEEE International Conference on Computer Vision (ICCV)}, 
+  title={Deep Colorization}, 
+  year={2015},
+  volume={},
+  number={},
+  pages={415-423},
+  keywords={Gray-scale;Image color analysis;Feature extraction;Neural networks;Neurons;Machine learning;Databases},
+  doi={10.1109/ICCV.2015.55}}
+
+@inproceedings{zhang2016,
+  title={Colorful Image Colorization},
+  author={Richard Zhang and Phillip Isola and Alexei A. Efros},
+  booktitle={European Conference on Computer Vision},
+  year={2016},
+  url={https://api.semanticscholar.org/CorpusID:50698}
+}
+
+@article{larsson2016,
+  title={Learning Representations for Automatic Colorization},
+  author={Gustav Larsson and Michael Maire and Gregory Shakhnarovich},
+  journal={ArXiv},
+  year={2016},
+  volume={abs/1603.06668},
+  url={https://api.semanticscholar.org/CorpusID:7023610}
+}
+
+@article{iizuka2016,
+author = {Iizuka, Satoshi and Simo-Serra, Edgar and Ishikawa, Hiroshi},
+title = {Let there be color! joint end-to-end learning of global and local image priors for automatic image colorization with simultaneous classification},
+year = {2016},
+issue_date = {July 2016},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {35},
+number = {4},
+issn = {0730-0301},
+url = {https://doi.org/10.1145/2897824.2925974},
+doi = {10.1145/2897824.2925974},
+abstract = {We present a novel technique to automatically colorize grayscale images that combines both global priors and local image features. Based on Convolutional Neural Networks, our deep network features a fusion layer that allows us to elegantly merge local information dependent on small image patches with global priors computed using the entire image. The entire framework, including the global and local priors as well as the colorization model, is trained in an end-to-end fashion. Furthermore, our architecture can process images of any resolution, unlike most existing approaches based on CNN. We leverage an existing large-scale scene classification database to train our model, exploiting the class labels of the dataset to more efficiently and discriminatively learn the global priors. We validate our approach with a user study and compare against the state of the art, where we show significant improvements. Furthermore, we demonstrate our method extensively on many different types of images, including black-and-white photography from over a hundred years ago, and show realistic colorizations.},
+journal = {ACM Trans. Graph.},
+month = {jul},
+articleno = {110},
+numpages = {11},
+keywords = {colorization, convolutional neural network}
+}
+
+@article{goodfellow2014,
+author = {Goodfellow, Ian and Pouget-Abadie, Jean and Mirza, Mehdi and Xu, Bing and Warde-Farley, David and Ozair, Sherjil and Courville, Aaron and Bengio, Y.},
+year = {2014},
+month = {06},
+pages = {},
+title = {Generative Adversarial Networks},
+volume = {3},
+journal = {Advances in Neural Information Processing Systems},
+doi = {10.1145/3422622}
+}
+
+@INPROCEEDINGS{isola,
+  author={Isola, Phillip and Zhu, Jun-Yan and Zhou, Tinghui and Efros, Alexei A.},
+  booktitle={2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, 
+  title={Image-to-Image Translation with Conditional Adversarial Networks}, 
+  year={2017},
+  volume={},
+  number={},
+  pages={5967-5976},
+  keywords={Gallium nitride;Generators;Training;Image edge detection;Force;Image resolution},
+  doi={10.1109/CVPR.2017.632}}
+
+@INPROCEEDINGS{deng,
+  author={Deng, Jia and Dong, Wei and Socher, Richard and Li, Li-Jia and Kai Li and Li Fei-Fei},
+  booktitle={2009 IEEE Conference on Computer Vision and Pattern Recognition}, 
+  title={ImageNet: A large-scale hierarchical image database}, 
+  year={2009},
+  volume={},
+  number={},
+  pages={248-255},
+  keywords={Large-scale systems;Image databases;Explosions;Internet;Robustness;Information retrieval;Image retrieval;Multimedia databases;Ontologies;Spine},
+  doi={10.1109/CVPR.2009.5206848}}
+
+@online{yadav,
+  title={Colorizing Historic Black and White Aerial Imagery using Deep Learning},
+  author={Yadav, Pavan and Mathew, Sangeet},
+  year={2021},
+  month={August 23},
+  url={https://www.esri.com/arcgis-blog/products/arcgis-pro/design-planning/colorizing-historic-black-and-white-aerial-imagery-using-deep-learning/},
+  urldate= {2024-04-6},
+}
+
+
+@thesis{dp:futschik,
+  author       = {Futschik, David},
+  title        = {Colorization of black-and-white images using deep neural networks},
+  type         = {Diplomová práce},
+  institution  = {ČVUT v Praze. Fakulta elektrotechnická},
+  date         = {2018},
+  url          = {https://dspace.cvut.cz/handle/10467/73951},
+}
+
+@thesis{bp:novotna,
+  author       = {Novotná, Lucie},
+  title        = {Image Colorization with Neural Networks},
+  type         = {Bakalářská práce},
+  institution  = {Masarykova univerzita. Fakulta informatiky},
+  date         = {2021},
+  url          = {https://is.muni.cz/th/cawr6/gan-colorization.pdf},
+}
+
+@online{britannica:history,
+  author       = {Gernsheim, Helmut Erich Robert and Grundberg, Andy and Newhall, Beaumont and Rosenblum, Naomi},
+  title        = {history of photography},
+  year         = 2024,
+  url          = {https://www.britannica.com/technology/photography},
+  urldate      = {2024-04-6},
+}
+
+@book{ftg1,
+  author = {Pavelka, Karel},
+  title = {Fotogrammetrie 1},
+  year = {2009},
+  address = {Praha},
+  publisher = {Česká technika - nakladatelství ČVUT},
+  note = {vysokoškolská skripta},
+  isbn = {978-80-01-04249-6},
+}
+
+@book{ftg2,
+  author = {Pavelka, Karel},
+  title = {Fotogrammetrie 2},
+  year = {2011},
+  address = {Praha},
+  publisher = {Česká technika - nakladatelství ČVUT},
+  note = {vysokoškolská skripta},
+  isbn = {978-80-01-04719-4},
+}
+
+@article{svec,
+author = {Svec, Zdenek and Pavelka, Karel},
+year = {2016},
+month = {06},
+pages = {107-113},
+title = {PREPARATION OF THE DIGITAL ELEVATION MODEL FOR ORTHOPHOTO CR PRODUCTION},
+volume = {XLI-B3},
+journal = {ISPRS - International Archives of the Photogrammetry, Remote Sensing and Spatial Information Sciences},
+doi = {10.5194/isprs-archives-XLI-B3-107-2016}
+}
+
+@techreport{TZ:ort,
+  author       = {Knapík, Josef and Šíma, Jiří and Dušánek, Petr and Koukalová, Blanka},
+  title        = {Technická zpráva k ortofotografickému zobrazení území ČR: Ortofoto České republiky},
+  institution  = {Zeměměřický úřad, Vojenský geografický a hydrometeorologický úřad},
+  year         = {2024},
+  url          = {https://geoportal.cuzk.cz/(S(ilt3ovboexo5eqkyvwm3bqwo))/Dokumenty/TZ_Ortofoto_CR.pdf},
+  urldate      = {2024-04-27},
+}
+
+@online{opendata,
+    title = {Otevřená data},
+    author = {Jakub Míšek},
+    year = {2022},
+    url = {https://opendata.gov.cz/informace:start},
+    urldate      = {2024-04-30}
+}
+
+@techreport{atom,
+  author       = {Kůsová, Veronika},
+  title        = {Informace o službách Atom a OpenSearch},
+  institution  = {Český úřad zeměměřický a katastrální},
+  year         = {2023},
+  url          = {https://services.cuzk.cz/doc/inspire-atom-download.pdf},
+  urldate      = {2024-04-30},
+}
+
+@online{bmp,
+  title={Grafický formát BMP - používaný a přitom neoblíbený},
+  author={Tišnovský, Pavel},
+  year={2006},
+  month={October 19},
+  url={https://www.root.cz/clanky/graficky-format-bmp-pouzivany-a-pritom-neoblibeny/},
+  urldate= {2024-05-4},
+}
+
+@online{tiff,
+  title={Formáty pro ukládání fotografií - 7.díl: TIFF},
+  author={Pihan, Roman},
+  year={2007},
+  url={https://www.digimanie.cz/formaty-pro-ukladani-fotografii-7dil-tiff/2023},
+  urldate= {2024-05-4},
+}
+
+@online{jpeg,
+  title={JPEG - král rastrových grafických formátů?},
+  author={Tišnovský, Pavel},
+  year={2006},
+  url={https://www.root.cz/clanky/jpeg-kral-rastrovych-grafickych-formatu/},
+  urldate= {2024-05-4},
+}
+
+@online{png,
+  title={PNG is Not GIF},
+  author={Tišnovský, Pavel},
+  year={2006},
+  url={https://www.root.cz/clanky/png-is-not-gif/#pollInText1350},
+  urldate= {2024-05-4},
+}
+
+@thesis{bp:elgrova,
+  author       = {Elgrová, Michaela},
+  title        = {Barvy v digitální fotografii},
+  type         = {Bakalářská práce},
+  institution  = {Západočeská univerzita v Plzni},
+  date         = {2012},
+  url          = {http://hdl.handle.net/11025/5758},
+}
+
+@online{barmod,
+  title={Barevné modely, prostory a režimy, barevná hloubka},
+  publisher={ZČU v Plzni},
+  url={https://kvd.zcu.cz/cz/materialy/ZTGI/HTML/11/text.htm},
+  urldate= {2024-05-4},
+}
+
+
+@article{kohout,
+  title={Historie a elementární základy teorie barev III.},
+  author={Kohout, Václav},
+  journaltitle = {Fyzika kolem nás},
+  year={2013},
+  publisher = {ZČU v Plzni. Fakulta pedagogická. Katedra matematiky, fyziky a technické výchovy},
+  url={http://hdl.handle.net/11025/22108}
+}
+
+
+
+@thesis{dp:simunsky,
+  author       = {Šimunský, Martin},
+  title        = {Vliv barevných modelů na chování konvolučních neuronových sítí},
+  type         = {Diplomová práce},
+  institution  = {VUT v Brně. Fakulta strojního inženýrství. Ústav automatizace a informatiky},
+  date         = {2020},
+  url          = {https://theses.cz/id/6bugyq/},
+}
+
+@online{cielab,
+    author = {Gashiye},
+    title = {Cielab Color Space - Pdf Logo},
+    url = {https://www.cleanpng.com/users/@gashiye.html},
+    urldate= {2024-05-8},
+}
+
+@online{cenia,
+  title={Historická ortofotomapa (50. léta)},
+  author={Česká informační agentura životního prostředí},
+  year={2022},
+  url={https://gis.cenia.cz/id/dataset/ortofotomapa_historicka},
+  urldate= {2024-05-8},
+}
+
+@article{mcculloch:neuron,
+  title={A logical calculus of the ideas immanent in nervous activity},
+  author={McCulloch, Warren S and Pitts, Walter},
+  journal={The bulletin of mathematical biophysics},
+  volume={5},
+  number={4},
+  pages={115--133},
+  year={1943},
+  publisher={Springer}
+}
+
+@book{bishop:nn,
+  title={Neural networks for pattern recognition},
+  author={Bishop, Christopher M.},
+  year={1995},
+  publisher={Oxford University Press}
+}
+
+@article{rosenblatt:perceptron,
+  doi = {10.1037/h0042519},
+  url = {https://doi.org/10.1037/h0042519},
+  year = {1958},
+  publisher = {American Psychological Association ({APA})},
+  volume = {65},
+  number = {6},
+  pages = {386--408},
+  author = {F. Rosenblatt},
+  title = {The perceptron: A probabilistic model for information storage and organization in the brain.},
+  journal = {Psychological Review}
+}
+
+@InProceedings{ronneberger,
+  author       = "O. Ronneberger and P.Fischer and T. Brox",
+  title        = "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+  booktitle    = "Medical Image Computing and Computer-Assisted Intervention (MICCAI)",
+  series       = "LNCS",
+  volume       = "9351",
+  pages        = "234--241",
+  year         = "2015",
+  publisher    = "Springer",
+  note         = "(available on arXiv:1505.04597 [cs.CV])",
+  url          = "http://lmb.informatik.uni-freiburg.de/Publications/2015/RFB15a"
+}
+
+@INPROCEEDINGS{hariharan,
+  author={Hariharan, Bharath and Arbeláez, Pablo and Girshick, Ross and Malik, Jitendra},
+  booktitle={2015 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, 
+  title={Hypercolumns for object segmentation and fine-grained localization}, 
+  year={2015},
+  volume={},
+  number={},
+  pages={447-456},
+  keywords={Training;Pipelines;Heating;Semantics;Image segmentation;Labeling;Feature extraction},
+  doi={10.1109/CVPR.2015.7298642}}
+
+@online{rehacek,
+  title={Matykání: Hoďte na problém neuronovou síť},
+  author={Řeháček, Jan},
+  year={2022},
+  url={https://www.matfyz.cz/clanky/matykani-hodte-na-problem-neuronovou-sit},
+  urldate= {2024-05-8},
+}
+
+@online{kordik11,
+  title={BI-VZD přednáška 11},
+  author={Kordík, Pavel},
+  organization = {ČVUT v Praze. Fakulta informačních technologií},
+  year={2021},
+  url={https://kam.fit.cvut.cz/bi-vzd/lectures/index.html},
+  urldate= {2024-05-8},
+}
+
+@online{klouda4,
+  title={BI-ML1 přednáška 4},
+  author={Klouda, Karel and Vašata, Daniel},
+  organization = {ČVUT v Praze. Fakulta informačních technologií},
+  year={2023},
+  url={https://courses.fit.cvut.cz/BI-ML1/lectures/index.html},
+  urldate= {2024-05-8},
+}
+
+@article{nwankpa:activationfcns,
+  author    = {Chigozie Nwankpa and
+               Winifred Ijomah and
+               Anthony Gachagan and
+               Stephen Marshall},
+  title     = {Activation Functions: Comparison of trends in Practice and Research for Deep Learning},
+  journal   = {CoRR},
+  volume    = {abs/1811.03378},
+  year      = {2018},
+  url       = {http://arxiv.org/abs/1811.03378},
+  eprinttype = {arXiv},
+  eprint    = {1811.03378},
+  timestamp = {Fri, 23 Nov 2018 12:43:51 +0100},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-1811-03378.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@thesis{bp:sarancuk,
+  author       = {Sarančuk, Nikola},
+  title        = {Implementace autoenkodéru pro zpracování obrazových dat},
+  type         = {Bakalářská práce},
+  institution  = {VUT v Brně. Fakulta elektrotechniky a komunikačních technologií. Ústav automatizace a měřicí techniky},
+  date         = {2022},
+  url          = {http://hdl.handle.net/11012/205767},
+}
+
+@thesis{bp:zacha,
+  author       = {Zacha, Jiří},
+  title        = {Konvoluční neuronové sítě pro klasifikaci objektů z LiDARových dat},
+  type         = {Bakalářská práce},
+  institution  = {ČVUT v Praze. Fakulta elektrotechnická},
+  date         = {2019},
+  url          = {http://hdl.handle.net/10467/82351},
+}
+
+@thesis{dp:rozhonova,
+  author       = {Rozhoňová, Andrea},
+  title        = {Metody hlubokého učení pro segmentaci cév a optického disku v oftalmologických sekvencích},
+  type         = {Diplomová práce},
+  institution  = {VUT v Brně. Fakulta elektrotechniky a komunikačních technologií},
+  date         = {2019},
+  url          = {https://www.vut.cz/www_base/zav_prace_soubor_verejne.php?file_id=190887},
+}
+
+@inproceedings{nair:relu,
+  author={Vinod Nair and Geoffrey E. Hinton},
+  title={Rectified Linear Units Improve Restricted Boltzmann Machines},
+  year={2010},
+  cdate={1262304000000},
+  pages={807-814},
+  url={https://icml.cc/Conferences/2010/papers/432.pdf},
+  booktitle={ICML},
+  crossref={conf/icml/2010}
+}
+
+@online{pilat,
+  title={Neuronové sítě - úvod},
+  author={Pilát, Martin},
+  url={https://ktiml.mff.cuni.cz/~pilat/cs/prirodou-inspirovane-algoritmy/neuronove-site-uvod/},
+  urldate= {2024-05-9},
+}
+
+@online{sc1,
+  title={What To Do When TensorFlow is Not Detecting Your GPU},
+  author={Saturn, Cloud},
+  url={https://saturncloud.io/blog/what-to-do-when-tensorflow-is-not-detecting-your-gpu/#1},
+  urldate= {2024-05-13},
+}
+
+@online{sc2,
+  title={How to troubleshoot TensorFlow not detecting GPU},
+  author={Saturn, Cloud},
+  url={https://saturncloud.io/blog/how-to-troubleshoot-tensorflow-not-detecting-gpu/},
+  urldate= {2024-05-13},
+}
+
+@online{tfgpu1,
+  title={Tensorflow not detecting GPU},
+  author={Marius},
+  url={https://discuss.tensorflow.org/t/tensorflow-not-detecting-gpu/16295},
+  urldate= {2024-05-14},
+}
+
+@online{tfgpu2,
+  title={Enable GPU acceleration for TensorFlow 2 with tensorflow-directml-plugin},
+  author={White, Steven and Dzkhuizen, Jonah},
+  url={https://learn.microsoft.com/en-us/windows/ai/directml/gpu-tensorflow-plugin},
+  urldate= {2024-05-14},
+}
+
+@online{tfdir,
+  title={Troubleshooting GPU timeouts in tensorflow-directml},
+  author={Rahrig, Clark},
+  url={https://github.com/microsoft/tensorflow-directml/blob/directml/tensorflow/docs/Troubleshooting-Timeouts.md},
+  urldate= {2024-05-14},
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@article{rama:swish,
+  title={Searching for activation functions},
+  author={Ramachandran, Prajit and Zoph, Barret and Le, Quoc V},
+  journal={arXiv preprint arXiv:1710.05941},
+  year={2017}
+}
+
+@inproceedings{dugas:softplus,
+ author = {Dugas, Charles and Bengio, Yoshua and B\'{e}lisle, Fran\c{c}ois and Nadeau, Claude and Garcia, Ren\'{e}},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {T. Leen and T. Dietterich and V. Tresp},
+ pages = {472-478},
+ publisher = {MIT Press},
+ title = {Incorporating Second-Order Functional Knowledge for Better Option Pricing},
+ url = {https://proceedings.neurips.cc/paper/2000/file/44968aece94f667e4095002d140b5896-Paper.pdf},
+ volume = {13},
+ year = {2000}
+}
+
+@proceedings{conf/icml/2010,
+  editor    = {Johannes F{\"{u}}rnkranz and
+               Thorsten Joachims},
+  title     = {Proceedings of the 27th International Conference on Machine Learning
+               (ICML-10), June 21-24, 2010, Haifa, Israel},
+  publisher = {Omnipress},
+  year      = {2010},
+  timestamp = {Fri, 12 Jun 2015 19:15:11 +0200},
+  biburl    = {https://dblp.org/rec/conf/icml/2010.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@manual{ai-thinker:esp12e,
+  title        = {ESP-12E WiFi Module},
+  author = {{AI-Thinker Team}},
+  year         = {2015},
+  note         = {Version 1.0},
+}
+
+@manual{dallas:ds18b20,
+  title        = {DS18B20 -- Programmable Resolution 1-Wire Digital Thermometer},
+  author = {{Maxim Integrated Products, Inc.}},
+  year         = {2019},
+  note         = {19-7487; Rev 6; 7/19},
+}
+
+@manual{adafruit:tsl2591,
+  title        = {Adafruit TSL2591 High Dynamic Range Digital Light Sensor},
+  author = {{Adafruit Industries}},
+  year         = {2014}
+}
+
+@online{somfy:api,
+  author = {Somfy},
+  title = {Somfy Open API Developer Portal | APIs \& Docs},
+  year = 2018,
+  url = {https://developer.somfy.com/apis-docs},
+  urldate = {2022-03-23}
+}
+
+@online{tetienne:pymfy,
+  author = {Thibaut Etienne},
+  title = {Somfy Open API},
+  year = 2021,
+  url = {https://github.com/tetienne/somfy-open-api#readme},
+  urldate = {2022-03-23}
+}
+
+@online{wendlers:mpfshell,
+  author = {Stefan Wendler},
+  title = {MPFShell},
+  year = 2018,
+  url = {https://github.com/wendlers/mpfshell},
+  urldate = {2022-03-23}
+}
+
+@online{mongodb:mongodb,
+  author = {{MongoDB, Inc.}},
+  title = {MongoDB Documentation},
+  year = 2021,
+  url = {https://www.mongodb.com/docs/},
+  urldate = {2022-04-20}
+}
+
+@online{micropython,
+  author = {Damien P. George and Paul Sokolovsky},
+  title = {The MicroPython Documentation},
+  year = 2014,
+  url = {http://docs.micropython.org/en/latest/},
+  urldate = {2022-03-23}
+}
+
+@online{keras:doc,
+  author = {Keras},
+  title = {Keras API reference},
+  year = 2022,
+  url = {https://keras.io/api/},
+  urldate = {2022-04-21}
+}
+
+@online{apple:home,
+  author = {{Apple Inc.}},
+  title = {Apple Home},
+  year = 2022,
+  url = {https://www.apple.com/ios/home/},
+  urldate = {2022-04-21}
+}
+
+@online{hass:hass,
+  author = {{Home Assistant}},
+  title = {Home Assistant},
+  year = 2022,
+  url = {https://www.home-assistant.io/},
+  urldate = {2022-04-21}
+}
+
+@online{openhab:openhab,
+  author = {{OpenHAB Foundation}},
+  title = {OpenHAB},
+  year = 2022,
+  url = {https://www.openhab.org/},
+  urldate = {2022-04-21}
+}
+
+@online{vercel:nextjs,
+  author = {Vercel},
+  organization = {Vercel},
+  title = {Next.js},
+  year = 2022,
+  url = {https://nextjs.org/},
+  urldate = {2022-04-21}
+}
+
+@online{w3c:svg,
+  author = {Erik Dahlström and Patrick Dengler and Anthony Grasso and Chris Lilley and Cameron McCormack and Doug Schepers and Jonathan Watt},
+  title = {Somfy Open API},
+  year = 2011,
+  url = {https://www.w3.org/TR/SVG11/},
+  urldate = {2022-04-21}
+}
+
+@online{mqtt,
+  author = {{OASIS Open}},
+  title = {MQTT Version 3.1.1},
+  year = 2014,
+  month = 10,
+  day = 29,
+  url = {http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html},
+  urldate = {2022-03-28},
+  editor = {Andrew Banks and Rahul Gupta}
+  }
+
+@techreport{RFC6455,
+  author = {I. Fette and A. Melnikov},
+  title = {The WebSocket Protocol},
+  howpublished = {Internet Requests for Comments},
+  type = {RFC},
+  number = {6455},
+  year = {2011},
+  month = {12},
+  issn = {2070-1721},
+  publisher = {RFC Editor},
+  institution = {RFC Editor},
+  url = {http://www.rfc-editor.org/rfc/rfc6455.txt},
+  note = {\url{http://www.rfc-editor.org/rfc/rfc6455.txt}},
+}
+
+@article{breiman:pfi,
+author = {Leo Breiman},
+year = {2001},
+month = {10},
+pages = {5-32},
+title = {Random Forests},
+volume = {45},
+journal = {Machine Learning},
+doi = {10.1023/A:1010950718922}
+}
+
+@article{hochreiter:lstm,
+author = {Hochreiter, Sepp and Schmidhuber, Jürgen},
+year = {1997},
+month = {12},
+pages = {1735-80},
+title = {Long Short-term Memory},
+volume = {9},
+journal = {Neural computation},
+doi = {10.1162/neco.1997.9.8.1735}
+}
+
+@article{rumel:rnn,
+  title={Learning representations by back-propagating errors},
+  author={Rumelhart, David E and Hinton, Geoffrey E and Williams, Ronald J},
+  journal={nature},
+  volume={323},
+  number={6088},
+  pages={533--536},
+  year={1986},
+  publisher={Nature Publishing Group}
+}
+
+@ARTICLE{lstm:forget,
+  author={Gers, Felix A. and Schmidhuber, Jürgen and Cummins, Fred},
+  journal={Neural Computation}, 
+  title={Learning to Forget: Continual Prediction with LSTM}, 
+  year={2000},
+  volume={12},
+  number={10},
+  pages={2451-2471},
+  doi={10.1162/089976600300015015}}
+
+@book{lubinova:stineni,
+  author         = {Štěpánka Lubinová},
+  publisher      = {Grada Publishing},
+  title          = {Stínění oken: žaluzie, rolety, markýzy a slunolamy},
+  year           = {2013},
+  isbn           = {978-80-247-4579-4},
+}
+
+@article{gokhale:iot,
+  title={Introduction to IOT},
+  author={Gokhale, Pradyumna and Bhat, Omkar and Bhat, Sagar},
+  journal={International Advanced Research Journal in Science, Engineering and Technology},
+  volume={5},
+  number={1},
+  pages={41--44},
+  year={2018}
+}
+
+@article{popa:dl,
+  doi = {10.1007/s00521-018-3724-6},
+  url = {https://doi.org/10.1007/s00521-018-3724-6},
+  year = {2018},
+  month = sep,
+  publisher = {Springer Science and Business Media {LLC}},
+  volume = {31},
+  number = {5},
+  pages = {1317--1337},
+  author = {Dan Popa and Florin Pop and Cristina Serbanescu and Aniello Castiglione},
+  title = {Deep learning model for home automation and energy reduction in a smart home environment platform},
+  journal = {Neural Computing and Applications}
+}
+
+@INPROCEEDINGS{jaihar:mlha,
+  author={Jaihar, John and Lingayat, Neehal and Vijaybhai, Patel Sapan and Venkatesh, Gautam and Upla, K. P.},
+  booktitle={2020 International Conference for Emerging Technology (INCET)}, 
+  title={Smart Home Automation Using Machine Learning Algorithms}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={1-4},
+  doi={10.1109/INCET49848.2020.9154007}}
+
+@mastersthesis{linn:backprop,
+  title={The representation of the cumulative rounding error of an algorithm as a Taylor expansion of the local rounding errors},
+  author={Linnainmaa, Seppo},
+  year={1970},
+  school={Univ. Helsinky}
+}
+
+Méthode généralepour larésolution des systèmes
+d'équations simultanées
+
+@article{cauchy:gd,
+  url = {https://gallica.bnf.fr/ark:/12148/bpt6k2982c/},
+  year = {1847},
+  month = dec,
+  publisher = {l'Académie des sciences},
+  volume          = {25},
+  number = {55},
+  pages = {536--538},
+  author = {Augustin Cauchy},
+  title = {Méthode générale pour la résolution des systèmes d'équations simultanées},
+  journal = {Comptes Rendus de l'Académie des sciences}
+}

@@ -1,0 +1,667 @@
+\chapter{Praktická část} \label{chap:practical_part}
+
+
+% metoda, implementace pro moje data, GUI, trenovani site, vysledky, Zhodnoceni, potom diskuze a zaver
+
+% VGG16
+
+% taky klidne popsat alternativy
+
+% popsat vsechny problemy
+
+
+\section{Použitá metoda}
+\subsection{Volba umělé neuronové sítě}
+\label{sec:volbametody}
+Jak již bylo psáno v \refskl{chap:related_work}{kapitole}, k automatické kolorizaci se v dnešní době používají nejčastěji CNN nebo GAN. Při výběru vhodné sítě pro tuto práci byla zohledňována hlavní čtyři kritéria:
+\begin{enumerate}
+  \item aplikovatelnost,
+  \item přesnost predikce,
+  \item výpočetní náročnost,
+  \item dostupnost.
+\end{enumerate}
+
+Bylo vybíráno z metod, kdy se autoři zabývali kolorizací leteckých snímků či ortofot \cite{poterek}, \cite{farella}, \cite{dias2020}. Metody z článků \cite{farella}, \cite{dias2020} jsou založeny na CNN a metoda prezentovaná v \cite{poterek} využívá GAN. Aplikovatelnost je nejvíce nejistá u~metody představené v článku \cite{dias2020}, jelikož autoři netestovali metodu na historických datech. Přesnost predikce na historických datech je u zbylých dvou metod slibná. Avšak z vizuálního pohledu lze říci, že metoda představená v článku \cite{poterek} dosahuje věrnějších výsledků. Vizuální srovnání ovšem není příliš relevantní, jelikož každá ze sítí byla trénována i testována na rozdílných datech s různým rozlišením. Rozhodující byla tedy především výpočetní náročnost a dostupnost. Jelikož GAN jsou obecně složitější a výpočetně náročnější, a vzhledem k tomu, že autoři článku \cite{poterek} nezveřejnili programovou část své práce, byla zvolena metoda obarvení pomocí Hyper-U-Net prezentovaná v článku \cite{farella}. Nespornou výhodou této metody je fakt, že autoři zveřejnili své programové výstupy a~trénovací data na platformě GitHub.
+
+Hyper-U-Net je založena na architektuře U-Net, která byla popsána v \refskl{chap:theory:unet}{sekci}. Na rozdíl od U-Net architektury se kodér a dekodér skládají z šesti bloků, nikoli z pěti. Do kodéru jsou zde uloženy váhy sítě VGG16. Tedy sítě vytvořené skupinou Visual Geometry Group, která obsahuje 16 vrstev s vahami. Nad rámec U-Net architektury je síť Hyper-U-Net rozšířena o tzv. HyperConnections. Jedná se o vektory aktivací (výstupů) všech konvolučních vrstev pro každý pixel. HyperConnections jsou inspirovány prací \cite{hariharan}, kde byla podobná technika použita pro segmentaci obrazu. Tato technika umožňuje přesné využití prostorově lokalizovaných informací z různých konvolučních vrstev. HyperConnections jsou implementovány jako dvourozměrné příznakové mapy, které jsou dodány do poslední vrstvy dekodéru. Použitá architektura je zobrazena na \refskl{fig:HyperUnet}{obrázku}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[draft=\draftfig,width=\textwidth]{img/HyperUnet.png}
+  \caption{Architektura Hyper-U-Net}
+  \caption*{Zdroj: \cite{farella}} % Zdroj
+  \label{fig:HyperUnet}
+\end{figure}
+
+\subsection{Práce s barevnými modely}
+
+Velké množství metod zabývajících se automatickou kolorizací využívá k práci s barvami barevný prostor CIELAB, který byl popsán v \refskl{chap:theory:cielab}{sekci}, nebo prostory založené obecně na modelu o složkách $L$, $a$, $b$ (dále je tento model nazýván LAB). Hyper-U-Net pracuje s barvami obdobným způsobem. Výhodou práce s prostory založenými na LAB modelu je snížení počtu parametrů a zjednodušení procesu trénování.
+
+Obrazová data jsou nejčastěji reprezentována modelem RGB. U černobílého snímku má každá z jeho barevných složek stejnou hodnotu. K převodu do obecného LABu lze poté vybrat kteroukoli ze složek a prohlásit ji za $L$. Dále je vhodné tuto hodnotu normovat na interval $\langle0,1\rangle$. To je provedeno pomocí známé barevné hloubky. Při automatické kolorizaci jsou pak složky $a$, $b$ predikovány. Po predikci dochází ke zpětnému převodu z LABu do RGB modelu.
+
+Autoři sítě Hyper-U-Net definovali přímo pro práci s historickými leteckými snímky vlastní barevný prostor, který nazvali sLAB (simplified LAB). Tento prostor je zjednodušením CIELABU a zároveň jsou využity koeficienty, které by podle autorů měly při převodu zohlednit proces skenování. Převod barev mezi RGB modelem a prostorem sLAB je zjednodušením postupu popsaného v \refskl{chap:theory:bar}{sekci}.
+
+Nejprve jsou hodnoty modelu RGB převedeny do zvoleného prostoru XYZ podobnému prostoru CIEXYZ dle \refskl{eq:slabrgb2xyz}{rovnice}. Následný převod do sLABu probíhá dle \refskl{eq:slabxyz2lab}{rovnic}.
+\begin{equation}
+  \label{eq:slabrgb2xyz}
+  \begin{bmatrix}
+      X \\ Y \\Z
+  \end{bmatrix}
+  = 
+  \begin{bmatrix}
+      0.449 & 0.353 & 0.198 \\
+      0.299 & 0.587 & 0.114 \\
+      0.012 & 0.089 & 0.899 
+  \end{bmatrix}
+  \cdot 
+  \begin{bmatrix}
+      R \\ G \\B
+  \end{bmatrix}
+\end{equation}
+
+\begin{align}
+  \label{eq:slabxyz2lab}
+  L &= Y \notag \\
+  a &= \frac{X-Y}{0.234} \\
+  b &= \frac{Y-Z}{0.785} \notag
+\end{align}
+
+Zpětný převod z sLABu do prostoru XYZ pak probíhá dle \refskl{eq:slablab2xyz}{rovnic}.
+
+\begin{align}
+  \label{eq:slablab2xyz}
+  Y &= L \notag \\
+  X &= Y + (a \cdot 0.234) \\
+  Z &= Y - (b \cdot 0.785) \notag
+\end{align}
+
+Následný převod na RGB hodnoty je uskutečněn pomocí inverze matice obsahující koeficienty dle \refskl{eq:slabxyz2rgb}{vztahu}.
+
+\begin{equation}
+  \label{eq:slabxyz2rgb}
+  \begin{bmatrix}
+      R \\ G \\B
+  \end{bmatrix}
+  = 
+  \begin{bmatrix}
+      0.449 & 0.353 & 0.198 \\
+      0.299 & 0.587 & 0.114 \\
+      0.012 & 0.089 & 0.899 
+  \end{bmatrix}^{-1}
+  \cdot 
+  \begin{bmatrix}
+      X \\ Y \\Z
+  \end{bmatrix}
+\end{equation}
+
+
+
+\section{Implementace architektury Hyper-U-Net}
+
+Vstupem do sítě Hyper-U-Net je tedy obecně složka $L$ snímku v barevném prostoru sLAB a výstupem jsou predikované složky $a$, $b$. Následně jsou tyto tři složky spojeny a je proveden převod do modelu RGB. Výsledkem je obarvený snímek. K tomuto procesu je nutné mít síť již natrénovanou. Autoři síť trénovali na 10~000 vzorcích o~rozměrech 512 $\times$ 512 pixelů a následně tento natrénovaný model také volně zpřístupnili na platformě GitHub. Jelikož byly volně dostupné jak skripty k použití této sítě, tak i samotná předtrénovaná síť, bylo možné tuto metodu implementovat pouze s částečnými programovými úpravami.
+
+Veškerá programovací a výpočetní část této práce byla prováděna pomocí programovacího jazyka Python, který je univerzální a velice populární. Poskytuje mnoho nástrojů pro zpracování dat včetně knihoven přímo určených pro hluboké učení. V tomto jazyce probíhala i tvorba sítě Hyper-U-Net, což také bylo důvodem pro volbu tohoto jazyka.
+
+Konkrétně byl využit Python verze 3.11. Bylo potřeba nainstalovat knihovny pro práci s numerickými daty (NumPy), zpracování obrazu (OpenCV) a hluboké učení (TensorFlow).
+
+Dostupný skript pro predikci byl zprvu jen mírně upraven pro větší přehlednost. Komplikací při pokusu o obarvení byl rozměr historického ortofota. Jak bylo psáno v \refskl{chap:theory:histdig}{sekci}, jeden obrazový soubor zvoleného historického ortofota má rozměry 5000~$\times$~4000~pixelů. Hyper-U-Net byla ovšem trénována na snímcích s rozměry 512~$\times$~512~pixelů a dokáže zpracovat rozměry dělitelné číslem 32. Tato podmínka vychází z architektury kodéru, kdy jsou vstupní data postupně zmenšována v jednotlivých blocích. Tento problém je řešitelný buď změnou architektury sítě dodáním paddingů do jednotlivých vrstev, nebo zpracováním dat po částech. Po změně architektury by síť musela být znovu trénována, nebylo by tedy možné zjistit funkčnost předtrénované sítě na zvolených historických datech. Z toho důvodu byla data zpracována po částech.
+
+Byla vytvořena funkce, která z ortofota o libovolných rozměrech vytvoří dlaždice 512~$\times$~512~pixelů. Ortofoto vstupuje do funkce ve formě matice. Pokud rozměry matice nejsou dělitelné 512, jsou zbývající pozice v krajních dlaždicích vyplňeny hodnotami nula. Jednotlivé dlaždice byly dále uloženy do datové struktury seznam. U každé dlaždice byla provedena predikce barev v~prostoru sLAB pomocí předtrénované sítě. Následoval převod složek prostoru sLAB zpět do RGB. Výsledná dlaždice byla uložena do nového seznamu.
+
+Další funkce byla vytvořena pro rekonstrukci ortofota o původních rozměrech. Vstupem byl seznam obarvených dlaždic a rozměry původního ortofota. Dlaždice byly spojeny a pozice vyplněné nulami byly oříznuty. Výsledkem je obarvené ortofoto o původních rozměrech.
+
+Nutno podotknout, že celý proces je výpočetně náročný. Pokud počítač neobsahuje grafickou kartu, dosahuje čas obarvení jedné dlaždice hodnot až několika sekund. Samozřejmě je tento čas závislý na typu a výpočetní síle procesoru. Pro procesor Intel Core I7-10510U se pohybuje doba predikce barev jedné dlaždice okolo 6 sekund. Pro historické ortofoto s rozměry 5000~$\times$~4000~pixelů pak doba predikce dosahuje téměř 8 minut. Takový čas lze již považovat za zdlouhavý a pro uživatele nepříjemný. Řešením je použití silné grafické karty, která čas obarvení jedné dlaždice snižuje na zlomek sekundy. Celé ortofoto je pak obarveno za méně než minutu. Opět čas závisí na konkrétní grafické kartě. Uvedené časy odpovídají použité grafické kartě NVIDIA~Geforce~RTX~2080~Ti. Bohužel knihovna TensorFlow ne vždy dokáže rozpoznat, že je grafická karta k dispozici. Tento problém bude popsán v \refskl{chap:pract:tr}{sekci}.
+
+\section{Grafické uživatelské rozhraní}
+Grafické uživatelské rozhraní (dále GUI -- Graphical User Interface) umožňuje ovládání programu pomocí grafických prvků (widgetů). Grafickými prvky mohou být například tlačítka, ikony nebo posuvníky. Tyto prvky umožňují snadnou a intuitivní práci s programem. GUI také umožňuje využívání programu uživatelům, kteří nerozumí psaní a manipulaci s kódem.
+
+\newpage
+GUI pro obarvení ortofota mělo umožňovat uživateli následující funkce:
+\begin{enumerate}
+  \item načtení vstupního ortofota z libovolné složky,
+  \item obarvení ortofota,
+  \item export obarveného ortofota do zvolené složky,
+  \item ukončení programu.
+\end{enumerate}
+
+GUI bylo vytvářeno pomocí knihovny Tkinter. Tato knihovna je součásti instalace Pythonu a nebylo tedy potřebné nic instalovat. Dálšími výhodami této knihovny jsou jednoduchost a flexibilita. Na pochopení není knihovna Tkinter složitá a poskytuje všechny potřebné nástroje pro tvorbu jednoduchého GUI. Kromě běžných widgetů typu tlačítko, popis nebo obrázek byl použit i~kontejnerový widget zvaný Frame (dále rámec). Do těchto kontejnerových widgetů byly vkládány veškeré ostatní grafické prvky. Rámec umožňuje úpravu a~práci se všemi obsaženými widgety najednou. Díky použití rámců nemusela být v~GUI vytvářena celá nová okna, nýbrž se jen zobrazil nový rámec ve stejném okně.
+
+Nejprve bylo vytvořeno hlavní okno a s ním i první rámec. Ten poskytuje základní informace o programu ve formě textu pomocí widgetu Label. Také zde byla vytvořena dvě tlačítka pomocí widgetu Button. První tlačítko slouží k zobrazení nového rámce a druhé tlačítko ukončuje program. Úvodní vzhled GUI při spuštění programu je zobrazen na \refskl{fig:gui1}{obrázku}. 
+\begin{figure}[H]
+  \centering
+  \includegraphics[draft=\draftfig,width=\textwidth]{img/pract/gui_1.png}
+  \caption{Úvodní vzhled GUI}
+  \label{fig:gui1}
+\end{figure}
+
+Po stisknutí tlačítka \textit{Obarvení ortofota} se první rámec odstraní a je vytvořen rámec druhý. Ten je určen k hlavnímu ovládání programu a obsahuje pět tlačítek, jak je patrné z \refskl{fig:gui2}{obrázku}. Na počátku jsou přístupná pouze tlačítka \textit{Načíst ortofoto}, \textit{Zpět na hlavní okno} a \textit{Ukončit program}.
+\begin{figure}[H]
+  \centering
+  \includegraphics[draft=\draftfig,width=\textwidth]{img/pract/gui_2.png}
+  \caption{Ovládací část GUI}
+  \label{fig:gui2}
+\end{figure}
+Tlačítko \textit{Načíst ortofoto} otevře dialogové okno, ze kterého je možné vybrat vstupní soubor. Formáty vstupního souboru byly omezeny na ty, které byly popsány v \refskl{chap:theory:form}{sekci}. Náhled na dialogové okno je na obrázku \refskl{fig:gui3}{obrázku}. 
+\begin{figure}[H]
+  \centering
+  \includegraphics[draft=\draftfig,width=\textwidth]{img/pract/gui_3.png}
+  \caption{Dialogové okno pro výběr vstupního souboru}
+  \label{fig:gui3}
+\end{figure}
+
+Vybráním vstupního souboru se vytvoří třetí a čtvrtý rámec. Třetí rámec je umístěn přímo pod současná tlačítka a je v něm vygenerován popis \textit{Původní~ortofoto}. Čtvrtý rámec je ještě níže a zobrazuje náhled na vstupní ortofoto (viz~\refskl{fig:gui4}{obrázek}). Náhled byl vytvořen pomocí knihovny Pillow. Tato knihovna slouží k práci s obrázky a bylo nezbytné ji instalovat. Náhled byl zobrazen widgetem Label, který kromě textu může obsahovat i obrázky. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[draft=\draftfig,width=\textwidth]{img/pract/gui_4.png}
+  \caption{Náhled na historické ortofoto v GUI}
+  \label{fig:gui4}
+\end{figure}
+
+Jakmile je vybrán vstupní soubor, zpřístupní se také tlačítko \textit{Obarvit~ortofoto}. Stisknutím tohoto tlačítka se spustí výpočetní část programu a proběhne samotné obarvení. Následně jsou obdobně jako s původním ortofotem vytvořeny widgety pro náhled a popis obarveného ortofota. Náhledy na ortofota jsou zobrazeny vedle sebe pro okamžité vizuální porovnání (viz~\refskl{fig:gui5}{obrázek}). 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[draft=\draftfig,width=\textwidth]{img/pract/gui_5.png}
+  \caption{Náhled na původní a obarvené ortofoto v GUI}
+  \label{fig:gui5}
+\end{figure}
+
+Obarvením je zpřístupněno tlačítko \textit{Exportovat~obarvené~ortofoto}, které otevře dialogové okno pro uložení výstupního souboru do libovolné složky (viz~\refskl{fig:gui6}{obrázek}). V základu je pro výstupní soubor zachován název vstupního souboru s dodatkem \textit{rgb}, případně je možno název změnit. Jako formát výstupního souboru je v základu zvolen bezeztrátový formát PNG. Uživatel si ovšem může zvolit kterýkoli jiný ze zmíňěných formátů v \refskl{chap:theory:form}{sekci}. Následně je možné načíst další vstupní soubor, vrátit se na úvodní stranu či ukončit program.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[draft=\draftfig,width=\textwidth]{img/pract/gui_6.png}
+  \caption{Dialogové okno pro uložení výstupního souboru}
+  \label{fig:gui6}
+\end{figure}
+
+
+\section{Tvorba trénovacího datasetu}
+
+Jak již bylo vysvětleno v \refskl{chap:theory:ANN}{sekci}, trénováním se nastavují váhy jednotlivých neuronových spojení tak, aby byla minimalizována ztrátová funkce. Síť Hyper-U-Net je určena pro tzv. učení s učitelem, kdy je známá výstupní veličina a síť ze vstupních dat predikuje tuto veličinu. V kontextu kolorizace lze říci, že se síť učí transformaci mezi černobílým vstupem a barevným výstupem. Prvním krokem k úspěšnému natrénování sítě je výběr vhodných trénovacích dat.
+
+Cílem bylo vytvořit trénovací dataset, který by obsahoval vstupní černobílá data a referenční barevná data. Na trénovací data je obecně kladen požadavek, aby se co nejvíce přimykala datům, na kterých bude po natrénování probíhat predikce. Jelikož se tato práce zabývá obarvením historických ortofot, která vznikla především z leteckých snímků ČR z 50. let 20. století a z této doby neexistují podobné barevné záznamy, trénovací dataset bylo potřeba vytvořit alternativním způsobem.
+
+První možností tvorby datasetu bylo použití historických ortofot jakožto vstupních dat a aktuálních barevných ortofot jakožto dat referenčních. Tento přístup ovšem přináší řadu problémů. Například roční období snímkování jednotlivých částí ČR nemusí být shodné u historických a aktuálních dat. Jelikož se vegetace v~průběhu roku výrazně barevně mění, referenční data by neodpovídala realitě historických dat. Dalším problémem je samozřejmě rozvoj zástavby a~obecný vývoj krajiny. Za přibližně 70 let se krajina výrazně změnila. Pro trénování by tudíž musely být hledány oblasti, kde je tato změna minimální. Dá se tedy předpokládat, že by tento způsob trénování nedospěl k uspokojivým výsledkům. Rozdíl mezi historickým ortofotem a dnešním je zobrazen na \refskl{fig:histsouc}{obrázku}, kde jsou vedle sebe zobrazeny stejné oblasti. Vývoj těchto oblastí je z \refskl{fig:histsouc}{obrázku} výrazně patrný.
+
+\begin{figure}[H]
+  \label{fig:histsouc}
+  \centering
+  \begin{minipage}{0.48\textwidth}
+      \begin{flushleft}
+      \includegraphics[height=6 cm]{img/porovnani_dat/Prah_7_0.jpg}
+    \end{flushleft}
+  \end{minipage}
+    \begin{minipage}{0.48\textwidth}
+      \begin{flushright}
+      \includegraphics[height=6 cm]{img/porovnani_dat/Prah_7_0_dnes.png}
+      \end{flushright}
+  \end{minipage}\\[0.4 cm]
+
+  \begin{minipage}{0.48\textwidth}
+    \begin{flushleft}
+      \includegraphics[height=6 cm]{img/porovnani_dat/Bero_0_3.jpg}
+    \end{flushleft}
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \begin{flushright}
+      \includegraphics[height=6 cm]{img/porovnani_dat/Bero_0_3_dnes.png}
+    \end{flushright}
+\end{minipage}\\~\\
+\begin{minipage}{0.48\textwidth}
+  \centering
+historické ortofoto~~
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+ ~~současné ortofoto
+\end{minipage}
+  \caption{Porovnání historického a současného ortofota}
+\end{figure}
+
+Druhou možností bylo trénování pouze na aktuálních datech. Tento přístup využívá jako referenční data také současná ortofota. Ovšem vstupní data jsou vytvořena převedením referenčních barevných dat na černobílá. V tomto přístupu zobrazují vstupní a referenční data přesně stejný prostor ve stejný okamžik. Síť se tedy učí predikci barev z šedých odstínů, které přesně odpovídají referenční barvě. Tímto způsobem postupovali i autoři článku \cite{farella} a byl použit i pro tuto práci. Nevýhodou tohoto přístupu je možnost, že šedé tóny určitých barev na vstupních trénovacích datech nemusí nutně odpovídat šedé na datech historických. To je ovlivněno rozdílnými použitými kamerami, procesem skenování a volbou barevného prostoru.
+
+Trénovací data byla vytvořena z volně dostupného produktu Ortofoto ČR. Pro tvorbu datasetu bylo použito celkem 200 samostatných ortofot, která byla stažena pomocí webové aplikace Geoprohlížeč. Skrze tuto aplikaci je Ortofoto ČR poskytováno ve formátu JPEG. Tento formát je sice ztrátový, ale pro dané účely dostačující. 
+
+Jelikož snímkování probíhá v různých dnech během roku a v krajině se průběžně mění jak světelné podmínky, tak vzhled vegetace, bylo nezbytné zajistit rovnoměrné zastoupení různých oblastí snímkování. Proto byla jednotlivá ortofota stahována manuální cestou. Vybraná ortofota zobrazují krajinu z různých oblastí ČR, jelikož barevné tóny ortofot se výrazně liší dle různých snímkovacích bloků (viz \refskl{fig:ortcr}{obrázek}). Dále bylo dbáno na rovnoměrné zastoupení různých druhů krajiny, které lze kategorizovat na:
+
+\begin{itemize}
+  \item městské oblasti,
+  \item vesnické oblasti,
+  \item lesy,
+  \item pole,
+  \item louky a pastviny.
+\end{itemize}
+
+Z výběru byly vyřazeny oblasti řepkových polí. Tyto oblasti se vizuálně vyznačují velmi výraznou žlutou barvou. Jelikož pěstování řepky olejky je trendem až posledních desetiletí, trénování sítě na těchto oblastech by mohlo mít negativní vliv na přesnost predikce na historických datech.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[draft=\draftfig,width=\textwidth]{img/pract/ort_cr.png}
+  \caption{Ortofoto ČR ve webové aplikaci Geoprohlížeč}
+  \label{fig:ortcr}
+\end{figure}
+
+Jak bylo psáno v \refskl{chap:theory:ortcr}{sekci}, od roku 2021 je rozlišení Ortofota ČR 0,125 m na zemském povrchu. Velikost pixelu historického ortofota je 0,5 m, tedy výrazně větší. Aby trénovací dataset lépe vystihoval data historická, bylo nutné zvětšit velikost pixelu u stažených ortofot.
+
+Zvětšení velikosti pixelu je možné provést pomocí různých interpolačních metod. V tomto případě bylo nezbytné spojit blok 4~$\times$~4 pixelů do jednoho pixelu. Byla zvolena metoda nejbližšího souseda (nearest neighbour). Tato metoda je výpočetně jednoduchá a pro daný účel dostatečná. Požadavkem na výsledek bylo ortofoto s~velikostí pixelu 0,5 m, tedy o rozměrech 5000~$\times$~4000 pixelů. Pro tento účel byla vytvořena funkce, která postupně načítá obrazové soubory ze zvolené složky, aplikuje na ně metodu nejblžšího souseda, kterou poskytuje funkce \textit{resize} z knihovny OpenCV, a výsledný soubor poté uloží do jiné zvolené složky. K načtení souborů ze složky byla použita knihovna OS, která slouží ke komunikaci s operačním systémem a je v každé instalaci Pythonu. Výsledné soubory byly ukládány ve formátu PNG z důvodu zachování kvality.
+
+Z takto převzorkovaných ortofot bylo nutné vytvořit trénovací a validační dlaždice o rozměrech 512~$\times$~512 pixelů. Převzorkovaná ortofota byla postupně načítána ze složky. Jelikož rozměry ortofota nejsou dělitelné 512, počet řádků a sloupců dlaždic byl určen na základě celočíselného dělení rozměru ortofota rozměrem dlaždice. Tímto dělením vzniklo 7 řádků a 9 sloupců, celkem tedy 63 dlaždic na jedno orotofoto. Dlaždice byly uloženy do datové struktury seznam. Z těchto 63 dlaždic bylo 50 uloženo jako trénovacích a 13 jako validačních. Jako validační dlaždice byla zvolena třetí a šestá dlaždice v každém řádku, tedy kromě řádku posledního, kde byla zvolena dlaždice pátá. Tímto způsobem bylo zajištěno rovnoměrné rozložení validačních dlaždic, které pak dobře reprezentují trénovací data. Z 200 ortofot bylo celkem vytvořeno 10 000 trénovacích dlaždic a 2600 dlaždic validačních. Tento počet trénovacích dlaždic byl zvolen po vzoru autorů článku \cite{farella}.
+
+\section{Trénování sítě Hyper-U-Net}
+
+Po vytvoření trénovacího datasetu mohlo být přistoupeno k trénování sítě. Základem byl trénovací skript, který byl dostupný od autorů článku \cite{farella}. V tomto skriptu bylo učiněno několik změn, přičemž největší z nich bylo dodání validačních dat. S validačními daty tento skript vůbec nepočítal a veškeré parametry v~průběhu trénování byly počítány jen s daty trénovacími. Takový postup obecně není doporučován, a proto byl skript upraven pro práci s validačními daty.
+
+\subsection{Princip a parametry trénování}
+
+Byla použita ztrátová funkce $L_1$ a jako optimalizační algoritmus byl zvolen Adam. Prvotní váhy byly přebrány ze sítě VGG16 natrénované na datasetu ImageNet. Na počátku každé epochy, přičemž epocha znamená průchod sítě celým trénovacím datasetem, byla trénovací data zamíchána. Mícháním je zajištěno různé složení jednotlivých dávek. Dávka je objem dat, která jsou zpracována~v jednom kroku trénování. Velikost dávky byla z důvodu výpočetní náročnosti nastavena na 4 dlaždice. V jedné epoše byla síť tedy trénována v 2500 krocích. Před každým krokem trénování byla daná dávka trénovacích dlaždic převedena do prostoru sLAB. Složka $L$ dále sloužila jako vstupní černobílé ortofoto a složky $a$ a $b$ jako referenční barevné ortofoto. Na konci každé epochy proběhlo stejným způsobem vyhodnocení modelu na validačních datech. Hodnotícím kritériem byla, vzhledem ke ztrátové funkci $L_1$, hodnota MAE. Pokud se tato hodnota vypočtená na validačních datech v závěru epochy snížila vzhledem k~dosavadní nejnižší hodnotě, byl model trénován znovu v epoše následující. Vždy, když se výkon sítě na validačních datech zlepšil, byl model uložen. Jakmile se přesnost sítě na těchto datech přestala dlouhodobě zlepšovat, proces trénování byl ukončen. Podmínkou pro ukončení trénování byly čtyři po sobě jdoucí epochy, ve kterých se výkon sítě na validačních datech zhoršil.
+
+Trénování bylo ukončeno v 44. epoše. To znamená, že nejlepší (optimální) model sítě byl nalezen již ve 40. epoše. Jak je patrné z \refskl{tab:MAE}{tabulky}, přesnost sítě na trénovacích datech byla v 44. epoše větší než v 40. epoše. Na validačních datech ovšem síť měla v 44. epoše horší výsledky. Pokud by nebyla použita validační data, model by se teoreticky neustále zlepšoval v predikci trénovacích dat, ale nebyl by schopen správně zpracovat data nová.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|r|r|}
+    \hline
+    \multicolumn{1}{|c}{Epocha}&\multicolumn{1}{|c}{MAE$_{val}$}&\multicolumn{1}{|c|}{MAE$_{tr}$}\\\hline\hline
+    40&0.01876&0.01706 \\\hline
+    44&0.01881&0.01687 \\\hline
+  \end{tabular}
+  \caption{Hodnoty MAE pro vybrané epochy}
+  \label{tab:MAE}
+\end{table}
+
+\subsection{Komplikace spojené s trénováním}
+\label{chap:pract:tr}
+Před samotným natrénováním sítě na vytvořeném datasetu se vyskytlo několik komplikací, které budou popsány v této sekci.
+
+Jak již bylo zmíněno, trénovací proces je výpočetně velice náročný. Z tohoto důvodu bylo nutné trénovat síť na počítači s výkonnou grafickou kartou, která umožňuje provádění velkého množství paralelních výpočtů. K dispozici byl počítač s grafickou kartou NVIDIA~Geforce~RTX~2080~Ti, 32 GB paměti RAM, procesorem Intel Core I7 a operačním systémem Windows 10. 
+
+Při pokusu o trénování sítě na tomto zařízení knihovna TensorFlow nedetekovala dostupnou grafickou kartu. Problém byl řešen za pomoci mnohých blogů \cite{sc1}, \cite{sc2}, \cite{tfgpu1}, \cite{tfgpu2}, \cite{tfdir}. Nejprve bylo nutné aktualizovat ovladače grafické karty, které je možné stáhnout z webových stránek výrobce. Dále bylo nutné instalovat CUDA Toolkit (Compute Unified Device Architecture), který je nezbytný k použití grafické karty pro knihovnu TensorFlow. Byla také instalována knihovna cuDNN (CUDA Deep Neural Network).
+
+Další komplikací bylo použití operačního systému Windows 10. Knihovna TensorFlow od verze 2.10 nepodporuje automatické použití grafické karty na tomto systému. Bylo tedy nutné instalovat TensorFlow ve verzi pouze pro práci s procesorem (tensorflow-cpu) a dále rozšíření pro práci s grafickou kartou (tensorflow-directml-plugin). Maximální podporovaná verze Pythonu pro toto rozšíření je 3.10, bylo tedy nutné instalovat starší verzi programovacího jazyka.
+
+I přes tyto úpravy v určitý moment během trénování došlo k neočekávanému ukončení. Toto ukončení bylo způsobeno výpočetní náročností operací počítaných na grafické kartě. Když výpočet operace přesáhl dobu dvou sekund, systém operaci vyhodnotil jako nežádanou a ukončil ji. Běžně se tato situace nazývá GPU timeout. Řešení poskytl blog \cite{tfdir}. V registru systému byl zvýšen maximální povolený čas pro výpočet jedné operace na deset sekund. S touto úpravou již trénování probíhalo bez komplikací.
+
+Nutno podotknout, že i s využitím poměrně výkonného počítače byl proces trénování časově náročný. Konvergence sítě k optimálnímu modelu trvala přibližně 89 hodin. Následně proběhly ještě čtyři výpočetní epochy, ve kterých se model zhoršil, tyto epochy byly počítány dalších 20 hodin. Celkem tedy byla síť trénována přibližně 4 dny a 13 hodin.
+% obecne problemy, ntbk, pc, casova narocnost..
+
+\subsection{Testování natrénované sítě}
+
+Schopnost sítě naučit se transformaci mezi černobílou předlohou a barevným výstupem byla testována pomocí současných ortofot. Testování bylo provedeno pomocí nových dat, která nebyla využita pro trénování sítě. Výsledky predikce jsou závislé na barevném charakteru zobrazovaného území, který souvisí s druhem krajiny. Testovací data reprezentují tuto rozmanitost. Testovací dlaždice vznikly podobně jako dlaždice trénovací. Rozdíl je v tom, že na závěr přípravného procesu nebyly převedeny do sLABu, ale jejich barvy byly převedeny na stupně šedi pomocí knihovny OpenCV. Následně na černobílých dlaždicích proběhlo obarvení a porovnání s původními barvami. Výsledky obarvení na pěti trénovacích dlaždicích jsou zobrazeny na \refskl{fig:vysltr}{obrázku}. Z \refskl{fig:vysltr}{obrázku} je patrné, že síť je schopná predikovat barvy z černobílého vzoru velice uspokojivě. Barevné rozdíly jsou nejvíce patrné u střech domů, kdy síť občas predikuje barvu šedou, když by měla být střecha červená. Obecně jsou rozdíly spíše v~tónu správně určené barvy a výsledky jsou velice věrohodné.
+
+\begin{figure}[H]
+  \label{fig:vysltr}
+  \centering
+  \begin{minipage}{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/prah61_61_gray.png}
+  \end{minipage}
+    \begin{minipage}{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/prah61_61_gray_rgb.png}
+  \end{minipage}
+  \begin{minipage}{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/prah61_61.png}
+  \end{minipage}\\~\\
+
+  \begin{minipage}{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/blov72_50_gray.png}
+  \end{minipage}
+    \begin{minipage}{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/blov72_50_gray_rgb.png}
+  \end{minipage}
+  \begin{minipage}{0.32\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/blov72_50.png}
+  \end{minipage}\\~\\
+
+  \begin{minipage}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/BUCO29_62_gray.png}
+\end{minipage}
+  \begin{minipage}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/BUCO29_62_gray_rgb.png}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/BUCO29_62.png}
+\end{minipage}\\~\\
+
+\begin{minipage}{0.32\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/klad40_37_gray.png}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/klad40_37_gray_rgb.png}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/klad40_37.png}
+\end{minipage}\\~\\
+
+\begin{minipage}{0.32\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/vimp60_50_gray.png}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/vimp60_50_gray_rgb.png}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{img/testovaci_dlazdice_vyber/vimp60_50.png}
+\end{minipage}\\~\\
+
+  \begin{minipage}{0.32\textwidth}
+    \centering
+černobílé ortofoto
+\end{minipage}
+  \begin{minipage}{0.32\textwidth}
+    \centering
+ obarvené ortofoto
+\end{minipage}
+\begin{minipage}{0.32\textwidth}
+    \centering
+původní ortofoto
+\end{minipage}\\
+  \caption{Výsledky obarvení na testovacích datech}
+\end{figure}
+
+\section{Výsledky obarvení historických ortofot}
+
+V této kapitole budou prezentovány výsledky obarvení historických ortofot pomocí sítě Hyper-U-Net. Budou porovnány výsledky modelu trénovaného autory článku \cite{farella} a modelu trénovaného v rámci této práce. Výsledky se výrazně liší v závislosti na druhu krajiny. Proto budou v této kapitole seřazeny ukázky výsledků právě dle druhů krajiny.
+
+U luk a pastvin jsou výsledky velice slibné. Zelená barva, která je charakteristická pro tyto oblasti je predikována velmi úspěšně. V těchto oblastech dosahuje vizuálně přirozenějších výsledků síť natrénovaná v rámci této práce na novém datasetu. Obarvením je dosaženo lepší možnosti porovnání historického a současného stavu. Z obarveného ortofota jsou více patrné například cesty a aleje stromů, čehož může být využito k revitalizaci krajiny.
+
+\begin{figure}[H]
+  \label{fig:louky}
+  \centering
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/results/Vimp_6_0_30.png}
+  \end{minipage}
+    \begin{minipage}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/results/vimp60_30.png}
+  \end{minipage}\\~\\
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+historické ortofoto
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+současné ortofoto
+\end{minipage}\\~\\
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/results/Vimp_6_0_rgb_t_30.png}
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/results/Vimp_6_0_rgb_p_30.png}
+\end{minipage}\\[0.2 cm]
+
+\begin{minipage}{0.48\textwidth}
+  \centering
+obarvené historické ortofoto \\ (natrénovaná síť)
+\end{minipage}
+\begin{minipage}{0.48\textwidth}
+  \centering
+  obarvené historické ortofoto \\ (předtrénovaná síť)
+\end{minipage}
+  \caption{Výsledky obarvení pro oblasti luk a pastvin}
+\end{figure}
+
+V případě lesů jsou výsledky také uspokojivé. Opět častěji dosahuje věrnějších barev síť natrénovaná v rámci této práce. Dodání zelené barvy do historických ortofot u těchto oblastí může například sloužit k snadnější identifikaci rozhraní mezi lesem a cestou či polem.
+
+\begin{figure}[H]
+  \label{fig:lesy}
+  \centering
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/results/Kral_5_3_58.png}
+  \end{minipage}
+    \begin{minipage}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/results/kral53_58.png}
+  \end{minipage}\\~\\
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+historické ortofoto
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+současné ortofoto
+\end{minipage}\\~\\
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/results/Kral_5_3_rgb_t_58.png}
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/results/Kral_5_3_rgb_p_58.png}
+\end{minipage}\\[0.2 cm]
+
+\begin{minipage}{0.48\textwidth}
+  \centering
+obarvené historické ortofoto \\ (natrénovaná síť)
+\end{minipage}
+\begin{minipage}{0.48\textwidth}
+  \centering
+  obarvené historické ortofoto \\ (předtrénovaná síť)
+\end{minipage}
+  \caption{Výsledky obarvení pro oblasti lesů}
+\end{figure}
+
+Obarvení historických ortofot zobrazujících pole lze také zhodnotit jako velmi úspěšné. Věrnějších barev dosahuje obvykle znovu síť trénovaná v rámci této práce. V těchto oblastech je vývoj krajiny často znatelný. Obarvením jsou více patrné rozhraní mezi jednotlivými poli, které v dnešní krajině již často nejsou obsažená z důvodu sloučení do větších celků. V těchto oblastech může mít obarvení přínos například pro pozemkové úpravy, kdy může být nové uspořádání pozemků vytvářeno dle historického stavu.
+
+\begin{figure}[H]
+  \label{fig:pole}
+  \centering
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/results/Kral_5_3_31.png}
+  \end{minipage}
+    \begin{minipage}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/results/kral53_31.png}
+  \end{minipage}\\~\\
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+historické ortofoto
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+současné ortofoto
+\end{minipage}\\~\\
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/results/Kral_5_3_rgb_t_31.png}
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/results/Kral_5_3_rgb_p_31.png}
+\end{minipage}\\[0.2 cm]
+
+\begin{minipage}{0.48\textwidth}
+  \centering
+obarvené historické ortofoto \\ (natrénovaná síť)
+\end{minipage}
+\begin{minipage}{0.48\textwidth}
+  \centering
+  obarvené historické ortofoto \\ (předtrénovaná síť)
+\end{minipage}
+  \caption{Výsledky obarvení pro oblasti polí}
+\end{figure}
+
+Ve vesnických oblastech dosahuje obarvení obecně horších výsledků než u~předešlých oblastí. Předtrénovaná síť v těchto oblastech predikuje barvy výrazně lépe. Natrénovaná síť velmi často nedokáže předpovědět správnou barvu budov, kterým velmi často přiřadí barvu zelenou. I přes nedostatky obarvené ortofoto umožňuje lepší orientaci v prostoru a porovnání se současným stavem než černobílé ortofoto.
+
+\begin{figure}[H]
+  \label{fig:vesnice}
+  \centering
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/results/Doma_2_8_46.png}
+  \end{minipage}
+    \begin{minipage}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/results/doma28_46.png}
+  \end{minipage}\\~\\
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+historické ortofoto
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+současné ortofoto
+\end{minipage}\\~\\
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/results/Doma_2_8_rgb_t_46.png}
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/results/Doma_2_8_rgb_p_46.png}
+\end{minipage}\\[0.2 cm]
+
+\begin{minipage}{0.48\textwidth}
+  \centering
+obarvené historické ortofoto \\ (natrénovaná síť)
+\end{minipage}
+\begin{minipage}{0.48\textwidth}
+  \centering
+  obarvené historické ortofoto \\ (předtrénovaná síť)
+\end{minipage}
+  \caption{Výsledky obarvení pro vesnické oblasti}
+\end{figure}
+
+Výsledky v městských oblastech mají obecně nejmenší kvalitu. Věrnějších barev dosahuje předtrénovaná síť. Barvy predikované natrénovanou sítí jsou velmi často omezeny především na tóny zelené barvy. I přes výrazné nepřesnosti jsou obarvená ortofota ve většině případů přehlednější k porovnání se současným stavem než ortofota černobílá.
+
+\begin{figure}[H]
+  \label{fig:mesta}
+  \centering
+  \begin{minipage}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/results/Klat_3_3_48.png}
+  \end{minipage}
+    \begin{minipage}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/results/klat33_48.png}
+  \end{minipage}\\~\\
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+historické ortofoto
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+současné ortofoto
+\end{minipage}\\~\\
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/results/Klat_3_3_rgb_t_48.png}
+\end{minipage}
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/results/Klat_3_3_rgb_p_48.png}
+\end{minipage}\\[0.2 cm]
+
+\begin{minipage}{0.48\textwidth}
+  \centering
+obarvené historické ortofoto \\ (natrénovaná síť)
+\end{minipage}
+\begin{minipage}{0.48\textwidth}
+  \centering
+  obarvené historické ortofoto \\ (předtrénovaná síť)
+\end{minipage}
+  \caption{Výsledky obarvení pro městské oblasti}
+\end{figure}
+
+Více výsledků je dostupných z GitHub repozitáře na následujícím odkazu:
+
+\begin{center}
+  \textbf{\href{https://github.com/klimesm/BP}{https://github.com/klimesm/BP}}
+\end{center}
+
+
+
+
+
+\begin{comment}
+  Použitým algoritmům strojového učení je nutné dodat data sestávající z~posloupnosti hodnot příznaků (více v~\refskl{chap:features}{sekci}) a odpovídajících stavů žaluzie (výška vytažení a sklon lamel) v~daných časových okamžicích. Tato kapitola se zabývá metodami sběru dat v~jednotlivých součástech systému, přenosem z~nich a jejich vzájemnou komunikací.
+  
+  \begin{figure}[H]
+    \centering
+    \input{img/comm.tex}
+    \caption[Schéma komunikace komponent]{Schéma komunikace komponent systému automatického řízení žaluzií, tok dat mezi nimi a komunikační protokoly.}
+    \label{fig:comm}
+  \end{figure}
+
+  Data se získávají ze 3 hlavních zdrojů na základě požadavku zaslaného skriptem \file{mqttDataCollector.py}. Stav žaluzie a informaci, zda je uživatel přítomen v~domácnosti\footnote{příznaky \code{posi\-tion}, \code{tilt} a \code{home}} odesílá systém domácí automatizace \emph{Home Assistant}. Měřené veličiny (teplota a intenzita osvětlení) uvnitř a venku pak sbírají příslušná zařízení \footnote{příznaky \code{lum\_in}, \code{lum\_out}, \code{temp\_in} a \code{temp\_out}}. Ostatní informace o~počasí\footnote{rychlost (\code{owm\_wind\_speed}) a směr (\code{owm\_wind\_heading}) větru, předpověď teploty na $x=1,2,3$~h dopředu (\code{owm\_temp\_$x$h}) a předpověď nejvyšší denní teploty (\code{owm\_temp\_max})} se získávají přímo v~rámci skriptu \file{mqttData\-Collector.py} z~REST API \href{https://openweathermap.org/}{OpenWeather}. Data získaná z~komponent se pak v~jedné společné zprávě odesílají přes MQTT skriptu \file{broker2mongo.py}, který je uloží do databáze MongoDB (\cref{sec:db}). Na \refskl{fig:comm}{obrázku} je přehled komponent, které se podílejí na sběru dat, a jejich komunikace včetně používaných protokolů.
+  \section{Použití komunikačního protokolu MQTT} \label{sec:MQTT}
+    Protokol MQTT (\cite{mqtt})
+    se využívá pro veškerou komunikaci součástí při sběru dat. Centrální uzel se nazývá broker a jedná se o~software spuštěný na Raspberry Pi (\cref{list:rpi}) na výchozím TCP portu 1883. Připojují se k~němu všechny komponenty, které využívají MQTT. Po připojení mohou publikovat zprávy do hierarchicky uspořádaných témat a přihlašovat se k~jejich odběru. Broker pak zajistí doručení zpráv publikovaných v~určitém tématu klientům, kteří jsou přihlášeni k~jeho odběru.
+    
+    Při sběru dat se periodicky nebo na základě změny stavu žaluzie odešle do tématu \code{smart\-blinds/command} zpráva ve formátu JSON, která obsahuje pod klíčem \uv{\emph{command}} hodnotu \uv{\emph{request\_values}}. K~odběru tohoto tématu jsou přihlášena obě zařízení s~ESP8266 (\cref{sec:senzory}) i systém domácí automatizace a po přijetí této zprávy odešlou aktuální hodnoty jimi sledovaných příznaků do odpovídajích témat dle \refskl{tab:topics}{tabulky}. Všechna tato témata odebírá skript \file{mqttDataCollec\-tor.py}, který hodnoty příznaků společně s~časovou známkou odesílá v~jedné zprávě do tématu \code{smart\-blinds/da\-ta}. Tato zpráva dále obsahuje informaci o~tom, zda je aktivní testovací režim využívaný při vývoji. Téma \code{smart\-blinds/da\-ta} odebírá skript \file{broker\-2mongo.py} popsaný v~\refskl{sec:db}{sekci}. Ten všechna takto přenesená data ukládá do databáze k~pozdějšímu použití.
+  \input{tab/tab_topics.tex}
+  \section{Komunikace s~pohonem žaluzie}
+    S~pohonem žaluzie komunikuje centrální jednotka Tahoma, dodávaná výrobcem žaluzie, pomocí bezdrátového proprietárního protokolu \emph{io}. Tato jednotka je dále připojená do internetu a je možné s~ní komunikovat prostřednictvím rozhraní pro programování aplikací (\acrshort{api}), které nabízí výrobce. Komunikace s~\acrshort{api} je šifrovaná a probíhá pomocí protokolu HTTPS zasíláním požadavků na \emph{endpointy} serverů výrobce\footnote{Endpointy jsou dostupné na adrese začínající na \href{https://api.somfy.com/api/v1/}{https://api.somfy.com/api/v1/}}. Použitý systém domácí automatizace i backend vyvíjeného systému používají ke komunikaci s~API knihovnu Pymfy v~jazyce Python, která mapuje akce pro manipulaci se žaluzií a její stav na metody a proměnné objektu, který je tak modelem žaluzie. Dále zpřístupňuje některé obecnější metody pro práci s~API jako je například zjištění všech montáží zákazníka či zjištění všech dostupných zařízení v~rámci konkrétní montáže.
+
+    Jednotlivé požadavky se autorizují na základě krátkodobého tokenu s~platností 1~h. Pokud vyprší jeho platnost, je nutné pomocí obnovovacího tokenu ze serveru získat nový a přikládat ho k~budoucím požadavkům. Oba tokeny se získávají OAuth2 metodou \uv{Authorization Code Grant}, z~důvodů odlišností od dokumentace v~implementaci Somfy se ani po kontaktování technické podpory nepodařilo získat nové přístupové údaje k~API a tak muselo být využito nedokumentovaného postupu k~jejich získání. Přestože jsou tokeny v~obou systémech odvozené od stejných přístupových údajů, zdají se být nezávislé (včetně kvóty na četnost požadavků) a na funkčnost to tedy nemá vliv. Hledání tohoto postupu se zdálo být časově nákladné a proto se ke zjišťování aktuálního stavu žaluzie využívá právě systém domácí automatizace.
+
+    Běžně je nutné si na webových stránkách na adrese \href{https://develeoper.somfy.com}{https://developer.som\-fy.com} vytvořit tzv. aplikaci pod uživatelským účtem, ke kterému je technikem při instalaci žaluzií přiřazena konkrétní montáž. Na základě zadaného názvu, \emph{callback \acrshort{url}}\footnote[1]{Návratová \acrshort{url} v~rámci vyvíjené aplikace, na kterou se přesměruje webový prohlížeč uživatele po úspěšné autorizaci, prostřednictvím parametrů v~\acrshort{url} se aplikaci předá kód, na základě kterého může získat tokeny ze serveru.} a popisu aplikace se získájí dva řetězce: \emph{Consumer key} a \emph{Consumer secret} (\cite{somfy:api}). Ty se pak společně s~\emph{callback \acrshort{url}}\footnotemark[1] předají konstruktoru objektu, který v~rámci knihovny Pymfy reprezentuje API (\cite{tetienne:pymfy}).
+
+    Takto vytvořené \emph{Consumer key} a \emph{Consumer secret} se však nedařilo použít, server Somfy je totiž zamítal. Byla tedy kontaktována technická podpora, ale ani po několika týdnech se nedostavila odpověď. Mezitím pokračovaly pokusy o~získání tokenu jinak. Pro systém domácí automatizace, který se se žaluziemi již používal, existovaly tyto údaje a ukázalo se, že jsou funkční. Místo správné \emph{callback \acrshort{url}} se tedy do konstruktoru zadala ta, která příslušela k~aplikaci ve vývojářském portálu, a byl zahájen proces získání tokenů. Po přesměrování zpět se v~adresním řádku prohlížeče ručně změnila adresa tak, aby odpovídala endpointu vytvořenému k~získávání a ukládání tokenů v~rámci backendu. Pokud by bylo možné postupovat standardním způsobem, po přihlášení na stránkách Somfy by byl prohlížeč přesměrován právě na tuto adresu. Tokeny se tak uložily do souboru \file{somfycache} pro pozdější použití.
+
+    Data a služby, které API poskytuje, jsou využívány ke dvěma účelům. Jednak systém domácí automatizace každou minutu kontroluje aktuální stav žaluzií a pokud se změní, odešle novou hodnotu přes MQTT a spustí tak posloupnost akcí (popsanou v~\refskl{sec:MQTT}{sekci}), které vedou k~vytvoření nového záznamu v~databázi, jednak stránka \uv{Control} v~\acrshort{gui} umožňuje zobrazit aktuální stav žaluzií a zadávat příkazy k~jeho změně. Samotnou komunikaci s~API zajišťuje backend systému, se kterým se komunikuje přes protokol WebSockets (\cite{RFC6455}). Po připojení alespoň jednoho klienta se každých 15~s~zjistí stav žaluzie a připojeným prohlížečům se odešle zpráva ve formátu JSON. Její struktura je uvedená v~\refskl{lst:wsMsg}{části kódu}. Naopak po přijetí zprávy backendem se v~závislosti na jejím obsahu odešle požadavek API na změnu stavu žaluzie. Zpráva má stejnou strukturu jako zpráva v~\refskl{lst:wsMsg}{části kódu}, ale obsahuje jen jeden z~klíčů. Navíc může obsahovat speciální klíč \code{testing} s~hodnotou datového typu \code{boolean}, pomocí kterého lze měnit příznak \code{testing} dat ukládaných do databáze, který slouží k~rozlišení akcí vyvolaných při vývoji v~rámci testování a skutečných akcí, které má systém napodobovat. Zpráva o~změně režimu se v~tomto případě odešle přes MQTT skriptu \file{mqttDataCollector.py}, který příznak zaznamenává k~datům. Zprávy se odesílají na základě interakce uživatele s~ovládacími prvky \acrshort{gui}.
+
+    \begin{lstlisting}[caption={[Struktura zprávy o~stavu žaluzie]Struktura zprávy o~stavu žaluzie, která je všem klientům zasílána každých 15~s. Klíč \code{position} označuje výšku vytažení žaluzie (0 -- zavřeno, 100 -- otevřeno), obdobně hodnota \code{tilt} vyjadřuje naklopení lamel.},captionpos=b,label=lst:wsMsg]
+      {
+        "position": int
+        "tilt": int
+      }
+    \end{lstlisting}
+
+  \section{Využití služby OpenWeather} \label{sec:owm}
+    Skript \file{mqttDataCollector.py} kromě měřených příznaků a stavu žaluzií zjišťuje také odhad počasí a jeho předpověď. Tato data poskytuje služba OpenWeather prostřednictvím svého API, které má několik možností využití. Z~důvodu jednoduchosti byla pro přístup k~API zvolena knihovna PyOWM, která používá variantu \uv{One-Call}. Na základě jednoho požadavku se tak získá aktuální počasí, předpověď po minutách na následující hodinu, předpověď po hodinách na následující 2 dny, předpověď po dnech na následující týden, výstrahy vydané Českým hydrometeorologickým ústavem a historická data z~posledních 5 dnů. Vše je pak přístupné pomocí atributů a metod objektu v~Pythonu. K~požadavku je vždy připojen klíč, který byl bezplatně získán po registraci na \href{https://openweathermap.org}{webových stránkách https://openweathermap.org}. Limity četnosti požadavků stanovené poskytovatelem jsou vyšší než 1 požadavek za 5 minut. Jako příznaků se využívá kódu počasí (vyjadřuje jeho shrnutí -- např. slunečno, polojasno, déšť, jasná noc atp.), rychlosti a směru větru, hodinové předpovědi teploty na následující 3 hodiny a předpovědi nejvyšší denní teploty.
+
+  \section{Databáze}\label{sec:db}
+    Data, která se sbírají pomocí skriptu \file{mqttDataCollector.py} v~pětiminutových intervalech nebo na základě změny stavu žaluzie uživatelem, ukládá skript \file{broker2mongo.py} do databáze MongoDB (\cite{mongodb:mongodb}). Jednotlivé vzorky jsou získávány z~MQTT zpráv zasílaných do tématu \code{smart\-blinds/data} a ukládají se ve stejné podobě jako příchozí zpráva. Struktura je uvedena v~\refskl{lst:datum}{části kódu}.
+
+    Uložená data se využívají při strojovém učení modelů, ve vizualizaci dat na stránce \uv{Live} v~\acrshort{gui} (\cref{sec:live}) a v~porovnání skutečného řízení a řízení jednotlivých regresorů tamtéž. Také se zobrazují v~tabulce na stránce \uv{Data}. Vyhodnocení sběru dat je uvedené v~\refskl{sec:resData}{sekci}.
+
+  \section{Webový server pro komunikaci s~\acrshort{gui}} \label{sec:tornado}
+    Systém má webové uživatelské rozhraní poskytované \emph{Next.js} serverem (\cite{vercel:nextjs}, \cref{chap:gui}). Jeho propojení s~jádrem systému (backend) je řešeno pomocí frameworku Tornado v~jazyce Python. Tento webserver tak tvoří rozhraní mezi \acrshort{gui} a databází, všemi regresory (predikce, simulace i učení) a Somfy API. Klient v~podobě webového prohlížeče odesílá HTTP požadavky na tyto end\-pointy: 
+    \begin{itemize}
+      \item \code{ep\_data} poskytuje data z~databáze na základě \code{POST} požadavku s~volitelnými JSON parametry (\code{ts\_start} a \code{ts\_end}) v~těle označujícími časovou známku začátku a konce intervalu, vrací seznam vzorků (\cref{lst:datum}) pod klíčem \code{data} ve formátu JSON jako tělo odpovědi.
+      \item \code{ep\_control} slouží k~predikci řízení jednoho z~regresorů (parametr \code{classifier\_name} na základě hodnot příznaků předaných jako JSON parametr \code{features} (jeden vzorek), vrací \code{con\-trol\-Time} - dobu trvání predikce, \code{status: ok} a navržené hodnoty řízení (jako v~\refskl{lst:wsMsg}{části kódu}).
+      \item \code{ep\_train} spustí přetrénování \acrshort{nn} (\cref{sec:retraining}) na všech dostupných datech.
+      \item \code{ep\_predict} slouží k~predikci řízení regresorů předaných v~parametru \code{classifiers} pro reálná data (přijímá začátek a konec intervalu stejným způsobem jako \code{ep\_data}, načte všechny vzorky z~tohoto intervalu). Pro každý z~regresorů vrací pod klíčem s~jejich názvem dobu predikce a seznam dvojic doporučeného řízení a odpovídajících časových známek.
+      \item \code{ws} zajišťuje spojení pomocí protokolu WebSockets pro pravidelnou aktualizaci vizualizace stavu žaluzií a pro přenos požadavků na jeho změnu.
+    \end{itemize}
+    Schéma těchto endpointů a některých přenášených dat je na \refskl{fig:endpoints}{obrázku}.
+    
+    \begin{figure}[h]
+      \centering
+      \begin{adjustbox}{width=\textwidth}
+        \input{img/endpoints.tex}
+      \end{adjustbox}
+      \caption[Schéma endpointů a přenášených struktur]{Schéma endpointů backendu systému pro automatické ovládání žaluzií a datové struktury přenášené v~těle jednotlivých požadavků a odpovědí včetně metody. V~posledním případě se jedná o~protokol WebSockets.}
+      \label{fig:endpoints}
+    \end{figure}
+  \end{comment}
