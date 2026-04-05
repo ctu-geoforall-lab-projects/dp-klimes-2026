@@ -52,12 +52,18 @@ Some algorithms, such as MAJA, use threshold-based techniques in combination wit
 \subsection{Temporal-Change-Based Methods}
 \label{sec:temporal_methods}
 
-Temporal-change-based algorithms achieve cloud detection by identifying changes in reflectance caused by clouds or cloud shadows. By analyzing multiple views of the same location over time, these methods are particularly effective at distinguishing clouds from bright surfaces such as urban areas \cite{zhiwei2022}. An example of a temporal-change-based algorithm is the MACCS-ATCOR Joint Algorithm (MAJA), which is the default cloud-masking algorithm for VEN$\mu$S imagery, but  it is also possible to use MAJA on Formosat-2, Landsat, and Sentinel-2 data \cite{hagolle2010}. MAJA combines spectral thresholding with multi-temporal analysis, using image time series to improve cloud and cloud-shadow detection \cite{hagolle2010, pesek2022}.
+Temporal-change-based algorithms achieve cloud detection by identifying changes in reflectance caused by clouds or cloud shadows. By analyzing multiple views of the same location over time, these methods are particularly effective at distinguishing clouds from bright surfaces such as urban areas \cite{zhiwei2022}. An example of a temporal-change-based algorithm is the MACCS-ATCOR Joint Algorithm (MAJA), which is the default cloud-masking algorithm for VEN$\mu$S imagery, but it is also possible to use MAJA on Formosat-2, Landsat, and Sentinel-2 data \cite{hagolle2010}. MAJA combines spectral thresholding with multi-temporal analysis, using image time series to improve cloud and cloud-shadow detection \cite{hagolle2010, pesek2022}.
 
-Overall, temporal-change-based approaches offer enhanced accuracy and robustness compared to threshold-based methods, but they require multi-temporal datasets and additional processing \cite{zhiwei2022, pesek2022}.
+Overall, temporal-change-based approaches offer enhanced accuracy and robustness compared to threshold-based methods, but they require multi-temporal data and additional processing \cite{zhiwei2022, pesek2022}.
 
 
 \subsection{Machine Learning-Based Methods}
+\label{sec:ml_methods} 
+
+Machine learning-based methods have been widely applied to cloud detection as an alternative to threshold-based approaches. These methods learn from the input data and iteratively optimize their performance. They can be broadly divided into supervised and unsupervised approaches. Supervised methods learn the relationship between input features and cloud labels from annotated training data, allowing them to adapt to different atmospheric conditions, surface types, and imaging scenarios. On the other hand, unsupervised methods try to identify patterns or clusters in the data without labeled samples, for example by grouping pixels with similar spectral properties \cite{singh2025, wang2024}. In context of cloud detection, supervised methods are used more frequently, as they typically yield better results compared to unsupervised methods.
+
+
+
 
 \section{Convolutional Neural Networks}
 
