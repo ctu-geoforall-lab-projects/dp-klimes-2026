@@ -1,1 +1,70 @@
 \chapter{Theoretical Background} \label{chap:theoretical_background}
+
+\section{Cloud Detection}
+
+\subsection{Problem Definition}
+Since approximately two‑thirds of the Earth's surface is covered by clouds at any given time \cite{king2013}, cloud detection is an essential preprocessing step in the analysis of optical satellite imagery \cite{zhiwei2022}. It is typically formulated as a semantic segmentation problem, where each pixel in a satellite image is labeled as either cloud or cloud-free \cite{wang2024}. The presence of clouds prevents optical satellite imaging systems from obtaining useful observations by blocking the view of the Earth's surface. Accurate identification of cloudy pixels is, therefore, crucial in many types of remote sensing applications, including land cover monitoring, disaster response, or military surveillance \cite{wang2024, singh2025}.
+
+\subsection{Challenges}
+There are several challenges that complicate precise cloud detection. First, clouds can exhibit spectral reflectance similar to bright surfaces such as snow, desert areas, or some urban regions, which may lead to misclassifications. In addition, there is a high variability in cloud types. According to \cite{singh2025}, clouds can be categorized based on their height above ground level or based on optical density. On the basis of height, clouds are typically sorted into low, medium, and high categories. Low clouds are found below approximately 2 km and are in most cases optically thick, often completely blocking the view of Earth's surface and producing strong shadows. Medium clouds are found between 2 km and 6 km and are slightly less dense than low clouds, partially limiting surface visibility. High clouds occur above 6 km, are mostly optically thin, and the surface under them remains visible, although often blurry \cite{beatens2019}. While cloud altitude provides a helpful way to categorize clouds, their optical density also plays an important role in order to classify clouds automatically \cite{wang2024}. Thick clouds have opacity above 50\% and obscure the surface and cast dark shadows. These shadows are an additional challenge in automated cloud detection, as their appearance is influenced by cloud shape, height, thickness, sun angle, and surface properties \cite{singh2025}. Cloud shadows can be mistaken for water bodies, shaded areas or other dark regions, making their accurate identification also essential \cite{hollstein2016}. Thin clouds, on the other hand, have opacity under 50\% and allow partial visibility of the surface \cite{singh2025}. Thin clouds can also cast shadows, although these are usually fainter and even more difficult to detect  \cite{zhiwei2022}. A~comparison of thick and thin clouds is shown in Fig.~\ref{fig:cloud_types}.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/thick_cloud.png}
+        \caption{Thick cloud}
+        \label{fig:thick_cloud}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/thin_cloud.png}
+        \caption{Thin cloud}
+        \label{fig:thin_cloud}
+    \end{subfigure}
+    \caption{Comparison of thick and thin clouds in optical satellite imagery.}
+    \label{fig:cloud_types}
+\end{figure}
+
+
+
+\section{Methods for Cloud Detection}
+
+Given the complexity and significance of the problem and the challenges described above, a wide range of cloud detection methods and algorithms have been proposed over the last decades. These methods continue to evolve in order to improve detection accuracy and further automate the process. Various classifications of these methods have been proposed in the literature, reflecting differences in input data, algorithmic approach, and level of automation. 
+
+Cloud detection methods in the literature can generally be classified along two main dimensions. The first dimension considers the algorithmic approach and level of automation and the second dimension focuses on the type of input data and the features exploited by the algorithms. These two perspectives often overlap, and the choice of classification depends on the focus of the study and the available data.
+
+Focusing on the algorithmic dimension, Singh et al. \cite{singh2025} divide methods into manual, automated, and active learning approaches. Even though manual methods are generally the most accurate, they require the most effort and are primarily used today for dataset creation. Automated methods include both rule-based and machine learning approaches, which operate without human intervention. Active learning represents a specialized approach, often based on machine learning, that uses human feedback to train and refine the algorithm’s predictions. A more common distinction, used for example by Wang et al. \cite{wang2024}, categorizes cloud detection methods into physical-rule or threshold-based, temporal-change-based, and machine learning-based algorithms. Li et al. \cite{zhiwei2022} additionally includes variational-model-based methods as a separate category of cloud detection algorithms.
+
+Considering the type of input data, cloud detection methods can be classified according to the features extracted and the temporal coverage of the imagery. Li et al. \cite{zhiwei2022} further classify cloud and cloud-shadow detection algorithms based on the type of features used. Methods can rely on spectral features, spectral-spatial features, spectral-temporal features, spectral-spatial–temporal features, or multi-source features, which can be extracted from mono-temporal, multi-temporal, or multi-source data. Singh et al. \cite{singh2025} further classify cloud detection methods based on the number of spectral bands used. Single-band approaches rely on one dominant band sensitive to clouds, while multi-band approaches combine several bands (e.g., RGB, NIR) to improve detection accuracy.
+
+For the purpose of this thesis, the classification based on the algorithmic approach and level of automation is more relevant than the classification based on the type of input data or features. In the following sections, algorithm-based categories relevant for this work are described.
+
+\subsection{Threshold-Based Methods}
+
+Threshold-based algorithms represent one of the earliest and most widely used approaches for cloud detection. These algorithms perform cloud detection by applying predefined thresholds to one or more spectral bands in order to classify individual pixels \cite{zhiwei2022, singh2025}. These thresholds are typically determined based on characteristic cloud properties, such as high reflectance in visible bands or specific spectral behavior in selected wavelengths \cite{wang2024}. Due to their simplicity and low computational requirements, these methods have been widely used in many operational systems \cite{pesek2022}.
+
+However, a major limitation of many threshold-based approaches is their dependence on empirically defined parameters. Thresholds are defined for specific sensors, scenes, and atmospheric conditions and for this reason, the algorithms are often applicable only to specific sensor or sensors similar to the original one \cite{zhiwei2022}. Several algorithms have been developed for different satellite missions \cite{wang2024, pesek2022}, including the Automated Cloud Cover Assessment (ACCA) for Landsat imagery \cite{irish2000, irish2006}, as well as Sen2Cor for Sentinel-2 imagery \cite{knorn2017} and CloudMask for MODIS imagery \cite{ackerman1998}. To improve applicability, some methods have been extended to support multiple satellite platforms. For example, FMask was originally developed for Landsat \cite{zhu2012} and later adapted for Sentinel-2 \cite{zhu2015}. 
+
+Some algorithms, such as MAJA, use threshold-based techniques in combination with temporal information to improve detection. The details of such multi-temporal approaches are discussed in section \ref{sec:temporal_methods}.
+
+\subsection{Temporal-Change-Based Methods}
+\label{sec:temporal_methods}
+
+Temporal-change-based algorithms achieve cloud detection by identifying changes in reflectance caused by clouds or cloud shadows. By analyzing multiple views of the same location over time, these methods are particularly effective at distinguishing clouds from bright surfaces such as urban areas \cite{zhiwei2022}. An example of a temporal-change-based algorithm is the MACCS-ATCOR Joint Algorithm (MAJA), which is the default cloud-masking algorithm for VEN$\mu$S imagery, but  it is also possible to use MAJA on Formosat-2, Landsat, and Sentinel-2 data \cite{hagolle2010}. MAJA combines spectral thresholding with multi-temporal analysis, using image time series to improve cloud and cloud-shadow detection \cite{hagolle2010, pesek2022}.
+
+Overall, temporal-change-based approaches offer enhanced accuracy and robustness compared to threshold-based methods, but they require multi-temporal datasets and additional processing \cite{zhiwei2022, pesek2022}.
+
+
+\subsection{Machine Learning-Based Methods}
+
+\section{Convolutional Neural Networks}
+
+\section{Transfer Learning}
+
+\subsection{Concept and Motivation}
+
+\subsection{Types of Transfer Learning}
+
+\section{Evaluation Metrics}
