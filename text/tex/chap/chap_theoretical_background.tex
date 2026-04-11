@@ -3,23 +3,24 @@
 \section{Cloud Detection}
 
 \subsection{Problem Definition}
-Since approximately two‑thirds of the Earth's surface is covered by clouds at any given time \cite{king2013}, cloud detection is an essential preprocessing step in the analysis of optical satellite imagery \cite{zhiwei2022}. It is typically formulated as a semantic segmentation problem, where each pixel in a satellite image is labeled as either cloud or cloud-free \cite{wang2024}. The presence of clouds prevents optical satellite imaging systems from obtaining useful observations by blocking the view of the Earth's surface. Accurate identification of cloudy pixels is, therefore, crucial in many types of remote sensing applications, including land cover monitoring, disaster response, or military surveillance \cite{wang2024, singh2025}.
+Since approximately two‑thirds of the Earth's surface is covered by clouds at any given time \cite{king2013}, cloud detection is an essential preprocessing step in the analysis of optical satellite imagery \cite{zhiwei2022}. It is typically formulated as a semantic segmentation problem, where each pixel in a satellite image is labeled as either cloud or cloud-free \cite{wang2024}. The presence of clouds prevents optical satellite imaging systems from obtaining useful observations by blocking the view of the Earth's surface. Accurate identification of cloudy pixels is, therefore, crucial in many types of remote sensing applications, including land cover monitoring, disaster response, and military surveillance \cite{wang2024, singh2025}.
 
 \subsection{Challenges}
+\label{chap:cloud_detection_challenges}
 There are several challenges that complicate precise cloud detection. First, clouds can exhibit spectral reflectance similar to bright surfaces such as snow, desert areas, or some urban regions, which may lead to misclassifications. In addition, there is a high variability in cloud types. According to \cite{singh2025}, clouds can be categorized based on their height above ground level or based on optical density. On the basis of height, clouds are typically sorted into low, medium, and high categories. Low clouds are found below approximately 2 km and are in most cases optically thick, often completely blocking the view of Earth's surface and producing strong shadows. Medium clouds are found between 2 km and 6 km and are slightly less dense than low clouds, partially limiting surface visibility. High clouds occur above 6 km, are mostly optically thin, and the surface under them remains visible, although often blurry \cite{beatens2019}. While cloud altitude provides a helpful way to categorize clouds, their optical density also plays an important role in order to classify clouds automatically \cite{wang2024}. Thick clouds have opacity above 50\% and obscure the surface and cast dark shadows. These shadows are an additional challenge in automated cloud detection, as their appearance is influenced by cloud shape, height, thickness, sun angle, and surface properties \cite{singh2025}. Cloud shadows can be mistaken for water bodies, shaded areas or other dark regions, making their accurate identification also essential \cite{hollstein2016}. Thin clouds, on the other hand, have opacity under 50\% and allow partial visibility of the surface \cite{singh2025}. Thin clouds can also cast shadows, although these are usually fainter and even more difficult to detect  \cite{zhiwei2022}. A~comparison of thick and thin clouds is shown in Fig.~\ref{fig:cloud_types}.
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{img/thick_cloud.png}
+        \fbox{\includegraphics[width=\textwidth]{img/thick_cloud.png}}
         \caption{Thick cloud}
         \label{fig:thick_cloud}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{img/thin_cloud.png}
+        \fbox{\includegraphics[width=\textwidth]{img/thin_cloud.png}}
         \caption{Thin cloud}
         \label{fig:thin_cloud}
     \end{subfigure}
@@ -39,7 +40,7 @@ Focusing on the algorithmic dimension, Singh et al. \cite{singh2025} divide meth
 
 Considering the type of input data, cloud detection methods can be classified according to the features extracted and the temporal coverage of the imagery. Li et al. \cite{zhiwei2022} further classify cloud and cloud-shadow detection algorithms based on the type of features used. Methods can rely on spectral features, spectral-spatial features, spectral-temporal features, spectral-spatial–temporal features, or multi-source features, which can be extracted from mono-temporal, multi-temporal, or multi-source data. Singh et al. \cite{singh2025} further classify cloud detection methods based on the number of spectral bands used. Single-band approaches rely on one dominant band sensitive to clouds, while multi-band approaches combine several bands (e.g., RGB, NIR) to improve detection accuracy.
 
-For the purpose of this thesis, the classification based on the algorithmic approach and level of automation is more relevant than the classification based on the type of input data or features. In the following sections, algorithm-based categories relevant for this work are described.
+For the purpose of this thesis, the classification based on the algorithmic approach and level of automation is more relevant than the classification based on the type of input data or features. In the following sections, algorithm-based categories relevant in context of this work are described.
 
 \subsection{Threshold-Based Methods}
 
@@ -47,7 +48,7 @@ Threshold-based algorithms represent one of the earliest and most widely used ap
 
 However, a major limitation of many threshold-based approaches is their dependence on empirically defined parameters. Thresholds are defined for specific sensors, scenes, and atmospheric conditions and for this reason, the algorithms are often applicable only to specific sensor or sensors similar to the original one \cite{zhiwei2022}. Several algorithms have been developed for different satellite missions \cite{wang2024, pesek2022}, including the Automated Cloud Cover Assessment (ACCA) for Landsat imagery \cite{irish2000, irish2006}, as well as Sen2Cor for Sentinel-2 imagery \cite{knorn2017} and CloudMask for MODIS imagery \cite{ackerman1998}. To improve applicability, some methods have been extended to support multiple satellite platforms. For example, FMask was originally developed for Landsat \cite{zhu2012} and later adapted for Sentinel-2 \cite{zhu2015}. 
 
-Some algorithms, such as MAJA, use threshold-based techniques in combination with temporal information to improve detection. The details of such multi-temporal approaches are discussed in section \ref{sec:temporal_methods}.
+Some algorithms, such as MACCS-ATCOR Joint Algorithm (MAJA), use threshold-based techniques in combination with temporal information to improve detection. The details of such multi-temporal approaches are discussed in section \ref{sec:temporal_methods}.
 
 \subsection{Temporal-Change-Based Methods}
 \label{sec:temporal_methods}
@@ -64,13 +65,187 @@ Machine learning-based methods have been widely applied to cloud detection as an
 
 Even though traditional supervised machine learning methods, such as decision trees, random forests and support vector machines can learn from the input data, they are limited in their ability to capture complex spatial patterns. This is because they typically operate on spectral features extracted from individual pixels. It is possible to include additional spatial features to improve detection accuracy, but this requires explicit feature engineering and thus leads to increased workload \cite{singh2025, zhiwei2022}. 
 
-This limitation has led to the rapid development and adoption of deep learning approaches \cite{wang2024}. In particular, convolutional neural networks (CNNs) have proven to be efficient at capturing both spectral and spatial features from raw images \cite{pesek2022, zhu2017}. More recently, hybrid approaches combining CNNs with transformer-based architectures have also been proposed to further improve performance \cite{zhang2022}. However, due to higher complexity of hybrid approaches, this work focuses on the usage of CNNs. A description of the CNN principle and an overview of CNN-based methods for cloud detection are provided in section \ref{sec:cnn}.
+This limitation has led to the rapid development and adoption of deep learning approaches \cite{wang2024}. In particular, convolutional neural networks (CNNs) have proven to be efficient at capturing both spectral and spatial features from raw images \cite{pesek2022, zhu2017}. More recently, hybrid approaches combining CNNs with transformer-based architectures have also been proposed to further improve performance \cite{zhang2022, luo2025}. However, due to higher complexity of hybrid approaches, this work focuses on the usage of CNNs. A description of the CNN principle and an overview of CNN-based methods for cloud detection are provided in section \ref{sec:cnn}.
 
 
 
 
 \section{Convolutional Neural Networks}
 \label{sec:cnn} 
+
+% Convolutional neural networks (CNNs) are a class of deep learning networks specifically designed for processing data with grid-like topology, such as images \cite{goodfellow2016}. CNNs exploit the spatial structure of the input data, allowing neurons in each layer to be connected only to local regions rather than to all neurons in the previous layer. This connectivity reduces the number of parameters and enables the network to learn spatially localized patterns efficiently. CNNs can automatically learn hierarchical features from input images through three main types of layers: convolutional layers, pooling layers, and fully connected layers. 
+
+% Convolutional layers apply a fixed-size kernel that slides over the input, computing a weighted sum between the kernel's weights and the local neighborhood of each pixel \cite{goodfellow2016}. This operation, illustrated in Figure \ref{fig:convolution}, allows the network to extract low-level features such as edges in early layers and increasingly complex patterns in deeper layers.  
+
+% Since convolution typically reduces the dimensions of the output relative to the input, padding is often applied around the input data to maintain the spatial size of the feature maps. Pooling layers, on the other hand, reduce the spatial resolution while preserving important information, and fully connected layers (usually at the end of the network) combine the learned features to produce the final output. Together, these layers enable CNNs to model both local and global structures in the data effectively.
+
+
+% \section{Convolutional Neural Networks}
+% \label{sec:cnn}
+
+Convolutional neural networks (CNNs) are a class of deep learning networks specifically designed for processing data with grid-like topology, such as images \cite{goodfellow2016, lecun1998}. CNNs exploit the spatial structure of the input data, allowing neurons in each layer to connect only to local regions rather than to all neurons in the previous layer. This local connectivity reduces the number of parameters and enables the network to learn spatially localized patterns efficiently \cite{lecun1998}. CNNs can automatically learn hierarchical features from input images primarily through convolutional layers and pooling layers \cite{goodfellow2016}. 
+
+Convolutional layers apply a fixed-size kernel that slides over the input, computing a weighted sum between the kernel's weights and the local neighborhood of each pixel \cite{goodfellow2016}. The principle of convolution is illustrated in Figure \ref{fig:convolution}. Since convolution typically reduces the dimensions of the output relative to the input, padding is often applied around the input data to maintain the spatial size of the feature maps \cite{goodfellow2016}. In remote sensing, convolution is typically performed over multiple spectral bands. For multispectral data, the kernels are three-dimensional tensors, where the depth of the kernel is equal to the number of spectral bands \cite{zhu2017}. 
+ 
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1, every node/.style={scale=0.9, minimum size=8mm, draw}]
+    % Input matrix
+    \foreach \i in {0,1,2,3} {
+        \foreach \j in {0,1,2,3} {
+            \node[fill=lightgray] (in\i\j) at (\j,-\i) {%
+                \pgfmathtruncatemacro{\val}{mod(\i+\j,4)}%
+                \val
+            };
+        }
+    }
+
+    % Kernel 
+    \foreach \i in {0,1} {
+        \foreach \j in {0,1} {
+            \node[fill=guiblue!50] (k\i\j) at (6+\j,-\i) {%
+                \pgfmathtruncatemacro{\val}{ifthenelse(mod(\i+\j,2)==0,0,1)}%
+                \val
+            };
+        }
+    }
+
+    % Output matrix 
+    \foreach \i in {0,1,2} {
+        \foreach \j in {0,1,2} {
+            \node[fill=guigreen!50] (out\i\j) at (10+\j,-\i) {%
+                \pgfmathtruncatemacro{\val}{(\i+\j+2)}%
+                \val
+            };
+        }
+    }
+
+    % Labels
+    \node[above] at (1.5,0.5) {Input};
+    \node[above] at (6.5,0.5) {Kernel};
+    \node[above] at (11,0.5) {Output};
+
+    % Highlight sliding window on input
+    \draw[guiblue, thick] (in00.north west) rectangle (in11.south east);
+
+    % Arrows from input to kernel (dashed)
+    \draw[->, dotted, thick] (in00.north west) -- (k00.north west);
+    \draw[->, dotted, thick] (in11.south east) -- (k11.south east);
+
+    % Arrow from kernel to output
+    \coordinate (kernelcenter) at ($(k00)!0.5!(k11)$);
+    \draw[->, dotted, thick] (kernelcenter) -- (out00.west);
+
+    \end{tikzpicture}
+    \caption{Principle of 2D convolution.}
+    \label{fig:convolution}
+\end{figure}
+
+The linear activations produced by the convolution are then passed through a nonlinear activation function, typically a rectified linear unit (ReLU) \cite{goodfellow2016}. The ReLU function sets all negative values to zero while leaving non-negative values unchanged.
+
+Pooling layers reduce the spatial resolution of feature maps while preserving the most important information \cite{long2015}. The most commonly used type is max pooling, where the maximum value is selected from a defined window, representing the most significant feature in that region (see Figure \ref{fig:pooling}). 
+
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1, every node/.style={scale=0.9, minimum size=8mm, draw}]
+    % --- Input matrix ---
+    \foreach \i in {0,...,3} {
+        \foreach \j in {0,...,3} {
+
+            % ručně definované "náhodné" hodnoty
+            \pgfmathtruncatemacro{\val}{
+                ifthenelse(\i==0 && \j==0, 3,
+                ifthenelse(\i==0 && \j==1, 7,
+                ifthenelse(\i==0 && \j==2, 2,
+                ifthenelse(\i==0 && \j==3, 5,
+                ifthenelse(\i==1 && \j==0, 6,
+                ifthenelse(\i==1 && \j==1, 9,
+                ifthenelse(\i==1 && \j==2, 1,
+                ifthenelse(\i==1 && \j==3, 4,
+                ifthenelse(\i==2 && \j==0, 8,
+                ifthenelse(\i==2 && \j==1, 2,
+                ifthenelse(\i==2 && \j==2, 7,
+                ifthenelse(\i==2 && \j==3, 3,
+                ifthenelse(\i==3 && \j==0, 1,
+                ifthenelse(\i==3 && \j==1, 5,
+                ifthenelse(\i==3 && \j==2, 4, 6
+                )))))))))))))))}
+
+            % zvýraznění maxima (9)
+            \ifnum\i=1
+                \ifnum\j=1
+                    \node[fill=guigreen!70] (in\i\j) at (\j,-\i) {\textbf{\val}};
+                \else
+                    \node[fill=lightgray] (in\i\j) at (\j,-\i) {\val};
+                \fi
+            \else
+                \node[fill=lightgray] (in\i\j) at (\j,-\i) {\val};
+            \fi
+        }
+    }
+
+    % --- Output matrix ---
+    \node[fill=guigreen!50] (out00) at (7,0) {\textbf{9}};
+    \node[fill=guigreen!50] (out01) at (8,0) {5};
+    \node[fill=guigreen!50] (out10) at (7,-1) {8};
+    \node[fill=guigreen!50] (out11) at (8,-1) {7};
+
+    % --- Labels ---
+    \node[above] at (1.5,0.5) {Input};
+    \node[above] at (7.5,0.5) {Output};
+
+    % --- Highlight pooling region ---
+    \draw[guiblue, thick] (in00.north west) rectangle (in11.south east);
+
+    % --- Arrow from max ---
+    \draw[->, thick, dotted] (in11.east) -- (out00.west);
+
+    \end{tikzpicture}
+    \caption{Principle of $2\times2$ max pooling with stride 2.}
+    \label{fig:pooling}
+\end{figure}
+
+
+In addition to architectural components, the training of CNN models is strongly influenced by the choice of loss function. In semantic segmentation, losses such as Dice loss are often used instead of standard cross-entropy, as they are better suited for handling class imbalance \cite{pesek2022}.
+
+In recent years, CNNs have proven highly effective for image detection and segmentation in remote sensing. Several studies have successfully applied them to cloud detection in satellite imagery \cite{zhiwei2022, wang2024, pesek2022, wright2025, lopez2021, mohajerani2018}. Typically, researchers have either developed architectures specifically for cloud detection or adapted popular models from other domains. The following section lists the most commonly used CNN architectures for cloud detection and describes the one relevant for this study.
+
+\subsection{CNNs for Cloud Detection}
+
+According to multiple studies \cite{zhiwei2022, wang2024, pesek2022, lopez2021, pang2023}, commonly used architectures for cloud detection include segmentation models such as U-Net \cite{ronneberger2015}, SegNet \cite{badrinarayanan2016}, and DeepLabV3 \cite{chen2017}. In addition, backbone architectures such as VGG \cite{simonyan2015} and ResNet \cite{he2015} are often used as encoders, where they serve as feature extractors. Among the various approaches, U-Net \cite{ronneberger2015} has become particularly popular, with its numerous modifications consistently achieving state-of-the-art performance in remote sensing and cloud detection tasks.
+
+\textbf{\color{red} \small Jiné architektury než U-Net bych popsal jen pokud by byly také porovnávány -> takže spíš ne}
+
+\subsubsection{U-Net}
+
+U-Net, introduced by Ronneberger et al. \cite{ronneberger2015} is a fully convolutional neural network originally designed for biomedical image segmentation. The main idea of U-Net is based on an encoder–decoder structure with a symmetric U-shaped design (see Figure \ref{fig:unet}). Due to its effectiveness and simplicity, this architecture has become one of the most widely adopted approaches for semantic segmentation in computer vision.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{text/img/unet.png}
+    \caption{U-Net architecture.}
+    
+    \caption*{Source: \cite{ronneberger2015}}
+    \label{fig:unet}
+\end{figure}
+
+The encoder, also called the contracting path in the original paper, uses a combination of convolutional layers, ReLU activation functions, and pooling layers, as described in Section \ref{sec:cnn}, to extract relevant features from the input image and reduce its spatial resolution. The decoder, also called expansive path, gradually restores the spatial resolution using upsampling operations and convolutional layers. A key part of U-Net is the use of skip connections. These connections transfer feature maps directly from the encoder to the corresponding decoder layers. This helps to maintain spatial detail, which is particularly important in segmentation tasks where accurate boundary estimation is required, such as cloud detection.
+
+\subsection{Limitations of CNNs in Cloud Detection}
+
+As described in Section \ref{chap:cloud_detection_challenges}, one of the main challenges in cloud detection is the complexity of clouds themselves. Clouds can vary significantly in shape, thickness, and transparency \cite{singh2025}. Therefore, the model needs to be robust enough to handle these variations, which requires a diverse and representative training dataset \cite{wang2024}.
+
+Another important issue is class imbalance, which is common in cloud detection datasets \cite{wright2024}. In most cases, the number of cloud-free pixels is significantly larger than the number of cloud pixels. This can lead to biased training, where the model tends to favor the dominant class and may fail to correctly identify less frequent cloud regions. To address this issue, loss functions such as Dice loss \cite{milletari2016} or Tversky loss \cite{salehi2017} are often used, as they help reduce the impact of class imbalance during training \cite{pesek2022}.
+
+CNN models are also sensitive to the quality and geographic distribution of training data \cite{emadi2025}. Models trained on limited or region-specific data may not generalize well to unseen conditions or different geographic areas. This motivates the distinction between globally trained models, which are learned from global datasets, and locally trained models, which are optimized for a specific geographic region. This issue is closely related to the problem of domain shift. In remote sensing, data acquired from different satellites often vary in spatial resolution, spectral characteristics, and radiometric properties \cite{zhiwei2022, wright2025}. As a result, models trained on a dataset from one satellite often experience a drop in performance when applied to data from a different sensor \cite{wright2025}. 
+
+To address these challenges, two main approaches are commonly used in remote sensing applications. The first approach focuses on developing more robust models by training on diverse and representative datasets, often combined with data augmentation techniques to improve generalization across different conditions and sensors. In this context, Wright et al. proposed OmniCloudMask \cite{wright2025}, a sensor-agnostic cloud and cloud-shadow detection model based on the U-Net architecture. Although the model was trained only on Sentinel-2 data, the authors used multiple augmentation techniques, including flipping, rotation, cropping, and, most importantly, mixed-resolution training, together with dynamic Z-score normalization to reduce spectral differences between sensors.  This enabled a model trained on Sentinel-2 data to generalize successfully to Landsat 8 and PlanetScope imagery.
+
+The second approach is based on transfer learning, which aims to adapt a model trained on a source domain to a different but related target domain, making it particularly effective in scenarios with limited labeled data and significant domain shift. An example was presented by Mateo-García et al. \cite{garcia2020}, who investigated transferring cloud detection model based on U-Net architecture between Landsat 8 and Proba-V sensors. Their experiments addressed three key questions related to cross-sensor transfer: adaptation from Landsat-8 to Proba-V, transfer from lower-resolution Proba-V to higher-resolution Landsat-8, and the effect of combining source and target domain data on model accuracy. The results confirmed that transfer learning can be effective in both directions and that incorporating limited target-domain data further improves performance, reducing the need for large manually labeled datasets. In the following chapter, the fundamental principles and common techniques of transfer learning are described in more detail.
+
 \section{Transfer Learning}
 
 \subsection{Concept and Motivation}

@@ -237,3 +237,219 @@ abstract = {Over lands, the cloud detection on remote sensing images is not an e
   pages={8-36},
   keywords={Machine learning;Remote sensing;Feature extraction;Hyperspectral imaging;Computer vision;Tutorials;Remote sensing;Climate change},
   doi={10.1109/MGRS.2017.2762307}}
+
+@ARTICLE{lecun1998,
+  author={Lecun, Y. and Bottou, L. and Bengio, Y. and Haffner, P.},
+  journal={Proceedings of the IEEE}, 
+  title={Gradient-based learning applied to document recognition}, 
+  year={1998},
+  volume={86},
+  number={11},
+  pages={2278-2324},
+  keywords={Neural networks;Pattern recognition;Machine learning;Optical character recognition software;Character recognition;Feature extraction;Multi-layer neural network;Optical computing;Hidden Markov models;Principal component analysis},
+  doi={10.1109/5.726791}}
+
+
+@misc{long2015,
+      title={Fully Convolutional Networks for Semantic Segmentation}, 
+      author={Jonathan Long and Evan Shelhamer and Trevor Darrell},
+      year={2015},
+      eprint={1411.4038},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1411.4038}, 
+}
+
+@article{luo2025,
+title = {A globally applicable deep learning model for Sentinel-2 cloud and shadow detection},
+journal = {Science of Remote Sensing},
+volume = {12},
+pages = {100278},
+year = {2025},
+issn = {2666-0172},
+doi = {https://doi.org/10.1016/j.srs.2025.100278},
+url = {https://www.sciencedirect.com/science/article/pii/S2666017225000847},
+author = {Dong Luo and Hankui K. Zhang and Hugo {De Lemos} and Junjie Li and David P. Roy},
+keywords = {Sentinel-2, Swin transformer, Classification, Cloud, Cloud shadow, Time series, Temporal smoothness index},
+abstract = {This study presents and evaluates a globally applicable cloud and shadow masking model for Sentinel-2 top-of-atmosphere (TOA) reflectance using a state-of-the-art transformer-based U-Net model (Swin-Unet) trained with nearly 20 thousand globally distributed 512 × 512 20 m pixel patches to classify each pixel as cloud, cloud shadow, or clear. The training data were compiled from publicly available annotation data, that were refined for obvious annotation errors and supplemented with additional annotations to enhance representation of underrepresented cloud and surface conditions. The trained Swin-Unet model was validated using the KappaSet and CloudSEN12+ testing datasets and compared with the Fmask, Sen2Cor scene classification layer (SCL), and a deep learning model CloudS2Mask. The Swin-Unet achieved the highest overall accuracy (91.32 %) and the highest F1-scores for cloud (0.909) and clear classes (0.935), despite a lower cloud shadow F1-score (0.691) than CloudS2Mask (0.743). The four models were also applied to 11,458 Sentinel-2 images acquired over a calendar year for 78 globally distributed 109 × 109 km tiles and the temporal smoothness index (TSI) of the time series ‘clear’ surface reflectance was derived. The Swin-Unet model yielded the smallest TSI value (most temporally consistent reflectance) for each selected Sentinel-2 band. Visual assessment confirmed the superior performance of the Swin-Unet model. The results highlight the potential of the Swin-Unet model for Sentinel-2 cloud and cloud shadow detection for images acquired anywhere and anytime. The training data and model are publicly available to enable users to apply them efficiently.}
+}
+
+
+@article{wright2025,
+title = {Training sensor-agnostic deep learning models for remote sensing: Achieving state-of-the-art cloud and cloud shadow identification with OmniCloudMask},
+journal = {Remote Sensing of Environment},
+volume = {322},
+pages = {114694},
+year = {2025},
+issn = {0034-4257},
+doi = {https://doi.org/10.1016/j.rse.2025.114694},
+url = {https://www.sciencedirect.com/science/article/pii/S0034425725000987},
+author = {Nicholas Wright and John M.A. Duncan and J. Nik Callow and Sally E. Thompson and Richard J. George},
+keywords = {Sensor-agnostic, Deep learning, Cloud, Shadow, Sentinel-2, Landsat, PlanetScope},
+abstract = {Deep learning models are widely used to extract features and insights from remotely sensed imagery. However, these models typically perform optimally when applied to the same sensor, resolution and imagery processing level as used during their training, and are rarely used or evaluated on out-of-domain data. This limitation results in duplication of efforts in collecting similar training datasets from different satellites to train sensor-specific models. Here, we introduce a range of techniques to train deep learning models that generalise across various sensors, resolutions, and processing levels. We applied this approach to train OmniCloudMask (OCM), a sensor-agnostic deep learning model that segments clouds and cloud shadow. OCM demonstrates robust state-of-the-art performance across various satellite platforms when classifying clear, cloud, and shadow classes, with balanced overall accuracy values across: Landsat (91.5 % clear, 91.5 % cloud, and 75.2 % shadow); Sentinel-2 (92.2 % clear, 91.2 % cloud, and 80.5 % shadow); and PlanetScope (96.9 % clear, 98.8 % cloud, and 97.4 % shadow). OCM achieves this accuracy while only being trained on a single Sentinel-2 dataset, employing spectral normalisation and mixed resolution training to address the spectral and spatial differences between satellite platforms. This approach allows the model to effectively handle imagery from different sensors within the 10 m to 50 m resolution range, as well as higher resolution imagery that has been resampled to 10 m. The OCM library is available as an open source Python package on PyPI.}
+}
+
+@misc{mohajerani2018,
+      title={Cloud Detection Algorithm for Remote Sensing Images Using Fully Convolutional Neural Networks}, 
+      author={Sorour Mohajerani and Thomas A. Krammer and Parvaneh Saeedi},
+      year={2018},
+      eprint={1810.05782},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1810.05782}, 
+}
+
+
+@Article{lopez2021,
+AUTHOR = {López-Puigdollers, Dan and Mateo-García, Gonzalo and Gómez-Chova, Luis},
+TITLE = {Benchmarking Deep Learning Models for Cloud Detection in Landsat-8 and Sentinel-2 Images},
+JOURNAL = {Remote Sensing},
+VOLUME = {13},
+YEAR = {2021},
+NUMBER = {5},
+ARTICLE-NUMBER = {992},
+URL = {https://www.mdpi.com/2072-4292/13/5/992},
+ISSN = {2072-4292},
+ABSTRACT = {The systematic monitoring of the Earth using optical satellites is limited by the presence of clouds. Accurately detecting these clouds is necessary to exploit satellite image archives in remote sensing applications. Despite many developments, cloud detection remains an unsolved problem with room for improvement, especially over bright surfaces and thin clouds. Recently, advances in cloud masking using deep learning have shown significant boosts in cloud detection accuracy. However, these works are validated in heterogeneous manners, and the comparison with operational threshold-based schemes is not consistent among many of them. In this work, we systematically compare deep learning models trained on Landsat-8 images on different Landsat-8 and Sentinel-2 publicly available datasets. Overall, we show that deep learning models exhibit a high detection accuracy when trained and tested on independent images from the same Landsat-8 dataset (intra-dataset validation), outperforming operational algorithms. However, the performance of deep learning models is similar to operational threshold-based ones when they are tested on different datasets of Landsat-8 images (inter-dataset validation) or datasets from a different sensor with similar radiometric characteristics such as Sentinel-2 (cross-sensor validation). The results suggest that (i) the development of cloud detection methods for new satellites can be based on deep learning models trained on data from similar sensors and (ii) there is a strong dependence of deep learning models on the dataset used for training and testing, which highlights the necessity of standardized datasets and procedures for benchmarking cloud detection models in the future.},
+DOI = {10.3390/rs13050992}
+}
+
+@misc{simonyan2015,
+      title={Very Deep Convolutional Networks for Large-Scale Image Recognition}, 
+      author={Karen Simonyan and Andrew Zisserman},
+      year={2015},
+      eprint={1409.1556},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1409.1556}, 
+}
+
+@misc{he2015,
+      title={Deep Residual Learning for Image Recognition}, 
+      author={Kaiming He and Xiangyu Zhang and Shaoqing Ren and Jian Sun},
+      year={2015},
+      eprint={1512.03385},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1512.03385}, 
+}
+
+
+@InProceedings{ronneberger2015,
+author="Ronneberger, Olaf
+and Fischer, Philipp
+and Brox, Thomas",
+editor="Navab, Nassir
+and Hornegger, Joachim
+and Wells, William M.
+and Frangi, Alejandro F.",
+title="U-Net: Convolutional Networks for Biomedical Image Segmentation",
+booktitle="Medical Image Computing and Computer-Assisted Intervention -- MICCAI 2015",
+year="2015",
+publisher="Springer International Publishing",
+address="Cham",
+pages="234--241",
+abstract="There is large consent that successful training of deep networks requires many thousand annotated training samples. In this paper, we present a network and training strategy that relies on the strong use of data augmentation to use the available annotated samples more efficiently. The architecture consists of a contracting path to capture context and a symmetric expanding path that enables precise localization. We show that such a network can be trained end-to-end from very few images and outperforms the prior best method (a sliding-window convolutional network) on the ISBI challenge for segmentation of neuronal structures in electron microscopic stacks. Using the same network trained on transmitted light microscopy images (phase contrast and DIC) we won the ISBI cell tracking challenge 2015 in these categories by a large margin. Moreover, the network is fast. Segmentation of a 512x512 image takes less than a second on a recent GPU. The full implementation (based on Caffe) and the trained networks are available at http://lmb.informatik.uni-freiburg.de/people/ronneber/u-net.",
+isbn="978-3-319-24574-4"
+}
+
+@misc{badrinarayanan2016,
+      title={SegNet: A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation}, 
+      author={Vijay Badrinarayanan and Alex Kendall and Roberto Cipolla},
+      year={2016},
+      eprint={1511.00561},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1511.00561}, 
+}
+
+@misc{chen2017,
+      title={Rethinking Atrous Convolution for Semantic Image Segmentation}, 
+      author={Liang-Chieh Chen and George Papandreou and Florian Schroff and Hartwig Adam},
+      year={2017},
+      eprint={1706.05587},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1706.05587}, 
+}
+
+
+@article{wright2024,
+title = {CloudS2Mask: A novel deep learning approach for improved cloud and cloud shadow masking in Sentinel-2 imagery},
+journal = {Remote Sensing of Environment},
+volume = {306},
+pages = {114122},
+year = {2024},
+issn = {0034-4257},
+doi = {https://doi.org/10.1016/j.rse.2024.114122},
+url = {https://www.sciencedirect.com/science/article/pii/S0034425724001330},
+author = {Nicholas Wright and John M.A. Duncan and J. Nik Callow and Sally E. Thompson and Richard J. George},
+keywords = {Cloud, Cloud shadow, Convolutional neural network, Deep learning, Mask, Sentinel-2},
+abstract = {The Sentinel-2 satellite constellation produces high-resolution multispectral data, covering the entire Earth's land surface every five days. However, the use of this data is significantly impacted by the presence of pixels affected by cloud and shadow. Precise and efficient cloud and cloud shadow masking methods are required for the automated use of this data. Here, we present CloudS2Mask, a new and open-source Python deep-learning library to detect cloud and cloud shadows in Sentinel-2 data accurately and efficiently. CloudS2Mask is trained on multiple large global datasets including CloudSEN12, KappaSet, Sentinel-2 Cloud Mask Catalogue, Sentinel-2 reference cloud masks generated by an active learning method and a custom CloudS2Mask dataset. Using techniques such as progressive resizing, hard fine-tuning, and transfer learning, CloudS2Mask outperforms published models when evaluated on both the CloudSEN12 and the PixBox datasets in terms of classification accuracy. Compared to the next best-published results, CloudS2Mask improves Balanced Overall Accuracy metrics on the CloudSEN12 dataset by 1.2% for cloud, 2.8% for cloud shadow and 1.1% for clear classification. CloudS2Mask provides a range of customisable options combined with novel pre-processing and post-processing approaches to meet task-specific needs, enabling mean scene processing speeds up to 44 times faster than current state-of-the-art methods. The application of novel techniques in CloudS2Mask, combined with its accuracy and processing speed, underscores its potential to streamline the automated cloud and cloud shadow detection of Sentinel-2 data.}
+}
+
+@misc{salehi2017,
+      title={Tversky loss function for image segmentation using 3D fully convolutional deep networks}, 
+      author={Seyed Sadegh Mohseni Salehi and Deniz Erdogmus and Ali Gholipour},
+      year={2017},
+      eprint={1706.05721},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1706.05721}, 
+}
+
+@misc{milletari2016,
+      title={V-Net: Fully Convolutional Neural Networks for Volumetric Medical Image Segmentation}, 
+      author={Fausto Milletari and Nassir Navab and Seyed-Ahmad Ahmadi},
+      year={2016},
+      eprint={1606.04797},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1606.04797}, 
+}
+
+
+@article{emadi2025,
+author = {Al-Emadi, Sara and Yang, Yin and Ofli, Ferda},
+year = {2025},
+month = {08},
+pages = {7672-7709},
+title = {Analysing Satellite Imagery Classification under Spatial Domain Shift across Geographic Regions},
+volume = {133},
+journal = {International Journal of Computer Vision},
+doi = {10.1007/s11263-025-02518-z}
+}
+
+@article{garcia2020,
+title = {Transferring deep learning models for cloud detection between Landsat-8 and Proba-V},
+journal = {ISPRS Journal of Photogrammetry and Remote Sensing},
+volume = {160},
+pages = {1-17},
+year = {2020},
+issn = {0924-2716},
+doi = {https://doi.org/10.1016/j.isprsjprs.2019.11.024},
+url = {https://www.sciencedirect.com/science/article/pii/S0924271619302801},
+author = {Gonzalo Mateo-García and Valero Laparra and Dan López-Puigdollers and Luis Gómez-Chova},
+keywords = {Transfer learning, Cloud masking, Convolutional neural networks, Deep learning, Multispectral sensors, Domain adaptation},
+abstract = {Accurate cloud detection algorithms are mandatory to analyze the large streams of data coming from the different optical Earth observation satellites. Deep learning (DL) based cloud detection schemes provide very accurate cloud detection models. However, training these models for a given sensor requires large datasets of manually labeled samples, which are very costly or even impossible to create when the satellite has not been launched yet. In this work, we present an approach that exploits manually labeled datasets from one satellite to train deep learning models for cloud detection that can be applied (or transferred) to other satellites. We take into account the physical properties of the acquired signals and propose a simple transfer learning approach using Landsat-8 and Proba-V sensors, whose images have different but similar spatial and spectral characteristics. Three types of experiments are conducted to demonstrate that transfer learning can work in both directions: (a) from Landsat-8 to Proba-V, where we show that models trained only with Landsat-8 data produce cloud masks 5 points more accurate than the current operational Proba-V cloud masking method, (b) from Proba-V to Landsat-8, where models that use only Proba-V data for training have an accuracy similar to the operational FMask in the publicly available Biome dataset (87.79–89.77% vs 88.48%), and (c) jointly from Proba-V and Landsat-8 to Proba-V, where we demonstrate that using jointly both data sources the accuracy increases 1–10 points when few Proba-V labeled images are available. These results highlight that, taking advantage of existing publicly available cloud masking labeled datasets, we can create accurate deep learning based cloud detection models for new satellites, but without the burden of collecting and labeling a large dataset of images.}
+}
+
+
+@Article{pang2023,
+AUTHOR = {Pang, Shulin and Sun, Lin and Tian, Yanan and Ma, Yutiao and Wei, Jing},
+TITLE = {Convolutional Neural Network-Driven Improvements in Global Cloud Detection for Landsat 8 and Transfer Learning on Sentinel-2 Imagery},
+JOURNAL = {Remote Sensing},
+VOLUME = {15},
+YEAR = {2023},
+NUMBER = {6},
+ARTICLE-NUMBER = {1706},
+URL = {https://www.mdpi.com/2072-4292/15/6/1706},
+ISSN = {2072-4292},
+ABSTRACT = {A stable and reliable cloud detection algorithm is an important step of optical satellite data preprocessing. Existing threshold methods are mostly based on classifying spectral features of isolated individual pixels and do not contain or incorporate the spatial information. This often leads to misclassifications of bright surfaces, such as human-made structures or snow/ice. Multi-temporal methods can alleviate this problem, but cloud-free images of the scene are difficult to obtain. To deal with this issue, we extended four deep-learning Convolutional Neural Network (CNN) models to improve the global cloud detection accuracy for Landsat imagery. The inputs are simplified as all discrete spectral channels from visible to short wave infrared wavelengths through radiometric calibration, and the United States Geological Survey (USGS) global Landsat 8 Biome cloud-cover assessment dataset is randomly divided for model training and validation independently. Experiments demonstrate that the cloud mask of the extended U-net model (i.e., UNmask) yields the best performance among all the models in estimating the cloud amounts (cloud amount difference, CAD = −0.35%) and capturing the cloud distributions (overall accuracy = 94.9%) for Landsat 8 imagery compared with the real validation masks; in particular, it runs fast and only takes about 41 ± 5.5 s for each scene. Our model can also actually detect broken and thin clouds over both dark and bright surfaces (e.g., urban and barren). Last, the UNmask model trained for Landsat 8 imagery is successfully applied in cloud detections for the Sentinel-2 imagery (overall accuracy = 90.1%) via transfer learning. These prove the great potential of our model in future applications such as remote sensing satellite data preprocessing.},
+DOI = {10.3390/rs15061706}
+}
+
+
+
+
+

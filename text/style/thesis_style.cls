@@ -165,6 +165,8 @@
 \RequirePackage{siunitx} % Required for \SI commands
 
 \RequirePackage{graphicx} % Required to include images
+\setlength{\fboxrule}{1.5pt}   % tloušťka čáry
+\setlength{\fboxsep}{0pt} 
 \graphicspath{{./img/}{./}} % Specifies where to look for included images
 
 \RequirePackage{booktabs} % Required for better table rules
