@@ -1,12 +1,15 @@
 \chapter{Theoretical Background} \label{chap:theoretical_background}
 
+
 \section{Cloud Detection}
 
 \subsection{Problem Definition}
 Since approximately two‑thirds of the Earth's surface is covered by clouds at any given time \cite{king2013}, cloud detection is an essential preprocessing step in the analysis of optical satellite imagery \cite{zhiwei2022}. It is typically formulated as a semantic segmentation problem, where each pixel in a satellite image is labeled as either cloud or cloud-free \cite{wang2024}. The presence of clouds prevents optical satellite imaging systems from obtaining useful observations by blocking the view of the Earth's surface. Accurate identification of cloudy pixels is, therefore, crucial in many types of remote sensing applications, including land cover monitoring, disaster response, and military surveillance \cite{wang2024, singh2025}.
 
+
 \subsection{Challenges}
 \label{chap:cloud_detection_challenges}
+
 There are several challenges that complicate precise cloud detection. First, clouds can exhibit spectral reflectance similar to bright surfaces such as snow, desert areas, or some urban regions, which may lead to misclassifications. In addition, there is a high variability in cloud types. According to \cite{singh2025}, clouds can be categorized based on their height above ground level or based on optical density. On the basis of height, clouds are typically sorted into low, medium, and high categories. Low clouds are found below approximately 2 km and are in most cases optically thick, often completely blocking the view of Earth's surface and producing strong shadows. Medium clouds are found between 2 km and 6 km and are slightly less dense than low clouds, partially limiting surface visibility. High clouds occur above 6 km, are mostly optically thin, and the surface under them remains visible, although often blurry \cite{beatens2019}. While cloud altitude provides a helpful way to categorize clouds, their optical density also plays an important role in order to classify clouds automatically \cite{wang2024}. Thick clouds have opacity above 50\% and obscure the surface and cast dark shadows. These shadows are an additional challenge in automated cloud detection, as their appearance is influenced by cloud shape, height, thickness, sun angle, and surface properties \cite{singh2025}. Cloud shadows can be mistaken for water bodies, shaded areas or other dark regions, making their accurate identification also essential \cite{hollstein2016}. Thin clouds, on the other hand, have opacity under 50\% and allow partial visibility of the surface \cite{singh2025}. Thin clouds can also cast shadows, although these are usually fainter and even more difficult to detect  \cite{zhiwei2022}. A~comparison of thick and thin clouds is shown in Fig.~\ref{fig:cloud_types}.
 
 \begin{figure}[H]
@@ -29,7 +32,6 @@ There are several challenges that complicate precise cloud detection. First, clo
 \end{figure}
 
 
-
 \section{Methods for Cloud Detection}
 
 Given the complexity and significance of the problem and the challenges described above, a wide range of cloud detection methods and algorithms have been proposed over the last decades. These methods continue to evolve in order to improve detection accuracy and further automate the process. Various classifications of these methods have been proposed in the literature, reflecting differences in input data, algorithmic approach, and level of automation. 
@@ -42,6 +44,7 @@ Considering the type of input data, cloud detection methods can be classified ac
 
 For the purpose of this thesis, the classification based on the algorithmic approach and level of automation is more relevant than the classification based on the type of input data or features. In the following sections, algorithm-based categories relevant in context of this work are described.
 
+
 \subsection{Threshold-Based Methods}
 
 Threshold-based algorithms represent one of the earliest and most widely used approaches for cloud detection. These algorithms perform cloud detection by applying predefined thresholds to one or more spectral bands in order to classify individual pixels \cite{zhiwei2022, singh2025}. These thresholds are typically determined based on characteristic cloud properties, such as high reflectance in visible bands or specific spectral behavior in selected wavelengths \cite{wang2024}. Due to their simplicity and low computational requirements, these methods have been widely used in many operational systems \cite{pesek2022}.
@@ -49,6 +52,7 @@ Threshold-based algorithms represent one of the earliest and most widely used ap
 However, a major limitation of many threshold-based approaches is their dependence on empirically defined parameters. Thresholds are defined for specific sensors, scenes, and atmospheric conditions and for this reason, the algorithms are often applicable only to specific sensor or sensors similar to the original one \cite{zhiwei2022}. Several algorithms have been developed for different satellite missions \cite{wang2024, pesek2022}, including the Automated Cloud Cover Assessment (ACCA) for Landsat imagery \cite{irish2000, irish2006}, as well as Sen2Cor for Sentinel-2 imagery \cite{knorn2017} and CloudMask for MODIS imagery \cite{ackerman1998}. To improve applicability, some methods have been extended to support multiple satellite platforms. For example, FMask was originally developed for Landsat \cite{zhu2012} and later adapted for Sentinel-2 \cite{zhu2015}. 
 
 Some algorithms, such as MACCS-ATCOR Joint Algorithm (MAJA), use threshold-based techniques in combination with temporal information to improve detection. The details of such multi-temporal approaches are discussed in section \ref{sec:temporal_methods}.
+
 
 \subsection{Temporal-Change-Based Methods}
 \label{sec:temporal_methods}
@@ -68,20 +72,8 @@ Even though traditional supervised machine learning methods, such as decision tr
 This limitation has led to the rapid development and adoption of deep learning approaches \cite{wang2024}. In particular, convolutional neural networks (CNNs) have proven to be efficient at capturing both spectral and spatial features from raw images \cite{pesek2022, zhu2017}. More recently, hybrid approaches combining CNNs with transformer-based architectures have also been proposed to further improve performance \cite{zhang2022, luo2025}. However, due to higher complexity of hybrid approaches, this work focuses on the usage of CNNs. A description of the CNN principle and an overview of CNN-based methods for cloud detection are provided in section \ref{sec:cnn}.
 
 
-
-
 \section{Convolutional Neural Networks}
 \label{sec:cnn} 
-
-% Convolutional neural networks (CNNs) are a class of deep learning networks specifically designed for processing data with grid-like topology, such as images \cite{goodfellow2016}. CNNs exploit the spatial structure of the input data, allowing neurons in each layer to be connected only to local regions rather than to all neurons in the previous layer. This connectivity reduces the number of parameters and enables the network to learn spatially localized patterns efficiently. CNNs can automatically learn hierarchical features from input images through three main types of layers: convolutional layers, pooling layers, and fully connected layers. 
-
-% Convolutional layers apply a fixed-size kernel that slides over the input, computing a weighted sum between the kernel's weights and the local neighborhood of each pixel \cite{goodfellow2016}. This operation, illustrated in Figure \ref{fig:convolution}, allows the network to extract low-level features such as edges in early layers and increasingly complex patterns in deeper layers.  
-
-% Since convolution typically reduces the dimensions of the output relative to the input, padding is often applied around the input data to maintain the spatial size of the feature maps. Pooling layers, on the other hand, reduce the spatial resolution while preserving important information, and fully connected layers (usually at the end of the network) combine the learned features to produce the final output. Together, these layers enable CNNs to model both local and global structures in the data effectively.
-
-
-% \section{Convolutional Neural Networks}
-% \label{sec:cnn}
 
 Convolutional neural networks (CNNs) are a class of deep learning networks specifically designed for processing data with grid-like topology, such as images \cite{goodfellow2016, lecun1998}. CNNs exploit the spatial structure of the input data, allowing neurons in each layer to connect only to local regions rather than to all neurons in the previous layer. This local connectivity reduces the number of parameters and enables the network to learn spatially localized patterns efficiently \cite{lecun1998}. CNNs can automatically learn hierarchical features from input images primarily through convolutional layers and pooling layers \cite{goodfellow2016}. 
 
@@ -216,12 +208,11 @@ In recent years, CNNs have proven highly effective for image detection and segme
 
 According to multiple studies \cite{zhiwei2022, wang2024, pesek2022, lopez2021, pang2023}, commonly used architectures for cloud detection include segmentation models such as U-Net \cite{ronneberger2015}, SegNet \cite{badrinarayanan2016}, and DeepLabV3 \cite{chen2017}. In addition, backbone architectures such as VGG \cite{simonyan2015} and ResNet \cite{he2015} are often used as encoders, where they serve as feature extractors. Among the various approaches, U-Net \cite{ronneberger2015} has become particularly popular, with its numerous modifications consistently achieving state-of-the-art performance in remote sensing and cloud detection tasks.
 
-\textbf{\color{red} \small Jiné architektury než U-Net bych popsal jen pokud by byly také porovnávány -> takže spíš ne}
-
 \subsubsection{U-Net}
 
-U-Net, introduced by Ronneberger et al. \cite{ronneberger2015} is a fully convolutional neural network originally designed for biomedical image segmentation. The main idea of U-Net is based on an encoder–decoder structure with a symmetric U-shaped design (see Figure \ref{fig:unet}). Due to its effectiveness and simplicity, this architecture has become one of the most widely adopted approaches for semantic segmentation in computer vision.
+U-Net, introduced by Ronneberger et al. \cite{ronneberger2015} is a fully convolutional neural network originally designed for biomedical image segmentation. The main idea of U-Net is based on an encoder-decoder structure with a symmetric U-shaped design (see Figure \ref{fig:unet}). Due to its effectiveness and simplicity, this architecture has become one of the most widely adopted approaches for semantic segmentation in computer vision.
 
+The encoder, also called the contracting path in the original paper, uses a combination of convolutional layers, ReLU activation functions, and pooling layers, as described in Section \ref{sec:cnn}, to extract relevant features from the input image and reduce its spatial resolution. The decoder, also called expansive path, gradually restores the spatial resolution using upsampling operations and convolutional layers. A key part of U-Net is the use of skip connections. These connections transfer feature maps directly from the encoder to the corresponding decoder layers. This helps to maintain spatial detail, which is particularly important in segmentation tasks where accurate boundary estimation is required, such as cloud detection.
 
 \begin{figure}[H]
     \centering
@@ -231,8 +222,6 @@ U-Net, introduced by Ronneberger et al. \cite{ronneberger2015} is a fully convol
     \caption*{Source: \cite{ronneberger2015}}
     \label{fig:unet}
 \end{figure}
-
-The encoder, also called the contracting path in the original paper, uses a combination of convolutional layers, ReLU activation functions, and pooling layers, as described in Section \ref{sec:cnn}, to extract relevant features from the input image and reduce its spatial resolution. The decoder, also called expansive path, gradually restores the spatial resolution using upsampling operations and convolutional layers. A key part of U-Net is the use of skip connections. These connections transfer feature maps directly from the encoder to the corresponding decoder layers. This helps to maintain spatial detail, which is particularly important in segmentation tasks where accurate boundary estimation is required, such as cloud detection.
 
 \subsection{Limitations of CNNs in Cloud Detection}
 
@@ -247,9 +236,309 @@ To address these challenges, two main approaches are commonly used in remote sen
 The second approach is based on transfer learning, which aims to adapt a model trained on a source domain to a different but related target domain, and is particularly effective when source and target domains differ in their data distributions \cite{goodfellow2016}. An example was presented by Mateo-García et al. \cite{garcia2020}, who investigated transferring cloud detection model based on U-Net architecture between Landsat 8 and Proba-V sensors. Their experiments addressed three key questions related to cross-sensor transfer: adaptation from Landsat-8 to Proba-V, transfer from lower-resolution Proba-V to higher-resolution Landsat-8, and the effect of combining source and target domain data on model accuracy. The results confirmed that transfer learning can be effective in both directions and that incorporating limited target-domain data further improves performance, reducing the need for large manually labeled datasets. In the following chapter, the fundamental principles and common techniques of transfer learning are described in more detail.
 
 \section{Transfer Learning}
+As introduced in the previous chapter, transfer learning leverages knowledge acquired from a source domain to improve learning in a different but related target domain \cite{goodfellow2016}.
 
-\subsection{Concept and Motivation}
+The most widely adopted formal definition was introduced by Pan and Yang \cite{pan2010}. Given a source domain $\mathcal{D}_S$ with learning task $\mathcal{T}_S$ and a target domain $\mathcal{D}_T$ with learning task $\mathcal{T}_T$, transfer learning aims to help improve the learning of the target predictive function $f_T(\cdot)$ in $\mathcal{D}_T$ using the knowledge in $\mathcal{D}_S$ and $\mathcal{T}_S$, where $\mathcal{D}_S \neq \mathcal{D}_T$, or $\mathcal{T}_S \neq \mathcal{T}_T$. 
 
-\subsection{Types of Transfer Learning}
+A domain is defined as a pair $\mathcal{D} =\{\mathcal{X}, P(X)\}$, consisting of a feature space $\mathcal{X}$ and a marginal probability distribution $P(X)$. The condition $\mathcal{D}_S \neq \mathcal{D}_T$ implies that either the feature spaces differ ($\mathcal{X}_S \neq \mathcal{X}_T$) or the marginal distributions differ ($P_S(X) \neq P_T(X)$). In the context of remote sensing and cloud detection, this corresponds to the situation where two sensors differ in their spectral bands or spatial resolution ($\mathcal{X}_S \neq \mathcal{X}_T$), or where the same spectral features follow different radiometric distributions across sensors ($P_S(X) \neq P_T(X)$), as is often the case between different satellite missions.
+
+
+A task is defined as a pair $\mathcal{T} = \{\mathcal{Y}, P(Y|X)\}$, consisting of a label space $\mathcal{Y}$ and a conditional distribution $P(Y|X)$. The condition $\mathcal{T}_S \neq \mathcal{T}_T$ implies that either the label spaces differ ($\mathcal{Y}_S \neq \mathcal{Y}_T$) or the conditional distributions differ ($P(Y_S|X_S)\neq P(Y_T|X_T)$). In cloud detection, the former arises when the set of predicted classes differs between sensors, for instance, when a cloud-shadow class is present in the source domain, but absent in the target domain. The latter occurs when the relationship between spectral observations and land cover types changes due to geographic or environmental factors. For example, a specific high-reflectance signature may represent a cloud in the source domain but correspond to snow or ice in a high-altitude target domain.
+
+
+Pan and Yang \cite{pan2010} categorize transfer learning into three settings based on the relationship between source and target domains and tasks, summarized in Figure~\ref{fig:tl_settings}. In transductive transfer learning, the source and target tasks are the same ($\mathcal{T}_S = \mathcal{T}_T$) while the domains differ ($\mathcal{D}_S \neq \mathcal{D}_T$), and no labeled data in the target domain are required. A representative technique is domain adaptation, which aims to reduce the discrepancy between source and target domains so that a model trained on the source can be applied to the target without any labeled target data \cite{farahani2020}. In inductive transfer learning, the target task differs from the source task ($\mathcal{T}_S \neq \mathcal{T}_T$), and labeled data in the target domain are available to help with adaptation \cite{pan2010}. When labeled source data are also available, this setting is commonly realized either by joint training, which combines source and target data into a single training set, or by fine-tuning, which uses the source-domain model as initialization for subsequent training on target data \cite{garcia2020}. In unsupervised transfer learning, no labeled data are available in either domain and the focus is on unsupervised objectives such as clustering or dimensionality reduction \cite{pan2010}.
+
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    every node/.style={scale=0.95},
+    main/.style={
+        draw,
+        rounded corners=3pt,
+        thick,
+        minimum width=36mm,
+        minimum height=10mm,
+        align=center,
+        font=\small\bfseries
+    },
+    sub/.style={
+        draw,
+        rounded corners=3pt,
+        minimum width=34mm,
+        minimum height=9mm,
+        align=center,
+        font=\footnotesize,
+        fill=white
+    },
+    subhl/.style={
+        draw,
+        rounded corners=3pt,
+        thick,
+        minimum width=34mm,
+        minimum height=9mm,
+        align=center,
+        font=\footnotesize\bfseries,
+    },
+    cond/.style={
+        draw,
+        dashed,
+        rounded corners=3pt,
+        minimum width=34mm,
+        minimum height=9mm,
+        align=center,
+        font=\scriptsize,
+        fill=white
+    },
+    arr/.style={-{Stealth[length=3mm]}, thick}
+]
+
+% ===================== ROOT =====================
+\node[main, fill=guiorange!30] (tl) at (0,0) {Transfer Learning};
+
+% ===================== CONDITIONS =====================
+\node[cond] (c1) at (-6.8,-1.8)
+{$\mathcal{T}_S = \mathcal{T}_T$\\no labeled target data};
+
+\node[cond] (c2) at (0,-1.8)
+{$\mathcal{T}_S \neq \mathcal{T}_T$\\labeled target data};
+
+\node[cond] (c3) at (6.8,-1.8)
+{$\mathcal{T}_S \neq \mathcal{T}_T$\\no labeled data};
+
+% ===================== MAIN TYPES =====================
+\node[main, fill=guigreen!30] (tra) at (-6.8,-4.2)
+{Transductive\\Transfer Learning};
+
+\node[main, fill=guiblue!30] (ind) at (0,-4.2)
+{Inductive\\Transfer Learning};
+
+\node[main] (uns) at (6.8,-4.2)
+{Unsupervised\\Transfer Learning};
+
+% ===================== STRUCTURE ARROWS =====================
+% TL -> conditions
+\draw[arr] (tl.south) -- ++(0,-0.35) -| (c1.north);
+\draw[arr] (tl.south) -- (c2.north);
+\draw[arr] (tl.south) -- ++(0,-0.35) -| (c3.north);
+
+% conditions -> types
+\draw[arr] (c1.south) -- (tra.north);
+\draw[arr] (c2.south) -- (ind.north);
+\draw[arr] (c3.south) -- (uns.north);
+
+% ===================== METHODS =====================
+\node[subhl, fill=guigreen!30] (domadapt) at (-6.8,-6.9)
+{Domain\\Adaptation};
+
+\node[subhl, fill=guiblue!30] (finetune) at (-2.2,-6.9)
+{Fine-tuning};
+
+\node[sub] (joint) at (2.2,-6.9)
+{Joint Training};
+
+\node[sub] (clustering) at (6.8,-6.9)
+{Clustering /\\Dimensionality Reduction};
+
+% ===================== METHOD CONNECTIONS =====================
+
+% Transductive
+\draw[arr, dashed, guigreen]
+(tra.south) -- (domadapt.north);
+
+% Inductive (clean split, no overlap)
+\draw[arr, dashed]
+(ind.south) -- ++(0,-0.4) -| (joint.north)
+node[pos=0.25, right, font=\scriptsize, draw=none];
+\draw[arr, dashed, guiblue]
+(ind.south) -- ++(0,-0.4) -| (finetune.north)
+node[pos=0.25, left, font=\scriptsize, draw=none];
+
+
+% Unsupervised
+\draw[arr, dashed]
+(uns.south) -- (clustering.north);
+
+\end{tikzpicture}%
+}
+\caption{Overview of transfer learning settings and selected related techniques.}
+\label{fig:tl_settings}
+\end{figure}
+
+
+In remote sensing, cross-sensor adaptation without any target labels corresponds to the transductive setting, while the availability of labeled target data shifts the problem to the inductive setting. Mateo-García et al. \cite{garcia2020} investigated both settings in the context of cloud detection, transferring a U-Net-based model between Landsat-8 and Proba-V. In the transductive experiments, models were trained on one sensor and evaluated on the other without any target-domain labels. In the inductive experiments, they compared two strategies: joint training, which combined labeled data from both sensors into a single training set, and fine-tuning, which initialized the model with source-domain weights and continued training on target-domain data.
+
+Fine-tuning can be applied either to the whole network or only to selected parts. Yosinski et al.~\cite{yosinski2014} experimentally showed that lower layers of deep neural networks usually learn more general features that can be transferred across tasks and domains, while
+deeper layers are more specialized to the original task. Therefore, it is often suggested to freeze earlier layers and adapt only the later layers to the target domain. This is especially useful when the target dataset is small compared to the number of trainable parameters, as updating fewer weights can help reduce overfitting.
+
+In encoder-decoder architectures such as U-Net, this often corresponds to using pretrained weights for the encoder while fine-tuning the decoder and the final output layers. If sufficient target-domain data are available, the whole network can also be fine-tuned, typically with a lower learning rate.
+
+When the target dataset uses a different set of classes than the source dataset, the final classification layer usually needs to be replaced or reinitialized so that it matches the target labels, while the remaining network parameters can still be transferred.
+
+In this thesis, transfer learning is studied in a cross-sensor remote sensing setting, where models trained on one satellite dataset are adapted to a different target dataset acquired from another sensor. Differences in spatial resolution, spectral configuration, and radiometric properties introduce a domain shift between the datasets.
 
 \section{Evaluation Metrics}
+\label{sec:evaluation_metrics}
+
+In remote sensing, evaluation metrics are used to quantify the performance of classification and segmentation models and to allow comparison between different methods. Visual inspection is subjective and not suitable for large-scale evaluation, so quantitative metrics are used to measure the performance of the method used.
+
+Evaluation is typically based on the confusion matrix \cite{powers2020}, which provides an overview of the relationship between predicted and reference (ground truth) labels at pixel level. The confusion matrix aggregates model predictions over all evaluated pixels and captures how individual classes are confused with each other. Since the binary case is merely a simplification of the multiclass formulation, the multiclass case is explained here. Each pixel is assigned to one of the classes, such as cloud, no-cloud, or cloud shadow. An example of the confusion matrix is shown in Figure~\ref{fig:confusion_matrix_multi}.
+
+In the multiclass setting, metrics are commonly computed for each class using a one-vs-rest interpretation. For a selected class, all remaining classes are treated as the negative class, which allows the computation of true positives (TP), false positives (FP), false negatives (FN), and true negatives (TN). The highlighted region in Figure~\ref{fig:confusion_matrix_multi} illustrates this one-vs-rest formulation for the cloud class, where all remaining classes (no-cloud and cloud shadow) are treated as the negative class.
+
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[every node/.style={scale=0.95}]
+
+\def\w{3.0cm}
+\def\h{1.7cm}
+\def\gap{3.4}
+\def\vgap{2.0}
+
+% =========================
+% MATRIX CELLS
+% =========================
+
+% Row 0
+\node[minimum width=\w, minimum height=\h, draw, thick, fill=guigreen!35]
+    (c00) at (0,0) {\textbf{TP}};
+\node[minimum width=\w, minimum height=\h, draw, thick, fill=guired!25]
+    (c01) at (\gap,0) {\textbf{FN}};
+\node[minimum width=\w, minimum height=\h, draw, thick, fill=guired!25]
+    (c02) at (2*\gap,0) {\textbf{FN}};
+
+% Row 1
+\node[minimum width=\w, minimum height=\h, draw, thick, fill=guired!25]
+    (c10) at (0,-\vgap) {\textbf{FP}};
+\node[minimum width=\w, minimum height=\h, draw, thick, fill=guigray!20]
+    (c11) at (\gap,-\vgap) {\textbf{TN}};
+\node[minimum width=\w, minimum height=\h, draw, thick, fill=guigray!20]
+    (c12) at (2*\gap,-\vgap) {\textbf{TN}};
+
+% Row 2
+\node[minimum width=\w, minimum height=\h, draw, thick, fill=guired!25]
+    (c20) at (0,-2*\vgap) {\textbf{FP}};
+\node[minimum width=\w, minimum height=\h, draw, thick, fill=guigray!20]
+    (c21) at (\gap,-2*\vgap) {\textbf{TN}};
+\node[minimum width=\w, minimum height=\h, draw, thick, fill=guigray!20]
+    (c22) at (2*\gap,-2*\vgap) {\textbf{TN}};
+
+% =========================
+% HIGHLIGHT (Cloud class)
+% =========================
+
+\draw[guiblue, very thick, rounded corners=3pt]
+    (c00.north west) rectangle (c02.south east);
+
+\draw[guiblue, very thick, rounded corners=3pt]
+    (c00.north west) rectangle (c20.south east);
+
+% =========================
+% HEADERS
+% =========================
+
+\node[font=\small\bfseries] at (\gap, 1.6)
+{Predicted Label};
+
+\node[font=\small] at (0, 1.0) {Cloud};
+\node[font=\small] at (\gap, 1.0) {No-cloud};
+\node[font=\small] at (2*\gap, 1.0) {Shadow};
+
+\node[font=\small\bfseries, rotate=90] at (-2.8,-\vgap)
+{Reference Label};
+
+\node[font=\small, rotate=90] at (-1.9, 0) {Cloud};
+\node[font=\small, rotate=90] at (-1.9,-\vgap) {No-cloud};
+\node[font=\small, rotate=90] at (-1.9,-2*\vgap) {Shadow};
+
+% =========================
+% FOOTNOTE
+% =========================
+
+\node[font=\scriptsize\itshape, text=guiblue!80!black]
+    at (\gap,-5.0)
+    {Highlighted region: Cloud class (one-vs-rest interpretation)};
+
+\end{tikzpicture}
+\caption{Multi-class confusion matrix.}
+\label{fig:confusion_matrix_multi}
+\end{figure}
+
+From the confusion matrix, a range of commonly used evaluation metrics can be derived to quantify model performance \cite{powers2020}, and the most commonly used of these metrics are described below.
+
+\textbf{Precision}, also known as user's accuracy \cite{wright2024}, expresses how reliable the predictions of a given class are. It is defined as the ratio between correctly predicted samples of the class and all samples predicted as that class:
+\begin{equation}
+\mathrm{Precision} = \frac{TP}{TP + FP}
+\end{equation}
+\textbf{Recall}, also referred to as sensitivity or producer's accuracy in remote sensing literature \cite{wright2024}, measures the ability of the model to correctly identify all pixels belonging to the given class:
+\begin{equation}
+\mathrm{Recall} = \frac{TP}{TP + FN}
+\end{equation}
+
+\newpage
+
+\textbf{Overall Accuracy (OA)} expresses the proportion of correctly classified pixels among all evaluated pixels. In the multiclass case, it is computed as the sum of correctly classified samples on the main diagonal of the confusion matrix divided by the total number of samples:
+\begin{equation}
+\mathrm{OA} = \frac{\sum_i CM_{ii}}{\sum_i \sum_j CM_{ij}}
+\end{equation}
+where $CM_{ij}$ denotes the element of the confusion matrix at row $i$ and column $j$. 
+
+Although OA is intuitive and easy to interpret, it can be misleading in the presence of class imbalance, where high values may be achieved by favoring dominant classes such as no-cloud pixels.
+
+\textbf{F1-score} addresses this limitation by combining precision and recall into a single metric using their harmonic mean, giving equal weight to false positives and false negatives. It is therefore particularly useful when working with imbalanced datasets:
+\begin{equation}
+F_1 = \frac{2 \cdot \mathrm{Precision} \cdot \mathrm{Recall}}{\mathrm{Precision} + \mathrm{Recall}}
+\end{equation}
+\textbf{Intersection over Union (IoU)}, also known as the Jaccard index, measures the overlap between predicted and reference regions for a given class:
+\begin{equation}
+\mathrm{IoU} = \frac{TP}{TP + FP + FN}
+\end{equation}
+
+Unlike the F1-score, which represents a harmonic mean of precision and recall, IoU directly measures the overlap between predicted and reference regions, providing a more intuitive geometric interpretation in semantic segmentation tasks.
+
+
+For multiclass segmentation, the IoU is often averaged across all classes and is called the \textbf{mean Intersection over Union (mIoU)}:
+\begin{equation}
+\mathrm{mIoU} = \frac{1}{C}\sum_{c=1}^{C}\mathrm{IoU}_c
+\end{equation}
+where $C$ denotes the number of classes.
+
+By averaging over all classes, mIoU gives equal importance to minority classes, such as cloud shadow.
+
+In this work, mIoU is used as the primary evaluation metric, as it is well suited for imbalanced datasets. In addition, per-class IoU and per-class F1-score are reported to provide insight into model performance across individual classes.
+
+\textbf{\color{blue} Možná bude reportováno více metrik}
+
+\textbf{\color{red} Dotaz: musím zde citovat běžné metriky?}
+
+
+\section{Loss Functions}
+\label{sec:loss_functions}
+
+While evaluation metrics are used to assess model performance during testing, the training process is guided by a loss function. In semantic segmentation, the loss is computed at pixel level by comparing predicted classes probabilities with reference labels \cite{goodfellow2016}.
+
+The standard choice for multiclass segmentation is \textbf{categorical cross-entropy loss}, which penalizes incorrect class probabilities and encourages the model to assign a high probability to the correct class \cite{goodfellow2016}:
+
+\begin{equation}
+\mathcal{L}_{CE} = - \sum_{c=1}^{C} y_c \log(\hat{y}_c)
+\end{equation}
+
+where $y_c$ is the ground truth label for class $c$ and $\hat{y}_c$ is the predicted probability of that class.
+
+However, cloud detection datasets are typically highly imbalanced, as the no-cloud class usually dominates. In such cases, standard cross-entropy may lead to biased predictions, and overlap-based loss functions are often preferred \cite{milletari2016}.
+
+\textbf{Dice loss} is derived from the Dice coefficient, which is equivalent to the F1-score, and directly optimizes the overlap between predicted and reference masks \cite{milletari2016}.
+
+\begin{equation}
+\mathcal{L}_{Dice} = 1 - \frac{2\cdot TP}{2\cdot TP + FP + FN}
+\end{equation}
+
+\textbf{Tversky loss} extends Dice loss by introducing separate weights for false positives and false negatives, allowing better control over the trade-off between precision and recall \cite{salehi2017}:
+
+\begin{equation}
+\mathcal{L}_{Tversky} = 1 - \frac{TP}{TP + \alpha \cdot FP + \beta \cdot FN}
+\end{equation}
+
+where $\alpha$ and $\beta$ control the penalty assigned to false positives and false negatives. 
