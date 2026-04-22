@@ -21,6 +21,7 @@ def generate_dataset(dataset_folder, output_folder, augment=True, is_test=False,
     )
 
     if dataset_folder == output_folder:
+        print("generate_dataset.py: Dataset generated")
         return
 
     output_folder.mkdir(parents=True, exist_ok=True)
