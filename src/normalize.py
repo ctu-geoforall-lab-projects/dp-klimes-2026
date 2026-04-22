@@ -1,4 +1,3 @@
-# src/normalize.py
 import json
 import argparse
 import shutil
