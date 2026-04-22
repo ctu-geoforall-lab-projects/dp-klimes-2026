@@ -75,7 +75,7 @@ This limitation has led to the rapid development and adoption of deep learning a
 \section{Convolutional Neural Networks}
 \label{sec:cnn} 
 
-Convolutional neural networks (CNNs) are a class of deep learning networks specifically designed for processing data with grid-like topology, such as images \cite{goodfellow2016, lecun1998}. CNNs exploit the spatial structure of the input data, allowing neurons in each layer to connect only to local regions rather than to all neurons in the previous layer. This local connectivity reduces the number of parameters and enables the network to learn spatially localized patterns efficiently \cite{lecun1998}. CNNs can automatically learn hierarchical features from input images primarily through convolutional layers and pooling layers \cite{goodfellow2016}. 
+Convolutional neural networks (CNNs) are a class of deep learning networks specifically designed for processing data with grid-like topology, such as images~\cite{goodfellow2016, lecun1998}. CNNs exploit the spatial structure of the input data, allowing neurons in each layer to connect only to local regions rather than to all neurons in the previous layer. This local connectivity reduces the number of parameters and enables the network to learn spatially localized patterns efficiently \cite{lecun1998}. CNNs can automatically learn hierarchical features from input images primarily through convolutional layers and pooling layers \cite{goodfellow2016}. 
 
 Convolutional layers apply a fixed-size kernel that slides over the input, computing a weighted sum between the kernel's weights and the local neighborhood of each pixel \cite{goodfellow2016}. The principle of convolution is illustrated in Figure \ref{fig:convolution}. Since convolution typically reduces the dimensions of the output relative to the input, padding is often applied around the input data to maintain the spatial size of the feature maps \cite{goodfellow2016}. In remote sensing, convolution is typically performed over multiple spectral bands. For multispectral data, the kernels are three-dimensional tensors, where the depth of the kernel is equal to the number of spectral bands \cite{zhu2017}. 
  
@@ -295,7 +295,7 @@ Pan and Yang \cite{pan2010} categorize transfer learning into three settings bas
 ]
 
 % ===================== ROOT =====================
-\node[main, fill=guiorange!30] (tl) at (0,0) {Transfer Learning};
+\node[main, fill=guired!30] (tl) at (0,0) {Transfer Learning};
 
 % ===================== CONDITIONS =====================
 \node[cond] (c1) at (-6.8,-1.8)
@@ -383,9 +383,9 @@ In this thesis, transfer learning is studied in a cross-sensor remote sensing se
 
 In remote sensing, evaluation metrics are used to quantify the performance of classification and segmentation models and to allow comparison between different methods. Visual inspection is subjective and not suitable for large-scale evaluation, so quantitative metrics are used to measure the performance of the method used.
 
-Evaluation is typically based on the confusion matrix \cite{powers2020}, which provides an overview of the relationship between predicted and reference (ground truth) labels at pixel level. The confusion matrix aggregates model predictions over all evaluated pixels and captures how individual classes are confused with each other. Since the binary case is merely a simplification of the multiclass formulation, the multiclass case is explained here. Each pixel is assigned to one of the classes, such as cloud, no-cloud, or cloud shadow. An example of the confusion matrix is shown in Figure~\ref{fig:confusion_matrix_multi}.
+Evaluation is typically based on the confusion matrix \cite{powers2020}, which provides an overview of the relationship between predicted and reference (ground truth) labels at pixel level. The confusion matrix aggregates model predictions over all evaluated pixels and captures how individual classes are confused with each other. Since the binary case is merely a simplification of the multiclass formulation, the multiclass case is explained here. Each pixel is assigned to one of the classes, such as cloud, clear, or cloud shadow. An example of the confusion matrix is shown in Figure~\ref{fig:confusion_matrix_multi}.
 
-In the multiclass setting, metrics are commonly computed for each class using a one-vs-rest interpretation. For a selected class, all remaining classes are treated as the negative class, which allows the computation of true positives (TP), false positives (FP), false negatives (FN), and true negatives (TN). The highlighted region in Figure~\ref{fig:confusion_matrix_multi} illustrates this one-vs-rest formulation for the cloud class, where all remaining classes (no-cloud and cloud shadow) are treated as the negative class.
+In the multiclass setting, metrics are commonly computed for each class using a one-vs-rest interpretation. For a selected class, all remaining classes are treated as the negative class, which allows the computation of true positives (TP), false positives (FP), false negatives (FN), and true negatives (TN). The highlighted region in Figure~\ref{fig:confusion_matrix_multi} illustrates this one-vs-rest formulation for the cloud class, where all remaining classes (clear and cloud shadow) are treated as the negative class.
 
 
 \begin{figure}[H]
@@ -443,14 +443,14 @@ In the multiclass setting, metrics are commonly computed for each class using a 
 {Predicted Label};
 
 \node[font=\small] at (0, 1.0) {Cloud};
-\node[font=\small] at (\gap, 1.0) {No-cloud};
+\node[font=\small] at (\gap, 1.0) {Clear};
 \node[font=\small] at (2*\gap, 1.0) {Shadow};
 
 \node[font=\small\bfseries, rotate=90] at (-2.8,-\vgap)
 {Reference Label};
 
 \node[font=\small, rotate=90] at (-1.9, 0) {Cloud};
-\node[font=\small, rotate=90] at (-1.9,-\vgap) {No-cloud};
+\node[font=\small, rotate=90] at (-1.9,-\vgap) {Clear};
 \node[font=\small, rotate=90] at (-1.9,-2*\vgap) {Shadow};
 
 % =========================
@@ -477,26 +477,24 @@ From the confusion matrix, a range of commonly used evaluation metrics can be de
 \mathrm{Recall} = \frac{TP}{TP + FN}
 \end{equation}
 
-\newpage
-
 \textbf{Overall Accuracy (OA)} expresses the proportion of correctly classified pixels among all evaluated pixels. In the multiclass case, it is computed as the sum of correctly classified samples on the main diagonal of the confusion matrix divided by the total number of samples:
 \begin{equation}
 \mathrm{OA} = \frac{\sum_i CM_{ii}}{\sum_i \sum_j CM_{ij}}
 \end{equation}
 where $CM_{ij}$ denotes the element of the confusion matrix at row $i$ and column $j$. 
 
-Although OA is intuitive and easy to interpret, it can be misleading in the presence of class imbalance, where high values may be achieved by favoring dominant classes such as no-cloud pixels.
+Although OA is intuitive and easy to interpret, it can be misleading in the presence of class imbalance, where high values may be achieved by favoring dominant classes such as clear pixels.
 
 \textbf{F1-score} addresses this limitation by combining precision and recall into a single metric using their harmonic mean, giving equal weight to false positives and false negatives. It is therefore particularly useful when working with imbalanced datasets:
 \begin{equation}
-F_1 = \frac{2 \cdot \mathrm{Precision} \cdot \mathrm{Recall}}{\mathrm{Precision} + \mathrm{Recall}}
+F_1 = \frac{2 \cdot \mathrm{Precision} \cdot \mathrm{Recall}}{\mathrm{Precision} + \mathrm{Recall}} = \frac{2 \cdot TP}{2 \cdot TP + FP + FN}
 \end{equation}
 \textbf{Intersection over Union (IoU)}, also known as the Jaccard index, measures the overlap between predicted and reference regions for a given class:
 \begin{equation}
 \mathrm{IoU} = \frac{TP}{TP + FP + FN}
 \end{equation}
 
-Unlike the F1-score, which represents a harmonic mean of precision and recall, IoU directly measures the overlap between predicted and reference regions, providing a more intuitive geometric interpretation in semantic segmentation tasks.
+Unlike the F1-score, which represents a harmonic mean of precision and recall, IoU directly measures the overlap between predicted and reference regions.
 
 
 For multiclass segmentation, the IoU is often averaged across all classes and is called the \textbf{mean Intersection over Union (mIoU)}:
@@ -510,8 +508,6 @@ By averaging over all classes, mIoU gives equal importance to minority classes, 
 In this work, mIoU is used as the primary evaluation metric, as it is well suited for imbalanced datasets. In addition, per-class IoU and per-class F1-score are reported to provide insight into model performance across individual classes.
 
 \textbf{\color{blue} Možná bude reportováno více metrik}
-
-\textbf{\color{red} Dotaz: musím zde citovat běžné metriky?}
 
 
 \section{Loss Functions}
@@ -527,9 +523,9 @@ The standard choice for multiclass segmentation is \textbf{categorical cross-ent
 
 where $y_c$ is the ground truth label for class $c$ and $\hat{y}_c$ is the predicted probability of that class.
 
-However, cloud detection datasets are typically highly imbalanced, as the no-cloud class usually dominates. In such cases, standard cross-entropy may lead to biased predictions, and overlap-based loss functions are often preferred \cite{milletari2016}.
+However, cloud detection datasets are typically highly imbalanced, as the clear class usually dominates. In such cases, standard cross-entropy may lead to biased predictions, and overlap-based loss functions are often preferred \cite{milletari2016}.
 
-\textbf{Dice loss} is derived from the Dice coefficient, which is equivalent to the F1-score, and directly optimizes the overlap between predicted and reference masks \cite{milletari2016}.
+\textbf{Dice loss} is derived from the Dice similarity coefficient, which is equivalent to the F1-score and directly optimizes the overlap between predicted and reference masks \cite{milletari2016}.
 
 \begin{equation}
 \mathcal{L}_{Dice} = 1 - \frac{2\cdot TP}{2\cdot TP + FP + FN}
