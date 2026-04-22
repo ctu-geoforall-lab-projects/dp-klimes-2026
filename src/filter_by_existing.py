@@ -5,14 +5,13 @@ from pathlib import Path
 def filter_by_existing(source_dir, reference_dir, output_dir):
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    reference_names = {f.stem for f in reference_dir.glob("*.tif")}
+    reference_names = {f.stem for f in reference_dir.rglob("*.tif")}
 
     moved = 0
-    for tif in source_dir.glob("*.tif"):
+    for tif in source_dir.rglob("*.tif"):
         if tif.stem in reference_names:
             tif.rename(output_dir / tif.name)
             moved += 1
-
     print(f"Moved: {moved} files")
 
 
