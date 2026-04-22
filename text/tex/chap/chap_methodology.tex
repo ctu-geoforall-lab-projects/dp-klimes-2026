@@ -2,8 +2,16 @@
 
 
 % na transfer shadow class bude potřeba partial freezing - freeze jedné výstupní classy - asi se to nazývá Constrained Fine-tuning?
-The goal of this work
 
+The objective of this thesis is to investigate the applicability of transfer learning techniques for semantic segmentation of clouds in multispectral satellite imagery under cross-sensor conditions. The study focuses on transferring knowledge from Sentinel-2 imagery to the VEN$\mu$S imagery, which differs in spatial resolution, spectral configuration, and radiometric properties.
+
+A secondary objective is to evaluate whether information related to the cloud-shadow class, learned from Sentinel-2 data, can be preserved during adaptation to the target domain, despite the absence of cloud-shadow annotations in the VEN$\mu$S dataset.
+
+Several experimental scenarios are considered, including direct application of a source-trained model to target data, input-level radiometric normalization, and fine-tuning-based strategies.
+
+All experiments are based on a convolutional neural network architecture called U-Net. The model is first trained on Sentinel-2 data and subsequently adapted to VEN$\mu$S data under different transfer learning settings.
+
+This chapter describes the datasets, preprocessing pipeline, model architecture, training procedure, transfer learning strategies, and evaluation methodology used in this study.
 
 \section{Used Datasets}
 \subsection{Source Dataset -S2}
