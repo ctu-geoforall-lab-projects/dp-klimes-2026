@@ -3,9 +3,9 @@
         "project_root": "C:/skola/diplomka",
         "raw_data": "data/venus/multiclass",
         "aoi_file": "data/aoi_boundary/selected_countries.gpkg",
-        "training_dataset": "data/venus/training_dataset_1",
-        "train_dir": "data/venus/training_dataset_1/train_tiles_512_512",
-        "test_dir": "data/venus/training_dataset_1/test_data"
+        "training_dataset": "data/venus/training_dataset_2",
+        "train_dir": "data/venus/training_dataset_2/train_tiles_512_512",
+        "test_dir": "data/venus/training_dataset_2/test_data"
     },
     "band_extraction": {
         "image_bands": {"B03": 3, "B04": 4, "B07": 7, "B08": 8, "B09": 9, "B10": 10, "B11": 11},
@@ -21,19 +21,20 @@
         "tensor_shape": [512, 512],
         "val_set_pct": 0.25,
         "padding_mode": "reflect",
-        "mask_ignore_value": 255
+        "mask_ignore_value": 255,
+        "filter_by_classes": "0,1"
     },
     "normalization": {
         "nodata_value": -1,
         "stats": {
             "venus": {
-                "mean": "data/venus/training_dataset_1/train_tiles_512_512/mean_venus.npy",
-                "std": "data/venus/training_dataset_1/train_tiles_512_512/std_venus.npy",
-                "source": "data/venus/training_dataset_1/train_tiles_512_512/train_images"
+                "mean": "data/venus/training_dataset_2/train_tiles_512_512/mean_venus.npy",
+                "std": "data/venus/training_dataset_2/train_tiles_512_512/std_venus.npy",
+                "source": "data/venus/training_dataset_2/train_tiles_512_512/train_images"
             },
             "s2": {
-                "mean": "data/venus/training_dataset_1/train_tiles_512_512/mean_s2.npy",
-                "std": "data/venus/training_dataset_1/train_tiles_512_512/std_s2.npy",
+                "mean": "data/venus/training_dataset_2/train_tiles_512_512/mean_s2.npy",
+                "std": "data/venus/training_dataset_2/train_tiles_512_512/std_s2.npy",
                 "source": "data/csen12/training_dataset_4/train_tiles_512_512/train_images"
             }
         }
