@@ -1,4 +1,3 @@
-# run_pipeline.py
 import sys
 import json
 import argparse

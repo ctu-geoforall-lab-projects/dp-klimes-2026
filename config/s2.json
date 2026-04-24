@@ -22,7 +22,8 @@
         "tensor_shape": [512, 512],
         "val_set_pct": 0.25,
         "padding_mode": "reflect",
-        "mask_ignore_value": 255
+        "mask_ignore_value": 255,
+        "filter_by_classes": "0,1,2"
     },
     "normalization": {
     "nodata_value": -1,
