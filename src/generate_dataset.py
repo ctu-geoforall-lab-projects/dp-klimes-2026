@@ -17,6 +17,7 @@ def generate_dataset(dataset_folder, output_folder, augment=True, is_test=False,
         val_set_pct=1 if is_test else cfg["dataset"]["val_set_pct"],
         padding_mode=cfg["dataset"]["padding_mode"],
         mask_ignore_value=cfg["dataset"]["mask_ignore_value"],
+        filter_by_class=cfg["dataset"].get("filter_by_classes"),
         input_regex='*.tif'
     )
 
