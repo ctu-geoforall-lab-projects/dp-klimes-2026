@@ -177,7 +177,7 @@ def main():
         subsets = ("train", "val")
 
     if args.dynamic:
-        dst_dir = data_dir / f"norm_{args.stats}_dynamic"
+        dst_dir = data_dir / f"norm_dynamic"
         normalize_dataset_dynamic(data_dir, dst_dir, subsets=subsets, nodata_value=nodata_value)
     else:
         source_dir = project_root / stats_cfg["source"]
