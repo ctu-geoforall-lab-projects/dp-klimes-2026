@@ -210,7 +210,7 @@ According to multiple studies \cite{zhiwei2022, wang2024, pesek2022, lopez2021, 
 
 \subsubsection{U-Net}
 
-U-Net, introduced by Ronneberger et al. \cite{ronneberger2015} is a fully convolutional neural network originally designed for biomedical image segmentation. The main idea of U-Net is based on an encoder-decoder structure with a symmetric U-shaped design (see Figure \ref{fig:unet}). Due to its effectiveness and simplicity, this architecture has become one of the most widely adopted approaches for semantic segmentation in computer vision.
+U-Net, introduced by Ronneberger et al. \cite{ronneberger2015} is a fully convolutional neural network originally designed for biomedical image segmentation. The main idea of U-Net is based on an encoder-decoder structure with a symmetric U-shaped design (see Figure \ref{fig:unet}). Due to its effectiveness and simplicity, this architecture has become one of the most widely adopted approaches for semantic segmentation in the field of computer vision.
 
 The encoder, also called the contracting path in the original paper, uses a combination of convolutional layers, ReLU activation functions, and pooling layers, as described in Section \ref{sec:cnn}, to extract relevant features from the input image and reduce its spatial resolution. The decoder, also called expansive path, gradually restores the spatial resolution using upsampling operations and convolutional layers. A key part of U-Net is the use of skip connections. These connections transfer feature maps directly from the encoder to the corresponding decoder layers. This helps to maintain spatial detail, which is particularly important in segmentation tasks where accurate boundary estimation is required, such as cloud detection.
 

@@ -13,9 +13,129 @@ All experiments are based on a convolutional neural network architecture called 
 
 This chapter describes the datasets, preprocessing pipeline, model architecture, training procedure, transfer learning strategies, and evaluation methodology used in this study.
 
-\section{Used Datasets}
-\subsection{Source Dataset -S2}
-\subsection{Target Dataset - venus}
+\section{Datasets}
+\label{sec:datasets}
+
+In this study, two datasets are used, each acquired by a different satellite sensor. The first consists of Sentinel-2 imagery from the CloudSEN12+ dataset, selected from several available labeled Sentinel-2 cloud detection datasets, including KappaSet \cite{kappaset2022}, the Sentinel-2 Cloud Mask Catalogue \cite{s2cloudmask}, a cloud mask dataset developed by Hollstein et al.\ \cite{hollstein2016}, dataset created by Baetens and Hagolle \cite{baetens2018}, and a dataset by Luo et al. \cite{luo2024}. CloudSEN12+ \cite{aybar2024} was chosen as it is the largest publicly available cloud detection dataset for Sentinel-2 imagery with high-quality expert-reviewed annotations and provided the most extensive patch coverage over the target region among the evaluated options. The second dataset consists of VEN$\mu$S imagery from a dedicated VEN$\mu$S cloud masking dataset created by Pešek et al. \cite{pesek2022}. Both sensors operate in the visible and near-infrared spectral range and share a sufficient number of spectrally equivalent bands to enable cross-sensor transfer learning, as described in Section~\ref{sec:band_selection}. The two datasets differ in spatial resolution, spectral configuration, and available annotation classes, making this a characteristic example of a cross-sensor transfer learning scenario.
+
+An important distinction between the datasets lies in the annotation classes that are available. CloudSEN12+ provides four semantic classes: thick cloud, thin cloud, cloud shadow, and clear. The VEN$\mu$S dataset provides three classes: thick cloud, thin cloud, and clear, with no cloud shadow annotations. The treatment of the cloud shadow class in the context of cross-sensor transfer is discussed in Section~\ref{}.
+
+\subsection{Sentinel-2 and CloudSEN12+}
+\label{sec:dataset_s2}
+
+Sentinel-2 is an Earth observation mission operated by the European Space Agency (ESA) as part of the Copernicus programme. The mission includes two satellites, Sentinel-2A and Sentinel-2B, launched in June 2015 and March 2017 from French Guiana. Both satellites orbit Earth at an altitude of 786~km on a sun-synchronous polar orbit, with a 180° phase offset between them. Each satellite has a swath width of 290~km and a revisit time of 10 days. With both satellites operating together, the revisit time is reduced to 5 days at the equator. The mission covers latitudes between 56°S and 84°N. Each satellite is equipped with the MultiSpectral Instrument (MSI), which acquires imagery in 13 spectral bands spanning the visible, near-infrared, and shortwave infrared regions (443--2190~nm) \cite{drusch2012}. Spatial resolution varies across bands: 10~m for the four main visible and near-infrared bands, 20~m for the six red-edge and shortwave infrared bands, and 60~m for the three atmospheric correction bands. The full list of spectral bands is provided in Table~\ref{tab:s2_bands}.
+
+\begin{table}[H]
+\small
+\centering
+\caption{Spectral bands of the Sentinel-2 Multi Spectral Instrument (MSI).} \caption*{Source: \cite{drusch2012}}
+\label{tab:s2_bands}
+\begin{tabular}{lccc}
+
+\toprule
+\textbf{Band} & \textbf{Central Wavelength (nm)} & \textbf{Bandwith (nm)} & \textbf{Resolution (m)} \\
+\midrule
+B1  & 443  & 20  & 60 \\
+B2  & 490  & 65  & 10 \\
+B3  & 560  & 35  & 10 \\
+B4  & 665  & 30  & 10 \\
+B5  & 705  & 15  & 20 \\
+B6  & 740  & 15  & 20 \\
+B7  & 783  & 20  & 20 \\
+B8  & 842  & 115 & 10 \\
+B8A & 865  & 20  & 20 \\
+B9  & 945  & 20  & 60 \\
+B10 & 1375 & 30  & 60 \\
+B11 & 1610 & 90  & 20 \\
+B12 & 2190 & 180 & 20 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+CloudSEN12+ \cite{aybar2024} is the Sentinel-2 dataset used in this work. It is an extension of the original CloudSEN12 dataset \cite{aybar2022} and represents the largest publicly available collection of expert-labeled pixels for cloud and cloud shadow detection in Sentinel-2 imagery. All 13 spectral bands are provided at a uniform spatial resolution of 10~m, with the native 20~m and 60~m bands upsampled accordingly. CloudSEN12+ provides global coverage, with pixel-wise annotations for four semantic classes: thick cloud, thin cloud, cloud shadow, and clear. Three annotation quality tiers are available: high-quality, scribble-labeled, and unlabeled.
+
+Although CloudSEN12+ provides global coverage, only patches falling within a selected region of the Middle East and North Africa were used for this study. This geographic restriction was applied to reduce the domain shift between the source and target datasets. The region was selected based on similar land cover characteristics with the VEN$\mu$S dataset, containing vegetated, urban, agricultural, and arid surfaces, as well as water bodies. A particular focus was placed on desert surfaces, which are spectrally challenging for cloud detection due to their high reflectance. A geographically matched training set therefore helps the model learn to distinguish clouds from such surfaces more reliably. As shown in Figure~\ref{fig:cloudsen12_aoi}, the selected patches are predominantly located in coastal and near-coastal zones of the region, which share the closest climatic and land cover characteristics with the VEN$\mu$S target area over Israel.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.75\textwidth]{img/cloudsen12_aoi.png}}
+    \caption{Geographic distribution of CloudSEN12+ patches within 
+    the area of interest. Orange dots indicate patches selected by 
+    geographic filtering; green dots indicate patches retained after 
+    quality-based filtering during preprocessing.}
+    \label{fig:cloudsen12_aoi}
+\end{figure}
+
+Only the high-quality annotation subset was used to ensure the highest possible quality of annotations. CloudSEN12+ provides patches in two sizes: $509 \times 509$ pixels (p509) and $2000 \times 2000$ pixels (p2000). Since only four p2000 patches fall within the area of interest, the p2000 subset was excluded. Each p509 location is covered by five scenes with varying cloud cover fractions. The p509 subset was further filtered during preprocessing based on a visual inspection of annotation quality, as described in Section~\ref{sec:preprocessing}. The final number of patches used for training is reported in Table~\ref{tab:dataset_splits}.
+
+\subsection{VEN$\mu$S and the VEN$\mu$S Cloud Masking Dataset}
+\label{sec:dataset_venus}
+
+VEN$\mu$S (Vegetation and Environment monitoring on a New Micro-Satellite) is a joint Earth observation mission of the French Centre National d'Études Spatiales (CNES) and the Israeli Space Agency (ISA), launched in August 2017 \cite{salvoldi2022}. The satellite was developed as a demonstration mission for the GMES (Global Monitoring for Environment and Security) programme, the same initiative under which Sentinel-2 was developed, which explains the strong similarity in spectral band configuration between the two sensors in the visible and red-edge regions. The satellite operates in a sun-synchronous orbit at 720~km altitude with 98.28° inclination. It has a swath width of 27.5~km and a revisit time of 2 days. The satellite can be tilted up to 30° along and across track to observe preselected sites, which are always imaged at a constant view azimuth and zenith angle, reducing directional effects. It carries the VSSC (VEN$\mu$S SuperSpectral Camera), which provides imagery in 12 narrow spectral bands covering the visible and near-infrared range (420--910~nm) \cite{salvoldi2022}. The native spatial resolution is 5.3~m. Unlike Sentinel-2, VEN$\mu$S does not include shortwave infrared bands, which are commonly used for cloud detection. The full list of spectral bands is provided in Table~\ref{tab:venus_bands}.
+
+\begin{table}[H]
+\small
+\centering
+\caption{Spectral bands of the VEN$\mu$S SuperSpectral Camera 
+(VSSC).}
+\caption*{Source: \cite{salvoldi2022}}
+\label{tab:venus_bands}
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Band} & \textbf{Central Wavelength (nm)} & \textbf{Bandwidth (nm)} \\
+\midrule
+B1  & 423.9 & 40 \\
+B2  & 446.9 & 40 \\
+B3  & 491.9 & 40 \\
+B4  & 555.0 & 40 \\
+B5  & 619.7 & 40 \\
+B6  & 619.7 & 40 \\
+B7  & 666.2 & 30 \\
+B8  & 702.0 & 24 \\
+B9  & 741.1 & 16 \\
+B10 & 782.2 & 16 \\
+B11 & 861.1 & 40 \\
+B12 & 908.7 & 20 \\
+\bottomrule
+\multicolumn{3}{l}{\footnotesize All bands acquired at 5.3~m 
+spatial resolution.}\\
+\end{tabular}
+\end{table}
+
+The VEN$\mu$S cloud masking dataset used in this study was created by Pešek~et~al.~\cite{pesek2022}. The dataset covers three VEN$\mu$S tiles over Israel: W07, S01, and S05, selected to represent the main land cover types present in Israel, including vegetated, urban, agricultural, and arid areas as well as water bodies. Nine scenes were manually labeled, with more than half of the dataset consisting of scenes from the Negev desert tile S05, reflecting the particular challenge of distinguishing clouds from bright arid surfaces. The dataset was created in response to the insufficiency of automatically generated MAJA cloud masks for VEN$\mu$S data, which were found to overestimate cloud cover, particularly over urban and arid regions \cite{pesek2022}. Each scene is pixel-wise annotated with one of three semantic classes: clear, thick cloud, and thin cloud. No cloud shadow class is provided. Tile S01 is a Level~1 top-of-atmosphere product provided at 5~m spatial resolution, while tiles W07 and S05 are Level~2 atmospherically corrected products provided at 10~m \cite{eoportal_venus}. This radiometric inconsistency within the dataset represents a source of variation, which is partially mitigated during preprocessing, as described in Section~\ref{sec:normalization}.
+
+\subsection{Band Selection for Cross-Sensor Transfer}
+\label{sec:band_selection}
+
+Although VEN$\mu$S was designed as a demonstration mission for Sentinel-2 and shares a similar spectral configuration in the visible and red-edge regions, it lacks shortwave infrared bands that are present in Sentinel-2. For meaningful cross-sensor transfer, only bands with spectrally equivalent counterparts in both sensors can be used. Seven such band pairs were identified by matching central wavelengths across the two sensors, as listed in Table~\ref{tab:equivalent_bands}. All selected pairs have a central wavelength difference of at most 5~nm. The selection covers the blue, green, red, three red-edge, and narrow near-infrared bands. In the CloudSEN12+ dataset, all bands are already provided at a uniform resolution of 10~m. However, the equivalent S2 bands B5--B8A have a native resolution of 20~m and were upsampled to 10~m. 
+
+\begin{table}[H]
+\small
+\centering
+\caption{Spectrally equivalent bands used for cross-sensor 
+transfer learning.}
+\label{tab:equivalent_bands}
+\small
+\begin{tabular}{lccccl}
+\toprule
+\textbf{VEN$\mu$S} & \textbf{$\lambda$ (nm)} & \textbf{S-2} & 
+\textbf{$\lambda$ (nm)} & \textbf{$\Delta\lambda$ (nm)} & 
+\textbf{Description} \\
+\midrule
+B3  & 491.9 & B2  & 490 & 1.9 & Blue \\
+B4  & 555.0 & B3  & 560 & 5.0 & Green \\
+B7  & 666.2 & B4  & 665 & 1.2 & Red \\
+B8  & 702.0 & B5  & 705 & 3.0 & Red-edge 1 \\
+B9  & 741.1 & B6  & 740 & 1.1 & Red-edge 2 \\
+B10 & 782.2 & B7  & 783 & 0.8 & Red-edge 3 \\
+B11 & 861.1 & B8A & 865 & 3.9 & Narrow NIR \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize $\lambda$ denotes the central wavelength.}\\
+\multicolumn{6}{l}{\footnotesize $\Delta\lambda$ denotes the 
+absolute difference in central wavelength between sensors.}\\
+\end{tabular}
+\end{table}
 
 
 \section{Data Preprocessing}
