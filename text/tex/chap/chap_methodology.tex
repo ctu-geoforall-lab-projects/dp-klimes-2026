@@ -3,7 +3,8 @@
 
 % na transfer shadow class bude potřeba partial freezing - freeze jedné výstupní classy - asi se to nazývá Constrained Fine-tuning?
 
-The objective of this thesis is to investigate the applicability of transfer learning techniques for semantic segmentation of clouds in multispectral satellite imagery under cross-sensor conditions. The study focuses on transferring knowledge from Sentinel-2 imagery to the VEN$\mu$S imagery, which differs in spatial resolution, spectral configuration, and radiometric properties.
+The objective of this thesis is to investigate the applicability of transfer learning techniques for semantic segmentation of clouds in multispectral satellite imagery under cross-sensor conditions. The study focuses on transferring knowledge from Sentinel-2 
+(S2) imagery to the VEN$\mu$S imagery, which differs in spatial resolution, spectral configuration, and radiometric properties.
 
 A secondary objective is to evaluate whether information related to the cloud-shadow class, learned from Sentinel-2 data, can be preserved during adaptation to the target domain, despite the absence of cloud-shadow annotations in the VEN$\mu$S dataset.
 
@@ -108,7 +109,7 @@ The VEN$\mu$S cloud masking dataset used in this study was created by Pešek~et~
 \subsection{Band Selection for Cross-Sensor Transfer}
 \label{sec:band_selection}
 
-Although VEN$\mu$S was designed as a demonstration mission for Sentinel-2 and shares a similar spectral configuration in the visible and red-edge regions, it lacks shortwave infrared bands that are present in Sentinel-2. For meaningful cross-sensor transfer, only bands with spectrally equivalent counterparts in both sensors can be used. Seven such band pairs were identified by matching central wavelengths across the two sensors, as listed in Table~\ref{tab:equivalent_bands}. All selected pairs have a central wavelength difference of at most 5~nm. The selection covers the blue, green, red, three red-edge, and narrow near-infrared bands. In the CloudSEN12+ dataset, all bands are already provided at a uniform resolution of 10~m. However, the equivalent S2 bands B5--B8A have a native resolution of 20~m and were upsampled to 10~m. 
+Although VEN$\mu$S was designed as a demonstration mission for Sentinel-2 and shares a similar spectral configuration in the visible and red-edge regions, it lacks shortwave infrared bands that are present in Sentinel-2. For meaningful cross-sensor transfer, only bands with spectrally equivalent counterparts in both sensors can be used. Seven such band pairs were identified by matching central wavelengths across the two sensors, as listed in Table~\ref{tab:equivalent_bands}. All selected pairs have a central wavelength difference of at most 5~nm. The selection covers the blue, green, red, three red-edge, and narrow near-infrared bands. In the CloudSEN12+ dataset, all bands are already provided at a uniform resolution of 10~m. However, the equivalent Sentinel-2 bands B5--B8A have a native resolution of 20~m and were upsampled to 10~m. 
 
 \begin{table}[H]
 \small
@@ -117,9 +118,9 @@ Although VEN$\mu$S was designed as a demonstration mission for Sentinel-2 and sh
 transfer learning.}
 \label{tab:equivalent_bands}
 \small
-\begin{tabular}{lccccl}
+\begin{tabular}{lc|lc|cl}
 \toprule
-\textbf{VEN$\mu$S} & \textbf{$\lambda$ (nm)} & \textbf{S-2} & 
+\textbf{VEN$\mu$S} & \textbf{$\lambda$ (nm)} & \textbf{Sentinel-2} & 
 \textbf{$\lambda$ (nm)} & \textbf{$\Delta\lambda$ (nm)} & 
 \textbf{Description} \\
 \midrule
@@ -139,6 +140,207 @@ absolute difference in central wavelength between sensors.}\\
 
 
 \section{Data Preprocessing}
+\label{sec:preprocessing}
+
+Before the datasets can be used for model training and evaluation, several preprocessing steps are required. Raw satellite imagery from different sensors differs in spectral configuration, radiometric properties, spatial resolution, and data format. These differences must be minimized to enable meaningful cross-sensor transfer. Both the Sentinel-2 and VEN$\mu$S datasets undergo a set of preprocessing steps: spectral band extraction, annotation class remapping, dataset splitting, tile generation, and normalization. However, not all steps are applied in every experiment as described in Section \ref{chap:experiments}.
+
+In addition to the shared steps, the two datasets require sensor-specific preprocessing. The Sentinel-2 data requires geographic filtering and filtering based on annotation quality, while the VEN$\mu$S data requires handling of nodata values. The sensor-specific preprocessing steps are described in Sections~\ref{sec:s2_preprocessing} and~\ref{sec:venus_preprocessing} respectively, followed by a description of the common dataset generation steps in Section~\ref{sec:dataset_generation}. Normalization strategies are described in Section~\ref{sec:normalization}.
+
+\subsection{Sentinel-2 Preprocessing}
+\label{sec:s2_preprocessing}
+
+The initial stage of Sentinel-2 preprocessing involved applying a geographic filter. Since CloudSEN12+ provides global coverage, only those patches that intersected the bounding boxes of the selected countries were kept. To achieve this, the spatial extent of each patch was checked against a collection of country bounding boxes loaded from a GeoPackage file. This step produced a list of patches selected for subsequent processing.
+
+In the second step, the seven spectral bands selected for cross-sensor transfer, as described in Section~\ref{sec:band_selection}, were extracted from each patch. Since CloudSEN12+ stores the annotation mask as a separate band within the same file, the labels were extracted and saved as independent files during this step. The original four-class annotation scheme was remapped to three classes by merging the thin cloud class into the thick cloud class, resulting in cloud, clear, and cloud shadow labels. All 13 spectral bands in CloudSEN12+ are provided at a uniform spatial resolution of 10~m, so no resampling was required.
+
+Following band extraction, a manual quality review was performed on all patches within the area of interest. Each patch was visually inspected and assigned one of three labels: good, bad, or clear. Patches were marked as bad primarily due to annotation quality issues, such as incorrect or incomplete cloud labels. Patches marked as clear contained no cloud coverage. Since cloud-free patches contribute only clear pixels, which are already well represented within partially cloudy patches, retaining all of them would increase training data volume without providing additional value for cloud detection. Only a subset of clear patches was thus kept to maintain a representative sample of cloud-free conditions while avoiding unnecessary duplication. A total of 129 patches were excluded during this review, leaving \textbf{TODO} patches for further processing.
+
+% The remaining patches were then split into training, validation, and test subsets as described in Section~\ref{sec:dataset_generation}. As a final preprocessing step, normalization is applied to the dataset. Since normalization strategy is one of the key experimental variables in this study, the three approaches used are described in detail in Section~\ref{sec:normalization}.
+
+\subsection{VEN$\mu$S Preprocessing}
+\label{sec:venus_preprocessing}
+
+Similarly to Sentinel-2 preprocessing, the first step involved extracting the seven spectral bands selected for cross-sensor transfer, as described in Section~\ref{sec:band_selection}. The original three-class annotation scheme was remapped to two classes by merging the thin cloud class into the thick cloud class, resulting in cloud and clear labels. No cloud shadow class is present in the VEN$\mu$S dataset.
+
+A key difference from the Sentinel-2 preprocessing is the presence of nodata pixels in VEN$\mu$S scenes. In the annotation masks, nodata regions were filled with the ignore value of 255, which was later used to exclude these pixels from loss computation during training as described in Section \ref{}.
+
+Unlike the Sentinel-2 dataset, no manual quality review was necessary for the VEN$\mu$S scenes, as all nine scenes were found to be of sufficient annotation quality.
+
+\subsection{Dataset Generation}
+\label{sec:dataset_generation}
+
+Following sensor-specific preprocessing, data from both datasets went through a set of modifications in order to create training datasets to be used in the U-Net model. All images were tiled into $512 \times 512$ pixel tiles, which serve as the input for the U-Net model. Although U-Net is a fully convolutional architecture capable of processing inputs of variable spatial dimensions, the repeated pooling operations in the encoder require input dimensions to be divisible by $2^d$, where $d$ is the number of pooling layers. For a standard U-Net with five pooling layers, this means input dimensions must be divisible by 32. Since 509 is not divisible by 32, padding is required. A tile size of $512 \times 512$ pixels was selected as the smallest valid dimension larger than 509. A tile size of $256 \times 256$ pixels was also tested, but initial experiments showed that larger tiles provide better spatial context for accurate identification of cloud edges.
+
+For CloudSEN12+ patches, which have a native size of $509 \times 509$ pixels, reflective padding of 3 pixels was applied to the right and bottom edges to reach the required $512 \times 512$ pixel dimensions. Reflective padding was chosen over zero padding to avoid introducing artificial boundaries that could affect model predictions near tile edges. For VENµS scenes, which have a native size of $2048 \times 2048$ pixels, tiling was performed using a non-overlapping grid.
+
+Both datasets were divided into training, validation, and test subsets. The test set was manually selected prior to dataset generation to represent the full range of cloud types and land cover classes present in each dataset, and was excluded from all subsequent training and validation steps. For both datasets, ten tiles were selected for the test set. The remaining tiles were automatically divided into training and validation subsets using a 75/25 train/validation ratio.
+
+During dataset generation, data augmentation was applied to the training set in the form of rotations by 90°, 180°, and 270°, effectively quadrupling the number of training tiles. Validation and test sets were not augmented. Padded regions and nodata pixels are excluded from loss computation during training using the ignore value of 255 assigned to the annotation masks. The final dataset composition for both datasets is summarized in Table~\ref{tab:dataset_splits}.
+
+\subsection{Normalization Strategies}
+\label{sec:normalization}
+
+Normalization is an important preprocessing step in deep learning, as it reduces the influence of varying radiometric scales across sensors and acquisition conditions, helping the model converge faster and generalize better. In standard deep learning workflows, normalization statistics are derived from the training dataset and applied to all inputs on a per-band basis. However, this approach may not be well-suited for cross-sensor transfer learning, where inputs from different sensors or processing levels can have different value distributions, with values from the target sensor potentially falling outside the range seen during training \cite{wright2025}. In this study, normalization strategy is one of the key experimental variables, and four strategies are investigated to assess their effect on cross-sensor transfer learning performance.
+
+The first strategy uses \textbf{raw} data without any normalization. The original reflectance values are passed directly to the model, preserving the full radiometric information but exposing the model to the full cross-sensor radiometric differences during transfer learning.
+
+The remaining three strategies are based on Z-score normalization, which transforms each band independently according to:
+
+\begin{equation}
+\hat{x}_b = \frac{x_b - \mu_b}{\sigma_b}
+\label{eq:zscore}
+\end{equation}
+
+where $x_b$ is the original pixel value in band $b$, $\mu_b$ is the mean, and $\sigma_b$ is the standard deviation. The three strategies differ in how $\mu_b$ and $\sigma_b$ are computed.
+
+In \textbf{fixed Z-score normalization with Sentinel-2 statistics}, $\mu_b$ and $\sigma_b$ are computed from the Sentinel-2 training set, excluding nodata pixels. The same statistics are then applied to both the Sentinel-2 and VEN$\mu$S data. This approach maps both datasets into the same radiometric space defined by the Sentinel-2 training distribution, which is particularly relevant for the transductive transfer setting where the model is trained on Sentinel-2 data and evaluated on VEN$\mu$S data without any target domain adaptation.
+
+In \textbf{fixed Z-score normalization with VEN$\mu$S statistics}, $\mu_b$ and $\sigma_b$ are computed from the VEN$\mu$S training split only, excluding nodata pixels, and applied to VEN$\mu$S data. This is the natural choice in the inductive and from-scratch settings. However, as discussed in Section~\ref{sec:dataset_venus}, the VEN$\mu$S training set contains a mixture of Level~1 top-of-atmosphere and Level~2 atmospherically corrected tiles, which differ significantly in their radiometric distributions. The computed statistics therefore represent a mixture of two distinct radiometric regimes, which may limit the effectiveness of this strategy.
+
+In \textbf{dynamic Z-score normalization}, proposed by Wright et al.\ \cite{wright2025}, $\mu_b$ and $\sigma_b$ are computed independently for each individual tile from its own valid pixels, excluding nodata values. Unlike fixed normalization strategies that use dataset-wide statistics, this approach normalizes each tile independently to have zero mean and unit standard deviation per band, regardless of the sensor, processing level, or acquisition conditions. This makes it particularly suitable for cross-sensor transfer learning as it effectively eliminates radiometric differences between sensors without requiring any prior knowledge of the target sensor's statistics. Nodata pixels are excluded from the statistics computation and set to zero after normalization. The four normalization strategies are summarized in Table~\ref{tab:normalization}.
+
+\begin{table}[H]
+\centering
+\caption{Summary of normalization strategies used in 
+this study.}
+\label{tab:normalization}
+\small
+\begin{tabular}{llll}
+\toprule
+\textbf{Strategy} & \textbf{Statistics source} & 
+\textbf{Applied to} & \textbf{Scope} \\
+\midrule
+Raw & — & S2, VEN$\mu$S & — \\
+Fixed Z-score (S2) & S2 training set & S2, VEN$\mu$S & 
+Global \\
+Fixed Z-score (VEN$\mu$S) & VEN$\mu$S training set & 
+VEN$\mu$S & Global \\
+Dynamic Z-score & Per tile & S2, VEN$\mu$S & Per tile \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Preprocessing Pipeline}
+\label{sec:pipeline}
+
+The preprocessing steps described in this chapter were implemented as a modular Python pipeline developed as part of this thesis and publicly available on GitHub. The pipeline consists of six scripts, each implementing one preprocessing step, and a sensor-specific JSON configuration file that specifies dataset paths, band indices, class remapping, and normalization parameters. The manual quality review step is implemented as an interactive Jupyter notebook, allowing visual inspection of each patch and assignment of quality labels. The full pipeline structure is illustrated in Figure~\ref{fig:pipeline}.
+
+The dataset generation step uses a function from cnn-lib, an open-source Python library for semantic segmentation of remote sensing imagery using CNNs, developed by the thesis supervisor and further extended during this thesis. In addition to dataset generation, cnn-lib provides functionality for model training, transfer learning, and inference, and is used throughout all subsequent experimental steps described in this work. The padding  and transfer learning implementation were developed as extensions to cnn-lib as part of this thesis. The preprocessing pipeline developed as part of this thesis is publicly available on GitHub.\footnote{\url{https://github.com/ctu-geoforall-lab-projects/dp-klimes-2026}} The cnn-lib is also publicly available on GitHub.\footnote{\url{https://github.com/ctu-geoforall-lab/cnn-lib}}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.55cm,
+    every node/.style={scale=0.85},
+    sbox/.style={
+        draw, rounded corners=3pt, thick,
+        minimum width=3.8cm, minimum height=0.9cm,
+        align=center, font=\small, fill=guiblue!15
+    },
+    vbox/.style={
+        draw, rounded corners=3pt, thick,
+        minimum width=3.8cm, minimum height=0.9cm,
+        align=center, font=\small, fill=guigreen!15
+    },
+    databox/.style={
+        draw, dashed, rounded corners=3pt,
+        minimum width=3.4cm, minimum height=0.7cm,
+        align=center, font=\small\itshape
+    },
+    cfgbox/.style={
+        draw, rounded corners=3pt,
+        minimum width=3.4cm, minimum height=0.7cm,
+        align=center, font=\small\itshape,
+        fill=guigray!20
+    },
+    arr/.style={-{Stealth[length=2.5mm]}, thick}
+]
+
+% ==================== S2 COLUMN ====================
+\node[databox] (s2raw) at (-3.5, 0) 
+    {Sentinel-2 raw patches};
+
+\node[cfgbox, below=0.4cm of s2raw] (s2cfg) 
+    {Sentinel-2 configuration\\
+    {\footnotesize \texttt{s2\_config.json}}};
+
+\node[sbox, below=0.4cm of s2cfg] (selrast) 
+    {Geographic filtering\\
+    {\footnotesize \texttt{select\_rasters.py}}};
+
+\node[sbox, below=of selrast] (s2extract) 
+    {Band extraction, \\remapping\\
+    {\footnotesize \texttt{extract\_bands.py}}};
+
+\node[sbox, below=of s2extract] (review) 
+    {Manual quality review\\
+    {\footnotesize good / bad / clear}};
+
+\node[sbox, below=of review] (filterrev) 
+    {Quality filtering\\
+    {\footnotesize \texttt{filter\_review.py}}};
+
+\node[sbox, below=of filterrev] (s2gen) 
+    {Tiling, padding, splitting\\
+    {\footnotesize \texttt{generate\_dataset.py}}};
+
+\node[sbox, below=of s2gen] (s2norm) 
+    {\textbf{Normalization}\\
+    {\footnotesize \texttt{normalize.py}}};
+
+\node[databox, below=0.4cm of s2norm] (s2out) 
+    {Sentinel-2 training dataset};
+
+% ==================== VENUS COLUMN ====================
+\node[databox] (venusraw) at (3.5, 0) 
+    {VEN$\mu$S raw scenes};
+
+\node[cfgbox, below=0.4cm of venusraw] (venuscfg) 
+    {VEN$\mu$S configuration\\
+    {\footnotesize \texttt{venus\_config.json}}};
+
+\node[vbox, below=0.4cm of venuscfg] (venusextract) 
+    {Band extraction, \\Remapping, \\nodata handling\\
+    {\footnotesize \texttt{extract\_bands.py}}};
+
+\node[vbox, below=of venusextract] (venusgen) 
+    {Tiling, splitting\\
+    {\footnotesize \texttt{generate\_dataset.py}}};
+
+\node[vbox, below=of venusgen] (venusnorm) 
+    {Normalization\\
+    {\footnotesize \texttt{normalize.py}}};
+
+\node[databox, below=0.4cm of venusnorm] (venusout) 
+    {VEN$\mu$S training dataset};
+
+% ==================== S2 ARROWS ====================
+\draw[arr] (s2raw) -- (s2cfg);
+\draw[arr] (s2cfg) -- (selrast);
+\draw[arr] (selrast) -- (s2extract);
+\draw[arr] (s2extract) -- (review);
+\draw[arr] (review) -- (filterrev);
+\draw[arr] (filterrev) -- (s2gen);
+\draw[arr] (s2gen) -- (s2norm);
+\draw[arr] (s2norm) -- (s2out);
+
+% ==================== VENUS ARROWS ====================
+\draw[arr] (venusraw) -- (venuscfg);
+\draw[arr] (venuscfg) -- (venusextract);
+\draw[arr] (venusextract) -- (venusgen);
+\draw[arr] (venusgen) -- (venusnorm);
+\draw[arr] (venusnorm) -- (venusout);
+
+% ==================== LABELS ====================
+\node[font=\small\bfseries, guiblue!70!black] at (-3.5, 0.7) 
+    {Sentinel-2};
+\node[font=\small\bfseries, guigreen!60!black] at (3.5, 0.7) 
+    {VEN$\mu$S};
+
+\end{tikzpicture}
+\caption{Structure of the preprocessing pipeline.}
+\label{fig:pipeline}
+\end{figure}
 
 \section{Model and Training}
 
