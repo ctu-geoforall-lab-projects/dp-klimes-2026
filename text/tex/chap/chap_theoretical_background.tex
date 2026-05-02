@@ -205,6 +205,7 @@ In addition to architectural components, the training of CNN models is strongly 
 In recent years, CNNs have proven highly effective for image detection and segmentation in remote sensing. Several studies have successfully applied them to cloud detection in satellite imagery \cite{zhiwei2022, wang2024, pesek2022, wright2025, lopez2021, mohajerani2018}. Typically, researchers have either developed architectures specifically for cloud detection or adapted popular models from other domains. The following section lists the most commonly used CNN architectures for cloud detection and describes the one relevant for this study.
 
 \subsection{CNNs for Cloud Detection}
+\label{sec:cnn_cloud}
 
 According to multiple studies \cite{zhiwei2022, wang2024, pesek2022, lopez2021, pang2023}, commonly used architectures for cloud detection include segmentation models such as U-Net \cite{ronneberger2015}, SegNet \cite{badrinarayanan2016}, and DeepLabV3 \cite{chen2017}. In addition, backbone architectures such as VGG \cite{simonyan2015} and ResNet \cite{he2015} are often used as encoders, where they serve as feature extractors. Among the various approaches, U-Net \cite{ronneberger2015} has become particularly popular, with its numerous modifications consistently achieving state-of-the-art performance in remote sensing and cloud detection tasks.
 
@@ -236,6 +237,7 @@ To address these challenges, two main approaches are commonly used in remote sen
 The second approach is based on transfer learning, which aims to adapt a model trained on a source domain to a different but related target domain, and is particularly effective when source and target domains differ in their data distributions \cite{goodfellow2016}. An example was presented by Mateo-García et al. \cite{garcia2020}, who investigated transferring cloud detection model based on U-Net architecture between Landsat 8 and Proba-V sensors. Their experiments addressed three key questions related to cross-sensor transfer: adaptation from Landsat-8 to Proba-V, transfer from lower-resolution Proba-V to higher-resolution Landsat-8, and the effect of combining source and target domain data on model accuracy. The results confirmed that transfer learning can be effective in both directions and that incorporating limited target-domain data further improves performance, reducing the need for large manually labeled datasets. In the following chapter, the fundamental principles and common techniques of transfer learning are described in more detail.
 
 \section{Transfer Learning}
+\label{sec:theoretical_tl}
 As introduced in the previous chapter, transfer learning leverages knowledge acquired from a source domain to improve learning in a different but related target domain \cite{goodfellow2016}.
 
 The most widely adopted formal definition was introduced by Pan and Yang \cite{pan2010}. Given a source domain $\mathcal{D}_S$ with learning task $\mathcal{T}_S$ and a target domain $\mathcal{D}_T$ with learning task $\mathcal{T}_T$, transfer learning aims to help improve the learning of the target predictive function $f_T(\cdot)$ in $\mathcal{D}_T$ using the knowledge in $\mathcal{D}_S$ and $\mathcal{T}_S$, where $\mathcal{D}_S \neq \mathcal{D}_T$, or $\mathcal{T}_S \neq \mathcal{T}_T$. 
@@ -507,7 +509,7 @@ By averaging over all classes, mIoU gives equal importance to minority classes, 
 
 In this work, mIoU is used as the primary evaluation metric, as it is well suited for imbalanced datasets. In addition, per-class IoU and per-class F1-score are reported to provide insight into model performance across individual classes.
 
-\textbf{\color{blue} Možná bude reportováno více metrik}
+\textbf{\color{blue} Bude reportováno více metrik - upravím}
 
 
 \section{Loss Functions}

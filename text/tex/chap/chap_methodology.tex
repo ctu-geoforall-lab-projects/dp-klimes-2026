@@ -1,25 +1,20 @@
 \chapter{Data and Methodology} \label{chap:methodology}
 
 
-% na transfer shadow class bude potřeba partial freezing - freeze jedné výstupní classy - asi se to nazývá Constrained Fine-tuning?
+The objective of this thesis is to investigate the applicability of transfer learning techniques for semantic segmentation of clouds in multispectral satellite imagery under cross-sensor conditions. The study focuses on transferring knowledge from Sentinel-2 (S2) imagery to VEN$\mu$S imagery, which differs in spatial resolution, spectral configuration, and radiometric properties.
 
-The objective of this thesis is to investigate the applicability of transfer learning techniques for semantic segmentation of clouds in multispectral satellite imagery under cross-sensor conditions. The study focuses on transferring knowledge from Sentinel-2 
-(S2) imagery to the VEN$\mu$S imagery, which differs in spatial resolution, spectral configuration, and radiometric properties.
+A secondary objective is to investigate whether information related to the cloud shadow class, learned from Sentinel-2 data, can be preserved during adaptation to the target domain, despite the absence of cloud shadow annotations in the VEN$\mu$S dataset.
 
-A secondary objective is to evaluate whether information related to the cloud-shadow class, learned from Sentinel-2 data, can be preserved during adaptation to the target domain, despite the absence of cloud-shadow annotations in the VEN$\mu$S dataset.
+Several transfer learning strategies are investigated, ranging from the direct application of a source-trained model to the target domain to the fine-tuning of the pretrained network. Input-level radiometric normalization is evaluated as a complementary experimental variable. All experiments are based on the U-Net architecture, with the model first trained on Sentinel-2 data and subsequently adapted to VEN$\mu$S data. The full experimental design is described in Chapter~\ref{chap:experiments}.
 
-Several experimental scenarios are considered, including direct application of a source-trained model to target data, input-level radiometric normalization, and fine-tuning-based strategies.
-
-All experiments are based on a convolutional neural network architecture called U-Net. The model is first trained on Sentinel-2 data and subsequently adapted to VEN$\mu$S data under different transfer learning settings.
-
-This chapter describes the datasets, preprocessing pipeline, model architecture, training procedure, transfer learning strategies, and evaluation methodology used in this study.
+This chapter describes the datasets used (Section~\ref{sec:datasets}), the preprocessing pipeline (Section~\ref{sec:preprocessing}), the model training setup (Section~\ref{sec:model_training}), and the evaluation methodology (Section~\ref{sec:evaluation}).
 
 \section{Datasets}
 \label{sec:datasets}
 
-In this study, two datasets are used, each acquired by a different satellite sensor. The first consists of Sentinel-2 imagery from the CloudSEN12+ dataset, selected from several available labeled Sentinel-2 cloud detection datasets, including KappaSet \cite{kappaset2022}, the Sentinel-2 Cloud Mask Catalogue \cite{s2cloudmask}, a cloud mask dataset developed by Hollstein et al.\ \cite{hollstein2016}, dataset created by Baetens and Hagolle \cite{baetens2018}, and a dataset by Luo et al. \cite{luo2024}. CloudSEN12+ \cite{aybar2024} was chosen as it is the largest publicly available cloud detection dataset for Sentinel-2 imagery with high-quality expert-reviewed annotations and provided the most extensive patch coverage over the target region among the evaluated options. The second dataset consists of VEN$\mu$S imagery from a dedicated VEN$\mu$S cloud masking dataset created by Pešek et al. \cite{pesek2022}. Both sensors operate in the visible and near-infrared spectral range and share a sufficient number of spectrally equivalent bands to enable cross-sensor transfer learning, as described in Section~\ref{sec:band_selection}. The two datasets differ in spatial resolution, spectral configuration, and available annotation classes, making this a characteristic example of a cross-sensor transfer learning scenario.
+In this study, two datasets are used, each acquired by a different satellite sensor. The first consists of Sentinel-2 imagery from the CloudSEN12+ dataset, selected from several available labeled Sentinel-2 cloud detection datasets, including KappaSet \cite{kappaset2022}, the Sentinel-2 Cloud Mask Catalogue \cite{s2cloudmask}, a cloud mask dataset developed by Hollstein et al.\ \cite{hollstein2016}, a dataset created by Baetens and Hagolle \cite{baetens2018}, and a dataset by Luo et al. \cite{luo2024}. CloudSEN12+ \cite{aybar2024} was chosen as it is the largest publicly available cloud detection dataset for Sentinel-2 imagery with high-quality expert-reviewed annotations and provided the most extensive patch coverage over the target region among the evaluated options. The second dataset consists of VEN$\mu$S imagery from a dedicated VEN$\mu$S cloud masking dataset created by Pešek et al. \cite{pesek2022}. Both sensors operate in the visible and near-infrared spectral range and share a sufficient number of spectrally equivalent bands to enable cross-sensor transfer learning, as described in Section~\ref{sec:band_selection}. The two datasets differ in spatial resolution, spectral configuration, and available annotation classes, making this a characteristic example of a cross-sensor transfer learning scenario.
 
-An important distinction between the datasets lies in the annotation classes that are available. CloudSEN12+ provides four semantic classes: thick cloud, thin cloud, cloud shadow, and clear. The VEN$\mu$S dataset provides three classes: thick cloud, thin cloud, and clear, with no cloud shadow annotations. The treatment of the cloud shadow class in the context of cross-sensor transfer is discussed in Section~\ref{}.
+An important distinction between the datasets lies in the annotation classes that are available. CloudSEN12+ provides four semantic classes: thick cloud, thin cloud, cloud shadow, and clear. The VEN$\mu$S dataset provides three classes: thick cloud, thin cloud, and clear, with no cloud shadow annotations. The treatment of the cloud shadow class in the context of cross-sensor transfer is discussed in Section~\ref{sec:transfer}.
 
 \subsection{Sentinel-2 and CloudSEN12+}
 \label{sec:dataset_s2}
@@ -34,7 +29,7 @@ Sentinel-2 is an Earth observation mission operated by the European Space Agency
 \begin{tabular}{lccc}
 
 \toprule
-\textbf{Band} & \textbf{Central Wavelength (nm)} & \textbf{Bandwith (nm)} & \textbf{Resolution (m)} \\
+\textbf{Band} & \textbf{Central Wavelength (nm)} & \textbf{Bandwidth (nm)} & \textbf{Resolution (m)} \\
 \midrule
 B1  & 443  & 20  & 60 \\
 B2  & 490  & 65  & 10 \\
@@ -153,16 +148,14 @@ The initial stage of Sentinel-2 preprocessing involved applying a geographic fil
 
 In the second step, the seven spectral bands selected for cross-sensor transfer, as described in Section~\ref{sec:band_selection}, were extracted from each patch. Since CloudSEN12+ stores the annotation mask as a separate band within the same file, the labels were extracted and saved as independent files during this step. The original four-class annotation scheme was remapped to three classes by merging the thin cloud class into the thick cloud class, resulting in cloud, clear, and cloud shadow labels. All 13 spectral bands in CloudSEN12+ are provided at a uniform spatial resolution of 10~m, so no resampling was required.
 
-Following band extraction, a manual quality review was performed on all patches within the area of interest. Each patch was visually inspected and assigned one of three labels: good, bad, or clear. Patches were marked as bad primarily due to annotation quality issues, such as incorrect or incomplete cloud labels. Patches marked as clear contained no cloud coverage. Since cloud-free patches contribute only clear pixels, which are already well represented within partially cloudy patches, retaining all of them would increase training data volume without providing additional value for cloud detection. Only a subset of clear patches was thus kept to maintain a representative sample of cloud-free conditions while avoiding unnecessary duplication. A total of 129 patches were excluded during this review, leaving \textbf{TODO} patches for further processing.
-
-% The remaining patches were then split into training, validation, and test subsets as described in Section~\ref{sec:dataset_generation}. As a final preprocessing step, normalization is applied to the dataset. Since normalization strategy is one of the key experimental variables in this study, the three approaches used are described in detail in Section~\ref{sec:normalization}.
+Following band extraction, a manual quality review was performed on all patches within the area of interest. Each patch was visually inspected and assigned one of three labels: good, bad, or clear. Patches were marked as bad primarily due to annotation quality issues, such as incorrect or incomplete cloud labels. Patches marked as clear contained no cloud coverage. Since cloud-free patches contribute only clear pixels, which are already well represented within partially cloudy patches, retaining all of them would increase the training data volume without providing additional value for cloud detection. Only a subset of clear patches was thus kept to maintain a representative sample of cloud-free conditions while avoiding unnecessary duplication. A total of 129 patches were excluded during this review, leaving 140 patches for further processing.
 
 \subsection{VEN$\mu$S Preprocessing}
 \label{sec:venus_preprocessing}
 
 Similarly to Sentinel-2 preprocessing, the first step involved extracting the seven spectral bands selected for cross-sensor transfer, as described in Section~\ref{sec:band_selection}. The original three-class annotation scheme was remapped to two classes by merging the thin cloud class into the thick cloud class, resulting in cloud and clear labels. No cloud shadow class is present in the VEN$\mu$S dataset.
 
-A key difference from the Sentinel-2 preprocessing is the presence of nodata pixels in VEN$\mu$S scenes. In the annotation masks, nodata regions were filled with the ignore value of 255, which was later used to exclude these pixels from loss computation during training as described in Section \ref{}.
+A key difference from the Sentinel-2 preprocessing is the presence of nodata pixels in VEN$\mu$S scenes. In the annotation masks, nodata regions were filled with the ignore value of 255, which was later used to exclude these pixels from loss computation during training, as described in Section~\ref{sec:dataset_generation}.
 
 Unlike the Sentinel-2 dataset, no manual quality review was necessary for the VEN$\mu$S scenes, as all nine scenes were found to be of sufficient annotation quality.
 
@@ -175,7 +168,32 @@ For CloudSEN12+ patches, which have a native size of $509 \times 509$ pixels, re
 
 Both datasets were divided into training, validation, and test subsets. The test set was manually selected prior to dataset generation to represent the full range of cloud types and land cover classes present in each dataset, and was excluded from all subsequent training and validation steps. For both datasets, ten tiles were selected for the test set. The remaining tiles were automatically divided into training and validation subsets using a 75/25 train/validation ratio.
 
-During dataset generation, data augmentation was applied to the training set in the form of rotations by 90°, 180°, and 270°, effectively quadrupling the number of training tiles. Validation and test sets were not augmented. Padded regions and nodata pixels are excluded from loss computation during training using the ignore value of 255 assigned to the annotation masks. The final dataset composition for both datasets is summarized in Table~\ref{tab:dataset_splits}.
+During dataset generation, data augmentation was applied to the training set in the form of rotations by 90°, 180°, and 270°, effectively quadrupling the number of training tiles. Validation and test sets were not augmented. Padded regions and nodata pixels were excluded from loss computation during training using the ignore value of 255 assigned to the annotation masks. The final dataset composition for both datasets is summarized in Table~\ref{tab:dataset_splits}.
+
+\begin{table}[H]
+\centering
+\caption{Dataset composition for Sentinel-2 and 
+VEN$\mu$S after preprocessing and dataset generation.}
+\label{tab:dataset_splits}
+\small
+\begin{tabular}{lrr}
+\toprule
+\textbf{} & \textbf{Sentinel-2} & \textbf{VEN$\mu$S} \\
+\midrule
+After geographic filtering      & 269  & —   \\
+Excluded during quality review  & 129  & —   \\
+Available after filtering       & 140  & 135 \\
+Test set                        & 10   & 10  \\
+Training set                    & 98   & 93  \\
+Validation set                  & 32   & 32  \\
+Training set (augmented)        & 392  & 372 \\
+\bottomrule
+\multicolumn{3}{l}{\footnotesize Augmented training 
+set obtained by rotations of 90°, 180°, and 270°.}\\
+\multicolumn{3}{l}{\footnotesize — indicates step 
+not applicable for VEN$\mu$S.}\\
+\end{tabular}
+\end{table}
 
 \subsection{Normalization Strategies}
 \label{sec:normalization}
@@ -225,7 +243,6 @@ Dynamic Z-score & Per tile & S2, VEN$\mu$S & Per tile \\
 
 The preprocessing steps described in this chapter were implemented as a modular Python pipeline developed as part of this thesis and publicly available on GitHub. The pipeline consists of six scripts, each implementing one preprocessing step, and a sensor-specific JSON configuration file that specifies dataset paths, band indices, class remapping, and normalization parameters. The manual quality review step is implemented as an interactive Jupyter notebook, allowing visual inspection of each patch and assignment of quality labels. The full pipeline structure is illustrated in Figure~\ref{fig:pipeline}.
 
-The dataset generation step uses a function from cnn-lib, an open-source Python library for semantic segmentation of remote sensing imagery using CNNs, developed by the thesis supervisor and further extended during this thesis. In addition to dataset generation, cnn-lib provides functionality for model training, transfer learning, and inference, and is used throughout all subsequent experimental steps described in this work. The padding  and transfer learning implementation were developed as extensions to cnn-lib as part of this thesis. The preprocessing pipeline developed as part of this thesis is publicly available on GitHub.\footnote{\url{https://github.com/ctu-geoforall-lab-projects/dp-klimes-2026}} The cnn-lib is also publicly available on GitHub.\footnote{\url{https://github.com/ctu-geoforall-lab/cnn-lib}}
 
 \begin{figure}[H]
 \centering
@@ -244,79 +261,70 @@ The dataset generation step uses a function from cnn-lib, an open-source Python 
     },
     databox/.style={
         draw, dashed, rounded corners=3pt,
-        minimum width=3.4cm, minimum height=0.7cm,
+        minimum width=3.8cm,
         align=center, font=\small\itshape
-    },
-    cfgbox/.style={
-        draw, rounded corners=3pt,
-        minimum width=3.4cm, minimum height=0.7cm,
-        align=center, font=\small\itshape,
-        fill=guigray!20
     },
     arr/.style={-{Stealth[length=2.5mm]}, thick}
 ]
 
 % ==================== S2 COLUMN ====================
-\node[databox] (s2raw) at (-3.5, 0) 
-    {Sentinel-2 raw patches};
+\node[databox] (s2input) at (-3.5, 0)
+    {Sentinel-2 raw patches \\
+    + \\
+    Configuration file \\
+    {\scriptsize \texttt{s2\_config.json}}};
 
-\node[cfgbox, below=0.4cm of s2raw] (s2cfg) 
-    {Sentinel-2 configuration\\
-    {\footnotesize \texttt{s2\_config.json}}};
-
-\node[sbox, below=0.4cm of s2cfg] (selrast) 
+\node[sbox, below=0.4cm of s2input] (selrast)
     {Geographic filtering\\
-    {\footnotesize \texttt{select\_rasters.py}}};
+    {\scriptsize \texttt{select\_rasters.py}}};
 
-\node[sbox, below=of selrast] (s2extract) 
-    {Band extraction, \\remapping\\
-    {\footnotesize \texttt{extract\_bands.py}}};
+\node[sbox, below=of selrast] (s2extract)
+    {Band extraction,\\ remapping\\
+    {\scriptsize \texttt{extract\_bands.py}}};
 
-\node[sbox, below=of s2extract] (review) 
+\node[sbox, below=of s2extract] (review)
     {Manual quality review\\
-    {\footnotesize good / bad / clear}};
+    {\scriptsize \texttt{data\_review.ipynb}}};
 
-\node[sbox, below=of review] (filterrev) 
+\node[sbox, below=of review] (filterrev)
     {Quality filtering\\
-    {\footnotesize \texttt{filter\_review.py}}};
+    {\scriptsize \texttt{filter\_by\_review.py}}};
 
-\node[sbox, below=of filterrev] (s2gen) 
-    {Tiling, padding, splitting\\
-    {\footnotesize \texttt{generate\_dataset.py}}};
+\node[sbox, below=of filterrev] (s2gen)
+    {Dataset generation\\
+    {\scriptsize \texttt{generate\_dataset.py}}};
 
-\node[sbox, below=of s2gen] (s2norm) 
-    {\textbf{Normalization}\\
-    {\footnotesize \texttt{normalize.py}}};
+\node[sbox, below=of s2gen] (s2norm)
+    {Normalization\\
+    {\scriptsize \texttt{normalize.py}}};
 
-\node[databox, below=0.4cm of s2norm] (s2out) 
+\node[databox, below=0.4cm of s2norm] (s2out)
     {Sentinel-2 training dataset};
 
 % ==================== VENUS COLUMN ====================
-\node[databox] (venusraw) at (3.5, 0) 
-    {VEN$\mu$S raw scenes};
+\node[databox] (venusinput) at (3.5, 0)
+    {VEN$\mu$S raw scenes \\
+    + \\
+    Configuration file \\
+    {\scriptsize \texttt{venus\_config.json}}};
 
-\node[cfgbox, below=0.4cm of venusraw] (venuscfg) 
-    {VEN$\mu$S configuration\\
-    {\footnotesize \texttt{venus\_config.json}}};
+\node[vbox, below=0.4cm of venusinput] (venusextract)
+    {Band extraction,\\remapping, \\nodata handling\\
+    {\scriptsize \texttt{extract\_bands.py}}};
 
-\node[vbox, below=0.4cm of venuscfg] (venusextract) 
-    {Band extraction, \\Remapping, \\nodata handling\\
-    {\footnotesize \texttt{extract\_bands.py}}};
+\node[vbox, below=of venusextract] (venusgen)
+    {Dataset generation\\
+    {\scriptsize \texttt{generate\_dataset.py}}};
 
-\node[vbox, below=of venusextract] (venusgen) 
-    {Tiling, splitting\\
-    {\footnotesize \texttt{generate\_dataset.py}}};
-
-\node[vbox, below=of venusgen] (venusnorm) 
+\node[vbox, below=of venusgen] (venusnorm)
     {Normalization\\
-    {\footnotesize \texttt{normalize.py}}};
+    {\scriptsize \texttt{normalize.py}}};
 
-\node[databox, below=0.4cm of venusnorm] (venusout) 
+\node[databox, below=0.4cm of venusnorm] (venusout)
     {VEN$\mu$S training dataset};
 
 % ==================== S2 ARROWS ====================
-\draw[arr] (s2raw) -- (s2cfg);
-\draw[arr] (s2cfg) -- (selrast);
+\draw[arr] (s2input) -- (selrast);
 \draw[arr] (selrast) -- (s2extract);
 \draw[arr] (s2extract) -- (review);
 \draw[arr] (review) -- (filterrev);
@@ -325,16 +333,15 @@ The dataset generation step uses a function from cnn-lib, an open-source Python 
 \draw[arr] (s2norm) -- (s2out);
 
 % ==================== VENUS ARROWS ====================
-\draw[arr] (venusraw) -- (venuscfg);
-\draw[arr] (venuscfg) -- (venusextract);
+\draw[arr] (venusinput) -- (venusextract);
 \draw[arr] (venusextract) -- (venusgen);
 \draw[arr] (venusgen) -- (venusnorm);
 \draw[arr] (venusnorm) -- (venusout);
 
 % ==================== LABELS ====================
-\node[font=\small\bfseries, guiblue!70!black] at (-3.5, 0.7) 
+\node[font=\bfseries, guiblue!70!black] at (-3.5, 1.2)
     {Sentinel-2};
-\node[font=\small\bfseries, guigreen!60!black] at (3.5, 0.7) 
+\node[font=\bfseries, guigreen!60!black] at (3.5, 1.2)
     {VEN$\mu$S};
 
 \end{tikzpicture}
@@ -342,6 +349,47 @@ The dataset generation step uses a function from cnn-lib, an open-source Python 
 \label{fig:pipeline}
 \end{figure}
 
+The dataset generation step uses a function from cnn-lib, an open-source Python library for semantic segmentation of remote sensing imagery using CNNs. The library was developed by the thesis supervisor and further extended during this thesis. In addition to dataset generation, cnn-lib provides functionality for model training, transfer learning, and inference, and is used throughout all subsequent experimental steps described in this work. 
+
+Several extensions to cnn-lib were developed as part of this thesis, including a padding implementation supporting multiple padding types, and transfer learning support comprising layer freezing by name pattern, tolerance for weight shape mismatches when class counts differ between source and target domains, and corresponding command-line interface arguments. The ignore value functionality for excluding nodata and padded regions from loss computation was also added. In addition, several bugs affecting training stability and evaluation correctness were identified and fixed.
+
+The preprocessing pipeline developed as part of this thesis is publicly available on GitHub.\footnote{\url{https://github.com/ctu-geoforall-lab-projects/dp-klimes-2026}} The cnn-lib library is also publicly available on GitHub.\footnote{\url{https://github.com/ctu-geoforall-lab/cnn-lib}}
+
+
 \section{Model and Training}
+\label{sec:model_training}
+This section describes the technical setup used across all experiments. It covers the model architecture, training configuration, and transfer learning setup. While the architecture and training procedure remain consistent across all experiments, the transfer learning setup varies depending on the degree of adaptation applied to the pretrained model, as described in Chapter~\ref{chap:experiments}.
+
+\subsection{Model Architecture}
+\label{sec:model}
+
+All experiments in this study use the U-Net architecture, described in detail in Section~\ref{sec:cnn_cloud}. The implementation used is provided by cnn-lib and follows the original architecture proposed by Ronneberger et al.\ \cite{ronneberger2015}, extended with support for dropout, batch normalization, and configurable padding. The model is implemented in TensorFlow and Keras via cnn-lib.
+
+The model accepts 7 input channels corresponding to the selected spectral bands described in Section~\ref{sec:band_selection}. For Sentinel-2 training, the model produces a 3-class output: cloud, clear, and cloud shadow. For VEN$\mu$S fine-tuning and from-scratch experiments, the output layer is configured for 2 classes: cloud and clear, since no cloud shadow annotations are available in the VEN$\mu$S dataset. The model is initialized with random weights for all experiments involving training from scratch.
+
+\subsection{Training Setup}
+\label{sec:training}
+
+All models were trained using the Adam optimizer with a learning rate of $10^{-3}$ and the Dice loss function, which is well suited for imbalanced segmentation tasks as described in Section~\ref{sec:loss_functions}. A batch size of 16 tiles was used for all experiments. Training was performed on a Linux server equipped with an NVIDIA Tesla V100 GPU with 32~GB of memory. The maximum number of training epochs was set to 3000, but in practice training was governed by early stopping, which monitors the validation loss and terminates training if no improvement is observed within a specified number of epochs. Early stopping with a patience of 200 epochs was used for from-scratch training, reflecting the slower convergence expected when training from random initialization. For fine-tuning experiments, a patience of 100 epochs was used, where faster convergence is expected due to the pretrained weights.
+
+Prior to finalizing the training configuration, several hyperparameter settings were explored. Tversky loss was evaluated as an alternative to Dice loss, but it did not consistently lead to better results, and was therefore not adopted. Multiple batch sizes were evaluated, with smaller batch sizes producing less stable training and lower performance. A batch size of 16 was selected as it provided the best trade-off between training stability and GPU memory constraints. Tile sizes of both $256 \times 256$ and $512 \times 512$ pixels were tested, with the larger tile size providing better spatial context for identifying cloud boundaries, as discussed in Section~\ref{sec:dataset_generation}.
+
+\subsection{Transfer Learning Setup}
+\label{sec:transfer}
+
+Transfer learning experiments follow two settings as defined in Section~\ref{sec:theoretical_tl}. In the transductive setting, the Sentinel-2 pretrained model is applied directly to VEN$\mu$S data without any modification to the model weights. Input-level adaptation through normalization is applied, as described in Section~\ref{sec:normalization}. This setting requires no labeled VEN$\mu$S data and serves to evaluate the zero-shot generalization capability of the source-trained model across sensors. It also preserves the full 3-class output of the Sentinel-2 model, including cloud shadow, which cannot be maintained in any fine-tuning setting due to the absence of shadow annotations in the VEN$\mu$S dataset.
+
+In the inductive setting, the pretrained model is adapted to VEN$\mu$S data using labeled target domain samples. Several fine-tuning strategies are investigated, differing in the degree of adaptation applied to the pretrained network, ranging from updating only the output layer to fine-tuning the full network. This allows a systematic comparison of how much of the network needs to be adapted for effective cross-sensor transfer. In all inductive experiments, the model is initialized from the best Sentinel-2 checkpoint, defined as the epoch with the lowest validation loss during Sentinel-2 training. The specific configurations of each fine-tuning strategy are described in Chapter~\ref{chap:experiments}.
 
 \section{Evaluation}
+\label{sec:evaluation}
+
+Model performance is evaluated on testing datasets from both sensors. The Sentinel-2 test set consists of ten patches selected during preprocessing as described in Section~\ref{sec:dataset_generation}, and is used to assess source domain performance. The VEN$\mu$S test set consists of ten tiles and serves as the primary benchmark for evaluating cross-sensor transfer learning performance.
+
+For all experiments except the transductive setting, evaluation is performed on two classes: cloud and clear. In the transductive setting, the Sentinel-2 trained model produces 3-class predictions including cloud shadow. Since the VEN$\mu$S ground truth contains no shadow annotations, shadow predictions are collapsed into the clear class prior to evaluation.
+
+MAJA, introduced in Section~\ref{sec:temporal_methods} as a temporal-change-based cloud detection algorithm, is included as a classical baseline to provide a reference point for comparing deep learning approaches against an operational algorithm used in practice for VEN$\mu$S cloud masking. It is evaluated using the existing MAJA cloud masks provided with the VEN$\mu$S dataset \cite{pesek2022}, without any reprocessing.
+
+Performance is measured by comparing predicted pixel labels against the ground truth annotations using a confusion matrix, from which evaluation metrics are derived as described in Section~\ref{sec:evaluation_metrics}. Both confusion matrices and evaluation metrics are reported for all experiments. Mean Intersection over Union (mIoU) is used as the primary metric, with per-class IoU and per-class F1-score reported additionally to provide insight into performance on each individual class. All results are reported as aggregate values across all test tiles.
+
+\textbf{\color{blue} Bude reportováno více metrik - upravím}
