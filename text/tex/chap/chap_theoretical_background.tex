@@ -389,91 +389,78 @@ Evaluation is typically based on the confusion matrix \cite{powers2020}, which p
 
 In the multiclass setting, metrics are commonly computed for each class using a one-vs-rest interpretation. For a selected class, all remaining classes are treated as the negative class, which allows the computation of true positives (TP), false positives (FP), false negatives (FN), and true negatives (TN). The highlighted region in Figure~\ref{fig:confusion_matrix_multi} illustrates this one-vs-rest formulation for the cloud class, where all remaining classes (clear and cloud shadow) are treated as the negative class.
 
-
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[every node/.style={scale=0.95}]
+\begin{tikzpicture}
+% ── cell fills ──────────────────────────────
+% Row 0 – True = Cloud  (y: 3.0–4.5)
+\fill[guigreen!35] (0.0,3.0) rectangle (1.5,4.5);   % TP
+\fill[guired!25]   (1.5,3.0) rectangle (3.0,4.5);   % FN
+\fill[guired!25]   (3.0,3.0) rectangle (4.5,4.5);   % FN
+% Row 1 – True = Clear  (y: 1.5–3.0)
+\fill[guired!25]   (0.0,1.5) rectangle (1.5,3.0);   % FP
+\fill[guigray!20]  (1.5,1.5) rectangle (3.0,3.0);   % TN
+\fill[guigray!20]  (3.0,1.5) rectangle (4.5,3.0);   % TN
+% Row 2 – True = Shadow (y: 0.0–1.5)
+\fill[guired!25]   (0.0,0.0) rectangle (1.5,1.5);   % FP
+\fill[guigray!20]  (1.5,0.0) rectangle (3.0,1.5);   % TN
+\fill[guigray!20]  (3.0,0.0) rectangle (4.5,1.5);   % TN
 
-\def\w{3.0cm}
-\def\h{1.7cm}
-\def\gap{3.4}
-\def\vgap{2.0}
+% ── cell labels ─────────────────────────────
+\node[font=\normalsize\bfseries] at (0.75,3.75) {TP};
+\node[font=\normalsize\bfseries] at (2.25,3.75) {FN};
+\node[font=\normalsize\bfseries] at (3.75,3.75) {FN};
+\node[font=\normalsize\bfseries] at (0.75,2.25) {FP};
+\node[font=\normalsize\bfseries] at (2.25,2.25) {TN};
+\node[font=\normalsize\bfseries] at (3.75,2.25) {TN};
+\node[font=\normalsize\bfseries] at (0.75,0.75) {FP};
+\node[font=\normalsize\bfseries] at (2.25,0.75) {TN};
+\node[font=\normalsize\bfseries] at (3.75,0.75) {TN};
 
-% =========================
-% MATRIX CELLS
-% =========================
+% ── grid ────────────────────────────────────
+\draw[black!70, line width=0.5pt] (0,0) rectangle (4.5,4.5);
+\draw[black!70, line width=0.3pt] (1.5,0) -- (1.5,4.5);
+\draw[black!70, line width=0.3pt] (3.0,0) -- (3.0,4.5);
+\draw[black!70, line width=0.3pt] (0,1.5) -- (4.5,1.5);
+\draw[black!70, line width=0.3pt] (0,3.0) -- (4.5,3.0);
 
-% Row 0
-\node[minimum width=\w, minimum height=\h, draw, thick, fill=guigreen!35]
-    (c00) at (0,0) {\textbf{TP}};
-\node[minimum width=\w, minimum height=\h, draw, thick, fill=guired!25]
-    (c01) at (\gap,0) {\textbf{FN}};
-\node[minimum width=\w, minimum height=\h, draw, thick, fill=guired!25]
-    (c02) at (2*\gap,0) {\textbf{FN}};
+% ── one-vs-rest highlight (Cloud class) ─────
+\draw[guiblue, very thick, rounded corners=2pt]
+    (0.0,3.0) rectangle (4.5,4.5);
+\draw[guiblue, very thick, rounded corners=2pt]
+    (0.0,0.0) rectangle (1.5,4.5);
 
-% Row 1
-\node[minimum width=\w, minimum height=\h, draw, thick, fill=guired!25]
-    (c10) at (0,-\vgap) {\textbf{FP}};
-\node[minimum width=\w, minimum height=\h, draw, thick, fill=guigray!20]
-    (c11) at (\gap,-\vgap) {\textbf{TN}};
-\node[minimum width=\w, minimum height=\h, draw, thick, fill=guigray!20]
-    (c12) at (2*\gap,-\vgap) {\textbf{TN}};
+% ── predicted labels ────────────────────────
+\node[font=\small]          at (0.75,-0.35) {Cloud};
+\node[font=\small]          at (2.25,-0.35) {Clear};
+\node[font=\small]          at (3.75,-0.35) {Shadow};
+\node[font=\small\bfseries] at (2.25,-0.9)  {Predicted label};
 
-% Row 2
-\node[minimum width=\w, minimum height=\h, draw, thick, fill=guired!25]
-    (c20) at (0,-2*\vgap) {\textbf{FP}};
-\node[minimum width=\w, minimum height=\h, draw, thick, fill=guigray!20]
-    (c21) at (\gap,-2*\vgap) {\textbf{TN}};
-\node[minimum width=\w, minimum height=\h, draw, thick, fill=guigray!20]
-    (c22) at (2*\gap,-2*\vgap) {\textbf{TN}};
+% ── reference labels ────────────────────────
+\node[anchor=east, font=\small, rotate=90] at (-0.4,4.25) {Cloud};
+\node[anchor=east, font=\small, rotate=90] at (-0.4,2.75) {Clear};
+\node[anchor=east, font=\small, rotate=90] at (-0.4,1.25) {Shadow};
+\node[rotate=90, font=\small\bfseries] at (-1.5,2.25) {Reference label};
 
-% =========================
-% HIGHLIGHT (Cloud class)
-% =========================
-
-\draw[guiblue, very thick, rounded corners=3pt]
-    (c00.north west) rectangle (c02.south east);
-
-\draw[guiblue, very thick, rounded corners=3pt]
-    (c00.north west) rectangle (c20.south east);
-
-% =========================
-% HEADERS
-% =========================
-
-\node[font=\small\bfseries] at (\gap, 1.6)
-{Predicted Label};
-
-\node[font=\small] at (0, 1.0) {Cloud};
-\node[font=\small] at (\gap, 1.0) {Clear};
-\node[font=\small] at (2*\gap, 1.0) {Shadow};
-
-\node[font=\small\bfseries, rotate=90] at (-2.8,-\vgap)
-{Reference Label};
-
-\node[font=\small, rotate=90] at (-1.9, 0) {Cloud};
-\node[font=\small, rotate=90] at (-1.9,-\vgap) {Clear};
-\node[font=\small, rotate=90] at (-1.9,-2*\vgap) {Shadow};
-
-% =========================
-% FOOTNOTE
-% =========================
-
+% ── footnote ────────────────────────────────
 \node[font=\scriptsize\itshape, text=guiblue!80!black]
-    at (\gap,-5.0)
-    {Highlighted region: Cloud class (one-vs-rest interpretation)};
+    at (2.25,-1.5) {Highlighted: Cloud class (one-vs-rest)};
 
 \end{tikzpicture}
-\caption{Multi-class confusion matrix.}
+\caption{Multi-class confusion matrix with one-vs-rest interpretation for the Cloud class.}
 \label{fig:confusion_matrix_multi}
 \end{figure}
+
+In this work, confusion matrices are normalized by row, meaning each value represents the proportion of pixels of the true class predicted as each class. Diagonal values therefore correspond to per class recall (explained below), and the total number of pixels per class is reported alongside the matrix for reference.
 
 From the confusion matrix, a range of commonly used evaluation metrics can be derived to quantify model performance \cite{powers2020}, and the most commonly used of these metrics are described below.
 
 \textbf{Precision}, also known as user's accuracy \cite{wright2024}, expresses how reliable the predictions of a given class are. It is defined as the ratio between correctly predicted samples of the class and all samples predicted as that class:
+
 \begin{equation}
 \mathrm{Precision} = \frac{TP}{TP + FP}
 \end{equation}
+
 \textbf{Recall}, also referred to as sensitivity or producer's accuracy in remote sensing literature \cite{wright2024}, measures the ability of the model to correctly identify all pixels belonging to the given class:
 \begin{equation}
 \mathrm{Recall} = \frac{TP}{TP + FN}
@@ -487,10 +474,26 @@ where $CM_{ij}$ denotes the element of the confusion matrix at row $i$ and colum
 
 Although OA is intuitive and easy to interpret, it can be misleading in the presence of class imbalance, where high values may be achieved by favoring dominant classes such as clear pixels.
 
-\textbf{F1-score} addresses this limitation by combining precision and recall into a single metric using their harmonic mean, giving equal weight to false positives and false negatives. It is therefore particularly useful when working with imbalanced datasets:
+\textbf{Balanced Overall Accuracy (BOA)} addresses this limitation by averaging the recall across all classes, giving equal weight to each class regardless of its frequency:
+
+\begin{equation}
+\mathrm{BOA} = \frac{1}{C}\sum_{c=1}^{C}\mathrm{Recall}_c
+\end{equation}
+
+where $C$ denotes the number of classes. Unlike OA, BOA is not biased towards dominant classes and provides a more reliable measure of performance for imbalanced datasets.
+
+\textbf{F1-score} combines precision and recall into a single metric using their harmonic mean, giving equal weight to false positives and false negatives. It is therefore particularly useful when working with imbalanced datasets:
 \begin{equation}
 F_1 = \frac{2 \cdot \mathrm{Precision} \cdot \mathrm{Recall}}{\mathrm{Precision} + \mathrm{Recall}} = \frac{2 \cdot TP}{2 \cdot TP + FP + FN}
 \end{equation}
+
+\textbf{Mean F1-score (mF1)} is the arithmetic mean of per-class F1-scores:
+
+\begin{equation}
+\mathrm{mF_1} = \frac{1}{C}\sum_{c=1}^{C}F_{1,c}
+\end{equation}
+where $C$ denotes the number of classes. By averaging over all classes, the mF1 gives equal importance to minority classes, such as cloud shadow.
+
 \textbf{Intersection over Union (IoU)}, also known as the Jaccard index, measures the overlap between predicted and reference regions for a given class:
 \begin{equation}
 \mathrm{IoU} = \frac{TP}{TP + FP + FN}
@@ -503,13 +506,9 @@ For multiclass segmentation, the IoU is often averaged across all classes and is
 \begin{equation}
 \mathrm{mIoU} = \frac{1}{C}\sum_{c=1}^{C}\mathrm{IoU}_c
 \end{equation}
-where $C$ denotes the number of classes.
+where $C$ denotes the number of classes. By averaging over all classes, mIoU gives equal importance to minority classes, such as cloud shadow, just as mF1.
 
-By averaging over all classes, mIoU gives equal importance to minority classes, such as cloud shadow.
-
-In this work, mIoU is used as the primary evaluation metric, as it is well suited for imbalanced datasets. In addition, per-class IoU and per-class F1-score are reported to provide insight into model performance across individual classes.
-
-\textbf{\color{blue} Bude reportováno více metrik - upravím}
+In this work, per-class and overall metrics are reported for all experiments, including F1-score, IoU, Overall Accuracy (OA), and Balanced Overall Accuracy (BOA). Per-class metrics are reported for F1 and IoU. At the overall level, mean F1-score (mF1), mean IoU (mIoU), OA, and BOA are reported.
 
 
 \section{Loss Functions}

@@ -13,5 +13,33 @@
 
 % \section{Future Work} \label{sec:future_work}
 % Outlook...
+\newpage
+for appendix
+\begin{figure}[H]
+    \centering
 
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/s2_loss_raw}
+        \caption{Raw.}
+    \end{subfigure}
 
+    \vspace{0.5em}
+
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/s2_loss_fix}
+        \caption{Fixed (S2).}
+    \end{subfigure}
+
+    \vspace{0.5em}
+
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{text/img/s2_loss_dynamic.pdf}
+        \caption{Dynamic.}
+    \end{subfigure}
+
+    \caption{Training and validation loss curves for Sentinel-2 models under each normalization strategy.}
+    \label{fig:s2_loss}
+\end{figure}

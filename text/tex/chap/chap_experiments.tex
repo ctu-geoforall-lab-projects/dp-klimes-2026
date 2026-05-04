@@ -1,3 +1,255 @@
-\chapter{Experiments and Results} \label{chap:experiments}
+\chapter{Experiments and Results} 
+\label{chap:experiments}
 
-{\color{blue} Try fine-tune with lower learning rate}
+This chapter presents the experimental design and results of the study. The experimental design defines all transfer learning and baseline experiments investigated, along with the normalization strategies applied to each. For each experiment, summary metrics for all normalization strategies are reported in the main text, while figures including confusion matrices and visual examples of predicted cloud masks are shown for the best performing normalization strategy only. Full detailed metrics for all normalization variants are provided in Appendix~\ref{chap:appendix}.
+
+\section{Experimental Design}
+\label{sec:experimental_design}
+
+The experiments in this study are organized into two 
+groups: baseline experiments and transfer learning 
+experiments. The baseline experiments provide reference 
+points against which transfer learning performance is 
+assessed. The transfer learning experiments investigate 
+two settings — transductive and inductive — as defined 
+in Section~\ref{sec:transfer}. All transfer learning 
+experiments use a U-Net model pretrained on Sentinel-2 
+data, which is described in Section~\ref{sec:s2_training}.
+
+\subsection{Baseline Experiments}
+
+Two baseline experiments are included. MAJA \cite{hagolle2010} serves as a classical reference, evaluated directly on the VEN$\mu$S test 
+set without any training or normalization, as 
+described in Section~\ref{sec:evaluation}.
+
+\subsection{Transfer Learning Experiments}
+
+Transfer learning experiments are based on a Sentinel-2 pretrained model. Prior to any transfer learning, a U-Net model is trained on the Sentinel-2 dataset for each normalization strategy, producing three pretrained models, that serve as starting points for the transfer learning experiments. The S2 training results are reported in Section~\ref{sec:s2_training}.
+
+In the transductive setting, the pretrained model is applied directly to VEN$\mu$S data without any modification to model weights. The model produces 3-class predictions including cloud shadow, but quantitative metrics are computed on two classes (cloud and clear) only, with shadow predictions collapsed into the clear class. Shadow detection quality is assessed through visual inspection. Three normalization strategies are evaluated in the transductive setting: raw, fixed Z-score with Sentinel-2 statistics, and dynamic Z-score.
+
+In the inductive setting, three fine-tuning strategies 
+are investigated, differing in the degree of network 
+adaptation. All inductive experiments produce 2-class 
+outputs and are evaluated on cloud and clear classes. 
+Early stopping with a patience of 100 epochs is used 
+for all fine-tuning experiments. Four normalization 
+strategies are evaluated for each fine-tuning variant: 
+raw, fixed Z-score with Sentinel-2 statistics, fixed 
+Z-score with VEN$\mu$S statistics, and dynamic 
+Z-score.
+
+The full experimental design is summarized in 
+Table~\ref{tab:experiments} and the normalization 
+strategies applied to each experiment are shown in 
+Table~\ref{tab:normalization_applicability}.
+
+\begin{table}[H]
+\centering
+\caption{Summary of all experiments in this study.}
+\label{tab:experiments}
+\small
+\begin{tabular}{llllc}
+\toprule
+\textbf{ID} & \textbf{Name} & \textbf{Setting} & 
+\textbf{Fine-tuned scope} & \textbf{Patience} \\
+\midrule
+B1 & MAJA & Baseline & — & — \\
+B2 & From scratch & Baseline & — & 200 \\
+E0 & Transductive & Transductive & None & — \\
+E1 & Output layer & Inductive & Output layer & 100 \\
+E2 & Frozen encoder & Inductive & Decoder + output & 100 \\
+E3 & Full fine-tune & Inductive & Full network & 100 \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize All transfer learning 
+experiments use the best Sentinel-2 checkpoint as 
+initialization.}\\
+\multicolumn{5}{l}{\footnotesize E0 produces 3-class 
+output; all other experiments produce 2-class output.}\\
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Normalization strategies applied to each 
+experiment.}
+\label{tab:normalization_applicability}
+\small
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Experiment} & \textbf{Raw} & 
+\textbf{Fixed (S2)} & \textbf{Fixed (VEN$\mu$S)} & 
+\textbf{Dynamic} \\
+\midrule
+B1 (MAJA)            & \xmark & \xmark & \xmark & \xmark \\
+B2 (From scratch)    & \cmark & \xmark & \cmark & \cmark \\
+E0 (Transductive)    & \cmark & \cmark & \cmark & \cmark \\
+E1 (Output layer)    & \cmark & \cmark & \cmark & \cmark \\
+E2 (Frozen encoder)  & \cmark & \cmark & \cmark & \cmark \\
+E3 (Full fine-tune)  & \cmark & \cmark & \cmark & \cmark \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize Fixed (S2): statistics 
+computed from S2 training set.}\\
+\multicolumn{5}{l}{\footnotesize Fixed (VEN$\mu$S): 
+statistics computed from VEN$\mu$S training set.}\\
+\multicolumn{5}{l}{\footnotesize Dynamic: statistics 
+computed per tile from valid pixels.}\\
+\end{tabular}
+\end{table}
+
+
+\section{Sentinel-2 Model Training}
+\label{sec:s2_training}
+
+Before transfer learning experiments can be conducted, a U-Net model is trained on the Sentinel-2 dataset for each normalization strategy. The resulting models serve as starting points for all subsequent transfer learning experiments. The S2 test set metrics are reported here as a reference for source domain performance.
+
+The per-class and overall metrics for all three Sentinel-2 models on the S2 test set are summarized in Tables~\ref{tab:s2_perclass} and \ref{tab:s2_overall}.
+
+\begin{table}[H]
+\centering
+\caption{Per-class metrics for Sentinel-2 models 
+on the S2 test set.}
+\label{tab:s2_perclass}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+\multirow{2}{*}{\textbf{Normalization}} & 
+\multicolumn{2}{c}{\textbf{Cloud}} & 
+\multicolumn{2}{c}{\textbf{Clear}} & 
+\multicolumn{2}{c}{\textbf{Shadow}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+& \textbf{F1} & \textbf{IoU} & 
+\textbf{F1} & \textbf{IoU} &
+\textbf{F1} & \textbf{IoU} \\
+\midrule
+Raw        & 0.746 & 0.595 & 0.789 & 0.652 & 0.534 & 0.365 \\
+Fixed (S2) & 0.777 & 0.635 & 0.815 & 0.688 & 0.706 & 0.546 \\
+Dynamic    & 0.884 & 0.793 & 0.920 & 0.853 & 0.791 & 0.654 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Overall metrics and training convergence 
+for Sentinel-2 models.}
+\label{tab:s2_overall}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Normalization} & \textbf{mF1} & \textbf{mIoU} & 
+\textbf{OA} & \textbf{BOA} & 
+\textbf{Best epoch} & \textbf{Val loss} \\
+\midrule
+Raw        & 0.690 & 0.537 & 0.726 & 0.726 & 294 & 0.296 \\
+Fixed (S2) & 0.766 & 0.623 & 0.784 & 0.780 & 798 & 0.278 \\
+Dynamic    & 0.865 & 0.766 & 0.890 & 0.858 & 521 & 0.246 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The dynamic Z-score normalization produced substantially better results than both raw and fixed Z-score strategies across all metrics and all classes. The dynamic model achieved an mF1 of 0.865 and mIoU of 0.766, compared to 0.766 and 0.623 for fixed Z-score and 0.690 and 0.537 for raw data. This improvement can likely be explained by the per-tile normalization, which reduces radiometric differences between patches captured under varying atmospheric conditions and at different geographic locations, making the problem more consistent across the whole dataset.
+
+Shadow detection shows the largest performance gap between normalization strategies. Dynamic Z-score achieves an F1 of 0.791 for shadow, compared to 0.706 for fixed Z-score and 0.534 for raw data. Shadow is consistently the hardest class across all normalizations, which is expected given its spectral similarity to other dark surfaces and the fact that the quality of shadow class annotations was the poorest of all classes, as discussed further in Chapter~\ref{chap:discussion}.
+
+The fixed Z-score model required significantly more epochs to converge (798) compared to raw (294) and dynamic (521), suggesting that global statistics introduce more radiometric variation across patches than per-tile normalization. Training and validation 
+loss curves for all three models are provided in 
+Appendix~\ref{app:loss_curves}.
+
+The three trained models serve as starting points for the transfer learning experiments described in the following sections. Whether the performance advantage of dynamic Z-score on the S2 test set carries over to VEN$\mu$S transfer is one of the questions investigated in this study.
+
+Representative examples of S2 model predictions on the test set are shown in Figure~\ref{fig:s2_visual}. The figure illustrates the model's ability to detect both clouds and cloud shadows under the dynamic Z-score normalization strategy over multiple land cover types.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{text/img/s2_vis/20180218T083011_20180218T083855_T36RUT_0_0_vis.png}
+    \end{subfigure}
+
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{text/img/s2_vis/20180512T083601_20180512T084854_T35RQQ_0_0_vis.png}
+    \end{subfigure}
+
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{text/img/s2_vis/20190916T064629_20190916T065901_T40QCG_0_0_vis.png}
+    \end{subfigure}
+    \caption{Representative S2 test set predictions 
+    using dynamic Z-score normalization.}
+    \label{fig:s2_visual}
+\end{figure}
+
+The confusion matrix for the dynamic Z-score model on the S2 test set is shown in Figure~\ref{fig:s2_confusion}. The confusion matrix reveals that the model performs well on the cloud and clear classes, with recall values of 0.85 and 0.94. Shadow shows the weakest performance, with a recall of 0.68, and is most frequently confused with the clear class 
+(0.15) and the cloud class (0.17). The cloud class 
+shows some confusion with the clear class (0.12), 
+which is expected at cloud boundaries where the 
+transition between classes is gradual.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\definecolor{cellhigh}{RGB}{33,102,172}
+\definecolor{celllow}{RGB}{214,232,246}
+\definecolor{cellzero}{RGB}{247,251,255}
+\fill[cellhigh!94] (0.0,3.0) rectangle (1.5,4.5);
+\node[black, font=\normalsize\bfseries] at (0.75,3.75) {0.94};
+\fill[cellzero] (1.5,3.0) rectangle (3.0,4.5);
+\node[black, font=\normalsize\bfseries] at (2.25,3.75) {0.03};
+\fill[cellzero] (3.0,3.0) rectangle (4.5,4.5);
+\node[black, font=\normalsize\bfseries] at (3.75,3.75) {0.02};
+\fill[celllow!23] (0.0,1.5) rectangle (1.5,3.0);
+\node[black, font=\normalsize\bfseries] at (0.75,2.25) {0.12};
+\fill[cellhigh!85] (1.5,1.5) rectangle (3.0,3.0);
+\node[black, font=\normalsize\bfseries] at (2.25,2.25) {0.85};
+\fill[cellzero] (3.0,1.5) rectangle (4.5,3.0);
+\node[black, font=\normalsize\bfseries] at (3.75,2.25) {0.03};
+\fill[celllow!29] (0.0,0.0) rectangle (1.5,1.5);
+\node[black, font=\normalsize\bfseries] at (0.75,0.75) {0.15};
+\fill[celllow!34] (1.5,0.0) rectangle (3.0,1.5);
+\node[black, font=\normalsize\bfseries] at (2.25,0.75) {0.17};
+\fill[cellhigh!68] (3.0,0.0) rectangle (4.5,1.5);
+\node[black, font=\normalsize\bfseries] at (3.75,0.75) {0.68};
+\draw[black!50, line width=0.5pt] (0,0) rectangle (4.5,4.5);
+\draw[black!20, line width=0.3pt] (1.5,0) -- (1.5,4.5);
+\draw[black!20, line width=0.3pt] (0,1.5) -- (4.5,1.5);
+\draw[black!20, line width=0.3pt] (3.0,0) -- (3.0,4.5);
+\draw[black!20, line width=0.3pt] (0,3.0) -- (4.5,3.0);
+\node[font=\small] at (0.75,-0.35) {clear};
+\node[font=\small] at (2.25,-0.35) {cloud};
+\node[font=\small] at (3.75,-0.35) {shadow};
+\node[anchor=east, font=\small] at (-0.2,3.93) {clear};
+\node[anchor=east, font=\footnotesize, black!60] at (-0.2,3.57) {[1364078]};
+\node[anchor=east, font=\small] at (-0.2,2.43) {cloud};
+\node[anchor=east, font=\footnotesize, black!60] at (-0.2,2.07) {[1059227]};
+\node[anchor=east, font=\small] at (-0.2,0.9299999999999999) {shadow};
+\node[anchor=east, font=\footnotesize, black!60] at (-0.2,0.5700000000000001) {[426586]};
+\node[font=\small] at (2.25,-0.9) {Predicted label};
+\node[rotate=90, font=\small] at (-2.2,2.25) {True label};
+\end{tikzpicture}
+\caption{Confusion matrix for the Sentinel-2 
+    model with dynamic Z-score normalization on the 
+    S2 test set.}
+\label{fig:s2_confusion}
+\end{figure}
+
+\section{Baseline Results}
+\label{sec:baseline_results}
+
+This section presents the results of the two baseline 
+experiments: MAJA and the U-Net model trained from 
+scratch on VEN$\mu$S data. These baselines serve as 
+reference points for evaluating the transfer learning 
+experiments in the following sections.
+
+\subsection{MAJA}
+\label{sec:maja_results}
+
+\textbf{TODO: Add MAJA results and confusion matrix.}
+
+\subsection{VEN$\mu$S From Scratch}
+\label{sec:scratch_results}
+
+\textbf{TODO: Add from-scratch results, tables, 
+confusion matrix, visual examples, and analysis.}
