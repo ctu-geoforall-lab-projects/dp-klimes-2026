@@ -1,4 +1,3 @@
-# src/filter_by_review.py
 import csv
 import shutil
 import json

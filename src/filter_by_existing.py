@@ -21,11 +21,9 @@ def filter_by_existing(source_dir, reference_dir, output_dir):
         base = get_base_stem(tif.stem)
         if base in reference_names:
             if base == tif.stem:
-                # originál — přesuň
                 tif.rename(output_dir / tif.name)
                 moved += 1
             else:
-                # rotace originálu který je v reference — smaž
                 tif.unlink()
                 deleted += 1
 
