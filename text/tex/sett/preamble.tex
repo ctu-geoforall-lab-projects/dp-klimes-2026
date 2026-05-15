@@ -47,7 +47,9 @@ hidelinks,
 \newcommand{\xmark}{\ding{55}}
 
 % Use the bibtex backend with the authoryear citation style (which resembles APA) (citestyle=alphabetic)
-\usepackage[backend=bibtex,style=numeric,natbib=true,sorting=none]{biblatex} 
+% \usepackage[backend=bibtex,style=numeric,natbib=true,sorting=none]{biblatex} 
+\usepackage[backend=bibtex, style=numeric, sorting=none]{biblatex}
+
 % citestyle=authoryear-comp, nastaví zapis jako autor, rok
 % sorting=ynt serazeni podle roku
 % Change the name format for the bibliography
@@ -95,7 +97,8 @@ hidelinks,
 \usepackage{etoolbox}
 
 \usepackage{tikz}
-
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 \usepackage{listofitems} % for \readlist to create arrays
 \usetikzlibrary{positioning, fit, arrows.meta, shapes, babel} % for arrow size
 \usepackage[outline]{contour} % glow around text
@@ -176,9 +179,11 @@ hidelinks,
 \usepackage{tocloft}
 \addtolength{\cftchapnumwidth}{5pt}
 
-\makeatletter
-\def\l@figure{\@dottedtocline{1}{1.5em}{3em}}
-\makeatother
+% \makeatletter
+% \def\l@figure{\@dottedtocline{1}{1.5em}{3em}}
+% \makeatother
+\setlength{\cftfigindent}{1.5em}
+\setlength{\cftfignumwidth}{3em}
 
 \usepackage{pdfpages}
 
@@ -191,7 +196,7 @@ hidelinks,
 \usepackage[useregional,showseconds=false]{datetime2}
 
 \usepackage{longtable}
-
+\usepackage{tocvsec2}
 \usepackage{array} % for defining a new column type
 \usepackage{varwidth} %for the varwidth minipage environment
 \newcolumntype{M}{>{\begin{varwidth}{4cm}}l<{\end{varwidth}}}
@@ -204,8 +209,7 @@ hidelinks,
 
 \input{tex/sett/acronyms.tex}
 
-% \includeonly{tex/chap/chap_hardware.tex,tex/chap/chap_data_collection.tex,tex/chap/chap_features,tex/chap/chap_regressors.tex,tex/chap/chap_gui.tex,tex/chap/chap_eval.tex,tex/chap/chap_discussion.tex,tex/chap/chap_conclusion.tex,tex/chap/chap_introduction.tex}
-% \includeonly{tex/chap/chap_introduction.tex,tex/chap/chap_features.tex}
+
 \newcommand{\draftfig}{false}
 
 \setcounter{tocdepth}{1}

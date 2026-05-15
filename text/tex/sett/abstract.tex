@@ -2,25 +2,85 @@
 %	ABSTRACT PAGE
 %----------------------------------------------------------------------------------------
 
-\begin{abstract}
-\addchaptertocentry{\abstractname} % Add the abstract to the table of contents
-	...\\
-\begin{center}
-	{\large\bfseries{Key words} \par}
-	\bigskip
-	\end{center}
-transfer learning, remote sensing, deep learning, convolutional neural network\\
-\vspace{20pt}
-\begin{center}
-	{\huge\bfseries{Abstrakt} \par}
-	\bigskip
-    \bfseries{\ttitleeng}
-\end{center}
-...\\
-\begin{center}
-	{\large\bfseries{Klíčová slova} \par}
-	\bigskip
-	\end{center}
-...\\
+% \begin{abstract}
+% \addchaptertocentry{\abstractname} % Add the abstract to the table of contents
 
-\end{abstract}
+% Cloud detection is an essential preprocessing step in optical satellite 
+% imagery analysis. Deep learning models trained on one sensor often fail to 
+% generalize to another due to differences in spectral configuration and 
+% radiometric properties, making cross-sensor transfer learning a practically 
+% important but underexplored problem. This thesis systematically investigates 
+% transfer learning strategies for cloud semantic segmentation, focusing on 
+% the transfer from Sentinel-2 to VEN$\mu$S imagery. A U-Net model was 
+% trained on a subset of the CloudSEN12+ dataset and adapted to a VEN$\mu$S 
+% cloud masking dataset using four normalization strategies and four transfer 
+% learning configurations, ranging from zero-shot transductive transfer to 
+% full network fine-tuning. In the transductive setting, dynamic Z-score 
+% normalization proved decisive, enabling strong cross-sensor generalization 
+% without any modification to the model weights. In the inductive setting, 
+% frozen encoder fine-tuning achieved the best overall result, surpassing a 
+% model trained from scratch on VEN$\mu$S data. The results confirm that when 
+% the source and target domains are sufficiently similar, transfer learning 
+% can match or exceed fully supervised target domain solutions, significantly 
+% reducing the effort required to deploy cloud detection for new satellite 
+% missions.
+% \begin{center}
+% 	{\large\bfseries{Key words} \par}
+% 	\bigskip
+% 	\end{center}
+% transfer learning, remote sensing, deep learning, convolutional neural network\\
+% \vspace{20pt}
+% \begin{center}
+% 	{\huge\bfseries{Abstrakt} \par}
+% 	\bigskip
+%     \bfseries{\ttitleeng}
+% \end{center}
+% ...\\
+% \begin{center}
+% 	{\large\bfseries{Klíčová slova} \par}
+% 	\bigskip
+% 	\end{center}
+% ...\\
+
+% \end{abstract}
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT PAGE
+%----------------------------------------------------------------------------------------
+\addchaptertocentry{\abstractname}
+\thispagestyle{plain}
+\null\vfil
+
+\begin{center}
+{\huge\bfseries{Abstract} \par}
+\bigskip
+\end{center}
+
+Cloud detection is an essential preprocessing step in optical satellite imagery analysis. Deep learning models trained on one sensor often fail to generalize to another due to differences in spectral configuration and radiometric properties, making cross-sensor transfer learning a practically important research problem. This thesis systematically investigates transfer learning strategies for cloud semantic segmentation, focusing on the transfer from Sentinel-2 to VEN$\mu$S imagery. A U-Net model was trained on a subset of the CloudSEN12+ dataset and adapted to a VEN$\mu$S cloud masking dataset using four normalization strategies and four transfer learning configurations, ranging from transductive transfer to full network fine-tuning. In the transductive setting, dynamic Z-score normalization proved decisive, enabling strong cross-sensor generalization without any modification to the model weights. In the inductive setting, frozen encoder fine-tuning achieved the best overall result, surpassing a model trained from scratch on VEN$\mu$S data. The results confirm that when the source and target domains are sufficiently similar, transfer learning can match or even exceed the performance of a model trained entirely on target domain data. This significantly reduces the effort required to deploy cloud detection for new satellite missions.
+
+\begin{center}
+{\large\bfseries{Key words} \par}
+\bigskip
+\end{center}
+\noindent transfer learning, cloud detection, remote sensing, deep learning, 
+convolutional neural network, semantic segmentation, Sentinel-2, VEN$\mu$S
+
+\clearpage
+\thispagestyle{plain}
+\null\vfil
+
+\begin{center}
+{\huge\bfseries{Abstrakt} \par}
+\bigskip
+\end{center}
+
+% Czech abstract text here
+
+\begin{center}
+{\large\bfseries{Klíčová slova} \par}
+\bigskip
+\end{center}
+\noindent % Czech keywords here
+
+\vfil\vfil\vfil\null
+\clearpage

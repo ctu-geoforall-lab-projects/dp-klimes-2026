@@ -6,20 +6,17 @@
 % ------------------------------------------------------------------------------------------------------
 
 \input{tex/sett/title_page}
-%\noindent\makebox[\textwidth]{\includegraphics[width=\paperwidth]{img/zadani1.jpg}}
-%\newpage
-%\noindent\makebox[\textwidth]{\includegraphics[width=\paperwidth]{img/zadani2.PDF}}
-
-% \noindent\makebox[\textwidth]{\includegraphics[width=0.8\paperwidth]{img/zadani_bp.pdf}}
-% \thispagestyle{empty}
-% \clearpage
+\frontmatter  
 \includepdf[
   pages=-,
   pagecommand={\thispagestyle{empty}}
 ]{img/zadani_dp.pdf}
-
-\frontmatter  
-\input{tex/sett/declaration_of_authorship}
+\includepdf[
+  pages=-,
+  pagecommand={\thispagestyle{empty}}
+]{img/declaration.pdf}
+% \frontmatter  
+% \input{tex/sett/declaration_of_authorship}
 % \input{tex/sett/quotation}
 \input{tex/sett/acknowledgements}
 \input{tex/sett/abstract}
@@ -40,11 +37,14 @@
 % ------------------------------------------------------------------------------------------------------
 \input{tex/sett/bibliography}
 % ------------------------------------------------------------------------------------------------------
-\appendix 											% Cue to tell LaTeX that the following "chapters" are Appendices
-\renewcommand{\thechapter}{A\arabic{chapter}}		% Appendices A1, A2, ...
-% \include{tex/appx/app_structure_of_the_workspace}
-%\include{tex/appx/app_grid_search.tex}
-%\include{tex/appx/app_db_structure.tex}
+
+% \appendix 											% Cue to tell LaTeX that the following "chapters" are Appendices
+% \renewcommand{\thechapter}{A\arabic{chapter}}		% Appendices A1, A2, ...
+% \include{text/tex/appx/additional_results}
+\addtocontents{toc}{\bigskip\noindent\textbf{Appendix}\par}
+\appendix
+
+\include{text/tex/appx/additional_results}
 % ------------------------------------------------------------------------------------------------------
 \end{document}  
 % ------------------------------------------------------------------------------------------------------
