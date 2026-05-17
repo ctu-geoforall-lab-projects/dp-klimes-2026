@@ -1,20 +1,11 @@
-\chapter{Introduction} \label{chap:introduction}
-% \uv{Introduction section of your paper leads a reader from a well-known to the particular spot}
-
-% Skeleton:
-% \begin{itemize}
-%     \item background
-%     \item gap
-%     \item proposed method
-%     \item outline
-% \end{itemize}
+\chapter{Introduction} 
+\label{chap:introduction}
 
 Optical satellite imagery is one of the primary sources of data for Earth observation, enabling monitoring of land cover, vegetation, urban development, and environmental change at global scale. As the number of satellite missions grows and sensor resolutions increase, the volume of acquired data is expanding rapidly, making automated processing pipelines essential. At the same time, the diversity of satellite sensors presents a significant challenge. Deep learning methods, which have become the dominant approach in many remote sensing tasks, are particularly affected by this. They often require large amounts of labeled training data, which are expensive and time-consuming to produce, and models trained on one sensor often do not generalize well to another. Cloud detection is a particularly important example of this problem, as it is a prerequisite for virtually any downstream analysis of optical satellite imagery. Transferring cloud detection knowledge from a well-established sensor to a new one could reduce or even eliminate the need for labeled target domain data, significantly lowering the effort required to develop cloud detection methods for new satellite missions. This thesis investigates whether and how this can be achieved through transfer learning.
 
 Transfer learning has been explored for cross-sensor cloud detection in a limited number of works. Existing approaches have either focused on developing sensor-agnostic models through data augmentation and normalization, or applied transfer learning without systematically exploring the range of available adaptation strategies. The combined effect of fine-tuning strategies and normalization approaches in cross-sensor transfer scenarios remains underexplored.
 
-
-This thesis addresses this gap by investigating cross-sensor transfer learning for cloud semantic segmentation on satellite imagery, with a focus on systematically comparing fine-tuning strategies and normalization approaches for the transfer of knowledge from Sentinel-2 to VEN$\mu$S imagery. Sentinel-2 is a well-established Earth observation mission with large publicly available labeled datasets, while VEN$\mu$S was a smaller research mission with a similar but not identical spectral configuration, making it a representative target for cross-sensor transfer. The goals of this thesis are to establish the theoretical foundations of cross-sensor transfer learning for cloud detection, to prepare and preprocess source and target datasets, to train and evaluate a deep learning model under multiple transfer learning and normalization configurations, and to compare the transfer learning results against a from-scratch deep learning baseline and a classical cloud detection algorithm. The study is guided by three research questions:
+This thesis addresses this gap by investigating cross-sensor transfer learning for cloud semantic segmentation on satellite imagery, with a focus on comparison of fine-tuning strategies and normalization approaches for the transfer of knowledge from Sentinel-2 (S2) to VEN$\mu$S (Vegetation and Environment monitoring on a New Micro-Satellite) imagery. Sentinel-2 is a well-established Earth observation mission with large publicly available labeled datasets, while VEN$\mu$S was a smaller research mission with a similar but not identical spectral configuration, making it a representative target for cross-sensor transfer. The goals of this thesis are to establish the theoretical foundations of cross-sensor transfer learning for cloud detection, to prepare and preprocess source and target datasets, to train and evaluate a deep learning model under multiple transfer learning and normalization configurations, and to compare the transfer learning results against a from-scratch deep learning baseline and a classical cloud detection algorithm. The study is guided by three research questions:
 
 \begin{enumerate}
     \item Can a U-Net model trained on Sentinel-2 data generalize to VEN$\mu$S imagery using only spectral band alignment as a base domain adaptation, and how does additional input-level radiometric normalization     affect this generalization?

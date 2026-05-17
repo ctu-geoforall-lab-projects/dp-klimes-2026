@@ -1,18 +1,14 @@
 \chapter{Theoretical Background} \label{chap:theoretical_background}
 
-This chapter provides the theoretical background necessary for understanding the methods and experimental design used in this thesis. It begins with an overview of cloud detection, its importance in optical satellite imagery analysis, and the main challenges associated with it. The most common cloud detection methods are then reviewed, with a focus on deep learning approaches and the U-Net architecture used in this work. The principles of transfer learning are subsequently described, including the formal definitions of transductive and inductive settings and common fine-tuning strategies. Finally, the evaluation metrics and loss functions used throughout the experimental part of the thesis are introduced.
+This chapter provides the theoretical background necessary for understanding the methods and experimental design used in this thesis. Section~\ref{sec:cloud_detection} introduces cloud detection, its importance in optical satellite imagery analysis, and the main challenges associated with it. Section~\ref{sec:cloud_detection_methods} reviews the most common cloud detection methods, with a focus on deep learning approaches and the U-Net architecture. Section~\ref{sec:theoretical_tl} describes the principles of transfer learning, including the formal definitions of transductive and inductive settings and common fine-tuning strategies. Finally, Section~\ref{sec:evaluation_metrics} introduces the evaluation metrics and Section~\ref{sec:loss_functions} the loss functions used throughout the experimental part of the thesis.
 
 
 \section{Cloud Detection}
 \label{sec:cloud_detection}
-% \subsection{Problem Definition}
-Since approximately two‑thirds of the Earth's surface is covered by clouds at any given time \cite{king2013}, cloud detection is an essential preprocessing step in the analysis of optical satellite imagery \cite{zhiwei2022}. It is typically formulated as a semantic segmentation problem, where each pixel in a satellite image is labeled as either cloud or cloud-free \cite{wang2024}. The presence of clouds prevents optical satellite imaging systems from obtaining useful observations by blocking the view of the Earth's surface. Accurate identification of cloudy pixels is, therefore, crucial in many types of remote sensing applications, including land cover monitoring, disaster response, and military surveillance \cite{wang2024, singh2025}.
 
+Since approximately two‑thirds of the Earth's surface is covered by clouds at any given time \cite{king2013}, cloud detection is an essential preprocessing step in the analysis of optical satellite imagery \cite{zhiwei2022}. It is typically formulated as a semantic segmentation problem, where each pixel in a satellite image is labeled as either cloud or cloud-free, or, in some approaches, cloud, cloud shadow, or clear \cite{wang2024}. The presence of clouds prevents optical satellite imaging systems from obtaining useful observations by blocking the view of the Earth's surface. Accurate identification of cloudy pixels is, therefore, crucial in many types of remote sensing applications, including land cover monitoring, disaster response, and military surveillance \cite{wang2024, singh2025}.
 
-% \subsection{Challenges}
-% \label{chap:cloud_detection_challenges}
-
-There are several challenges that complicate precise cloud detection. First, clouds can exhibit spectral reflectance similar to bright surfaces such as snow, desert areas, or some urban regions, which may lead to misclassifications. In addition, there is a high variability in cloud types. According to \cite{singh2025}, clouds can be categorized based on their height above ground level or based on optical density. On the basis of height, clouds are typically sorted into low, medium, and high categories. Low clouds are found below approximately 2 km and are in most cases optically thick, often completely blocking the view of Earth's surface and producing strong shadows. Medium clouds are found between 2 km and 6 km and are slightly less dense than low clouds, partially limiting surface visibility. High clouds occur above 6 km, are mostly optically thin, and the surface under them remains visible, although often blurry \cite{beatens2019}. While cloud altitude provides a helpful way to categorize clouds, their optical density also plays an important role in order to classify clouds automatically \cite{wang2024}. Thick clouds have opacity above 50\% and obscure the surface and cast dark shadows. These shadows are an additional challenge in automated cloud detection, due to their appearance being influenced by cloud shape, height, thickness, sun angle, and surface properties \cite{singh2025}. Cloud shadows can be mistaken for water bodies, shaded areas or other dark regions, making their accurate identification also essential \cite{hollstein2016}. Thin clouds, on the other hand, have opacity under 50\% and allow partial visibility of the surface \cite{singh2025}. Thin clouds can also cast shadows, although these are usually fainter and even more difficult to detect  \cite{zhiwei2022}. A~comparison of thick and thin clouds is shown in Figure~\ref{fig:cloud_types}.
+There are several challenges that complicate precise cloud detection. First, clouds can exhibit spectral reflectance similar to bright surfaces such as snow, desert areas, or some urban regions, which may lead to misclassifications. In addition, there is a high variability in cloud types. According to \cite{singh2025}, clouds can be categorized based on their height above ground level or based on optical density. On the basis of height, clouds are typically sorted into low, medium, and high categories. Low clouds are found below approximately 2 km and are in most cases optically thick, often completely blocking the view of Earth's surface and producing strong shadows. Medium clouds are found between 2 km and 6 km and are slightly less dense than low clouds, partially limiting surface visibility. High clouds occur above 6 km, are mostly optically thin, and the surface under them remains visible, although often blurry \cite{beatens2019}. While cloud altitude provides a helpful way to categorize clouds, their optical density also plays an important role in order to classify clouds automatically \cite{wang2024}. Thick clouds have opacity above 50\%, obscure the surface and cast dark shadows. These shadows are an additional challenge in automated cloud detection, due to their appearance being influenced by cloud shape, height, thickness, sun angle, and surface properties \cite{singh2025}. Cloud shadows can be mistaken for water bodies, shaded areas or other dark regions, making their accurate identification also essential \cite{hollstein2016}. Thin clouds, on the other hand, have opacity under 50\% and allow partial visibility of the surface \cite{singh2025}. Thin clouds can also cast shadows, although these are usually fainter and even more difficult to detect  \cite{zhiwei2022}. A~comparison of thick and thin clouds is shown in Figure~\ref{fig:cloud_types}.
 
 \begin{figure}[H]
     \centering
@@ -35,23 +31,24 @@ There are several challenges that complicate precise cloud detection. First, clo
 
 
 \section{Methods for Cloud Detection}
+\label{sec:cloud_detection_methods}
 
 Given the complexity and significance of the problem and the challenges described above, a wide range of cloud detection methods and algorithms have been proposed over the last decades. These methods continue to evolve in order to improve detection accuracy and further automate the process. Various classifications of these methods have been proposed in the literature, reflecting differences in input data, algorithmic approach, and level of automation. 
 
-Cloud detection methods in the literature can generally be classified along two main dimensions. The first dimension considers the algorithmic approach and level of automation, while the second dimension focuses on the type of input data and the features exploited by the algorithms. These two perspectives often overlap, and the choice of classification depends on the focus of the study and the available data.
+Cloud detection methods in the literature can generally be classified along two main criteria. The first criterion considers the algorithmic approach and level of automation, while the second criterion focuses on the type of input data and the features exploited by the algorithms. These two perspectives often overlap, and the choice of classification depends on the focus of the study and the available data.
 
-Focusing on the algorithmic dimension, Singh et al. \cite{singh2025} divide methods into manual, automated, and active learning approaches. Even though manual methods are generally the most accurate, they require the most effort and are primarily used today for dataset creation. Automated methods include both rule-based and machine learning approaches, which operate without human intervention. Active learning represents a specialized approach, often based on machine learning, that uses human feedback to train and refine the algorithm’s predictions. A more common distinction, used for example by Wang et al. \cite{wang2024}, categorizes cloud detection methods into physical-rule or threshold-based, temporal-change-based, and machine learning-based algorithms. Li et al. \cite{zhiwei2022} additionally include variational-model-based methods as a separate category of cloud detection algorithms.
 
-Considering the type of input data, cloud detection methods can be classified according to the features extracted and the temporal coverage of the imagery. Li et al. \cite{zhiwei2022} further classify cloud and cloud-shadow detection algorithms based on the type of features used. Methods can rely on spectral features, spectral-spatial features, spectral-temporal features, spectral-spatial–temporal features, or multi-source features, which can be extracted from mono-temporal, multi-temporal, or multi-source data. Singh et al. \cite{singh2025} further classify cloud detection methods based on the number of spectral bands used. Single-band approaches rely on one dominant band sensitive to clouds, while multi-band approaches combine several bands (e.g., RGB, NIR) to improve detection accuracy.
+Focusing on the algorithmic criterion, Singh et al. \cite{singh2025} divide methods into manual, automated, and active learning approaches. Even though manual methods are generally the most accurate, they require the most effort and are primarily used today for ground truth dataset creation. Automated methods include both rule-based and machine learning approaches, which operate without human intervention. Active learning represents a specialized approach, often based on machine learning, that uses human feedback to train and refine the algorithm’s predictions. A more common distinction, used for example by Wang et al. \cite{wang2024}, categorizes cloud detection methods into physical-rule or threshold-based, temporal-change-based, and machine learning-based algorithms. Li et al. \cite{zhiwei2022} additionally include variational-model-based methods as a separate category of cloud detection algorithms.
 
-For the purpose of this thesis, the classification based on the algorithmic approach and level of automation is more relevant than the classification based on the type of input data or features. In the following sections, algorithm-based categories relevant in context of this work are described.
+Considering the type of input data, cloud detection methods can be classified according to the features extracted and the temporal coverage of the imagery. Li et al. \cite{zhiwei2022} further classify cloud and cloud-shadow detection algorithms based on the type of features used. Methods can rely on spectral features, spectral-spatial features, spectral-temporal features, spectral-spatial–temporal features, or multi-source features, which can be extracted from mono-temporal, multi-temporal, or multi-source data. Singh et al. \cite{singh2025} further classify cloud detection methods based on the number of spectral bands used. Single-band approaches rely on one dominant band sensitive to clouds, while multi-band approaches combine several bands (e.g., red-green-blue (RGB), near-infrared (NIR)) to improve detection accuracy.
 
+The classification based on the algorithmic approach and level of automation proposed by Wang et al. \cite{wang2024} is adopted, as it covers all three algorithm-based categories relevant to this work.
 
 \subsection{Threshold-Based Methods}
 
-Threshold-based algorithms represent one of the earliest and most widely used approaches for cloud detection. These algorithms perform cloud detection by applying predefined thresholds to one or more spectral bands in order to classify individual pixels \cite{zhiwei2022, singh2025}. These thresholds are typically determined based on characteristic cloud properties, such as high reflectance in visible bands or specific spectral behavior in selected wavelengths \cite{wang2024}. Due to their simplicity and low computational requirements, these methods have been widely used in many operational systems \cite{pesek2022}.
+Threshold-based algorithms represent one of the earliest and most widely used approaches for cloud detection \cite{wang2024}. These algorithms perform cloud detection by applying predefined thresholds to one or more spectral bands in order to classify individual pixels \cite{zhiwei2022, singh2025}. These thresholds are typically determined based on characteristic cloud properties, such as high reflectance in visible bands or specific spectral behavior in selected wavelengths \cite{wang2024}. Due to their simplicity and low computational requirements, these methods have been widely used in many operational systems \cite{pesek2022}.
 
-However, a major limitation of many threshold-based approaches is their dependence on empirically defined parameters. Thresholds are defined for specific sensors, scenes, and atmospheric conditions and for this reason, the algorithms are often applicable only to specific sensor or sensors similar to the original one \cite{zhiwei2022}. Several algorithms have been developed for different satellite missions \cite{wang2024, pesek2022}, including the Automated Cloud Cover Assessment (ACCA) for Landsat imagery \cite{irish2000, irish2006}, as well as Sen2Cor for Sentinel-2 imagery \cite{knorn2017} and CloudMask for MODIS imagery \cite{ackerman1998}. To improve applicability, some methods have been extended to support multiple satellite platforms. For example, FMask was originally developed for Landsat \cite{zhu2012} and later adapted for Sentinel-2 \cite{zhu2015}. 
+However, a major limitation of many threshold-based approaches is their dependence on empirically defined parameters. Thresholds are defined for specific sensors, regions, and atmospheric conditions and for this reason, the algorithms are often applicable only to specific sensor or sensors similar to the original one \cite{zhiwei2022}. Several algorithms have been developed for different satellite missions \cite{wang2024, pesek2022}, including the Automated Cloud Cover Assessment (ACCA) for Landsat imagery \cite{irish2000, irish2006}, as well as Sen2Cor for Sentinel-2 imagery \cite{knorn2017} and CloudMask for MODIS imagery \cite{ackerman1998}. To improve applicability, some methods have been extended to support multiple satellite platforms. For example, FMask was originally developed for Landsat \cite{zhu2012} and later adapted for Sentinel-2 \cite{zhu2015}. 
 
 Some algorithms, such as MACCS-ATCOR Joint Algorithm (MAJA), use threshold-based techniques in combination with temporal information to improve detection. The details of such multi-temporal approaches are discussed in section \ref{sec:temporal_methods}.
 
@@ -59,7 +56,7 @@ Some algorithms, such as MACCS-ATCOR Joint Algorithm (MAJA), use threshold-based
 \subsection{Temporal-Change-Based Methods}
 \label{sec:temporal_methods}
 
-Temporal-change-based algorithms achieve cloud detection by identifying changes in reflectance caused by clouds or cloud shadows. By analyzing multiple views of the same location over time, these methods are particularly effective at distinguishing clouds from bright surfaces such as urban areas \cite{zhiwei2022}. An example of a temporal-change-based algorithm is the MACCS-ATCOR Joint Algorithm (MAJA), which is the default cloud-masking algorithm for VEN$\mu$S imagery, but it is also possible to use MAJA on Formosat-2, Landsat, and Sentinel-2 data \cite{hagolle2010}. MAJA combines spectral thresholding with multi-temporal analysis, using image time series to improve cloud and cloud-shadow detection \cite{pesek2022, hagolle2010}.
+Temporal-change-based algorithms achieve cloud detection by identifying changes in reflectance caused by clouds or cloud shadows. By analyzing multiple views of the same location over time, these methods are particularly effective at distinguishing clouds from bright surfaces such as urban areas \cite{zhiwei2022}. An example of a temporal-change-based algorithm is MAJA, which is the default cloud-masking algorithm for VEN$\mu$S imagery, but it is also possible to use MAJA on Formosat-2, Landsat, and Sentinel-2 data \cite{hagolle2010}. MAJA combines spectral thresholding with multi-temporal analysis, using image time series to improve cloud and cloud-shadow detection \cite{pesek2022, hagolle2010}.
 
 Overall, temporal-change-based approaches offer enhanced accuracy compared to threshold-based methods, but they require multi-temporal data and additional processing \cite{zhiwei2022, pesek2022}.
 
@@ -67,9 +64,9 @@ Overall, temporal-change-based approaches offer enhanced accuracy compared to th
 \subsection{Machine Learning-Based Methods}
 \label{sec:ml_methods} 
 
-Machine learning-based methods have been widely applied to cloud detection as an alternative to threshold-based approaches. These methods learn from the input data and iteratively optimize their performance. They can be divided into supervised and unsupervised approaches. Supervised methods learn the relationship between input features and cloud labels from annotated training data, allowing them to adapt to different cloud types, surface types and lighting conditions. On the other hand, unsupervised methods try to identify patterns or clusters in the data without labeled samples, for example by grouping pixels with similar spectral properties \cite{singh2025, wang2024}. In context of cloud detection, supervised methods are used more frequently, as they typically yield better results compared to unsupervised methods.
+Machine learning-based methods have been widely applied to cloud detection as an alternative to threshold-based approaches \cite{singh2025, wang2024}. These methods learn from the input data and iteratively optimize their performance. They can be divided into supervised and unsupervised approaches. Supervised methods learn the relationship between input features and cloud labels from annotated training data, allowing them to adapt to different cloud types, surface types and lighting conditions. On the other hand, unsupervised methods try to identify patterns or clusters in the data without labeled samples, for example by grouping pixels with similar spectral properties.
 
-Even though traditional supervised machine learning methods, such as decision trees, random forests and support vector machines can learn from the input data, they are limited in their ability to capture complex spatial patterns. This is because they typically operate on spectral features extracted from individual pixels. It is possible to include additional spatial features to improve detection accuracy, but this requires explicit feature engineering and thus leads to increased workload \cite{singh2025, zhiwei2022}. 
+Even though traditional supervised machine learning methods, such as decision trees, random forests and support vector machines can learn from the input data, they are limited in their ability to capture complex spatial patterns. This is because they typically operate on spectral features extracted from individual pixels. It is possible to include additional spatial features to improve detection accuracy, but this requires explicit feature engineering, which is particularly challenging for clouds due to their highly variable shapes and appearances, and thus leads to increased workload \cite{singh2025, zhiwei2022}.
 
 This limitation has led to the rapid development and adoption of deep learning approaches \cite{wang2024}. In particular, convolutional neural networks (CNNs) have proven to be efficient at capturing both spectral and spatial features from raw images \cite{pesek2022, zhu2017}. More recently, hybrid approaches combining CNNs with transformer-based architectures have also been proposed to further improve performance \cite{zhang2022, luo2025}. However, due to higher complexity of hybrid approaches, this work focuses on the usage of CNNs, possibly serving as a springboard for a hybrid-focused extension. A description of the CNN principle and an overview of CNN-based methods for cloud detection are provided in section \ref{sec:cnn}.
 
@@ -105,15 +102,13 @@ Convolutional layers apply a fixed-size kernel that slides over the input, compu
         }
     }
 
-    % Output matrix 
-    \foreach \i in {0,1,2} {
-        \foreach \j in {0,1,2} {
-            \node[fill=guigreen!50] (out\i\j) at (10+\j,-\i) {%
-                \pgfmathtruncatemacro{\val}{(\i+\j+2)}%
-                \val
-            };
-        }
+% Output matrix
+\foreach \i in {0,1,2} {
+    \foreach \j in {0,1,2} {
+        \pgfmathtruncatemacro{\val}{2*mod(\i+\j+1,4)}
+        \node[fill=guigreen!50] (out\i\j) at (10+\j,-\i) {\val};
     }
+}
 
     % Labels
     \node[above] at (1.5,0.5) {Input};
@@ -209,7 +204,7 @@ In recent years, CNNs have proven highly effective for image detection and segme
 \subsection{CNNs for Cloud Detection}
 \label{sec:cnn_cloud}
 
-According to multiple studies \cite{zhiwei2022, wang2024, pesek2022, lopez2021, pang2023}, commonly used architectures for cloud detection include segmentation models such as U-Net \cite{ronneberger2015}, SegNet \cite{badrinarayanan2016}, and DeepLabV3 \cite{chen2017}. In addition, backbone architectures such as VGG \cite{simonyan2015} and ResNet \cite{he2015} are often used as encoders, where they serve as feature extractors. Among the various approaches, U-Net \cite{ronneberger2015} has become particularly popular, with its numerous modifications consistently achieving state-of-the-art performance in remote sensing and cloud detection tasks.
+According to multiple studies \cite{zhiwei2022, wang2024, pesek2022, lopez2021, pang2023}, commonly used architectures for cloud detection include segmentation models such as U-Net \cite{ronneberger2015}, SegNet~\cite{badrinarayanan2016}, and DeepLabV3~\cite{chen2017}. In addition, backbone architectures such as VGG~\cite{simonyan2015} and ResNet \cite{he2015} are often used as encoders, where they serve as feature extractors. Among the various approaches, U-Net \cite{ronneberger2015} has become particularly popular, with its numerous modifications consistently achieving state-of-the-art performance in remote sensing and cloud detection tasks, which is the primary reason it was selected for this work.
 
 \subsubsection{U-Net}
 
@@ -219,24 +214,24 @@ The encoder, also called the contracting path in the original paper, uses a comb
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{text/img/unet.png}
+    \includegraphics[width=0.9\textwidth]{text/img/unet2.png}
     \caption{U-Net architecture.}
     
-    \caption*{Source: \cite{ronneberger2015}}
+    \caption*{Source: \cite{unet2}}
     \label{fig:unet}
 \end{figure}
 
-\subsection{Limitations of CNNs in Cloud Detection}
+\subsection{Challenges in CNN-Based Cloud Detection}
 
-As described in Section \ref{sec:cloud_detection}, one of the main challenges in cloud detection is the complexity of clouds themselves. Clouds can vary significantly in shape, thickness, and transparency \cite{singh2025}. Therefore, the model needs to be robust enough to handle these variations, which requires a diverse and representative training dataset \cite{wang2024}.
+As described in Section \ref{sec:cloud_detection}, one of the main challenges in cloud detection is the complexity of clouds themselves. Clouds can vary significantly in shape, thickness, and transparency \cite{singh2025}. Handling these variations therefore requires a robust model trained on a diverse and representative dataset \cite{wang2024}.
 
-Another important issue is class imbalance, which is common in cloud detection datasets \cite{wright2024}. In most cases, the number of cloud-free pixels is significantly larger than the number of cloud pixels. This can lead to biased training, where the model tends to favor the dominant class and may fail to correctly identify less frequent cloud regions. To address this issue, loss functions such as Dice loss \cite{milletari2016} or Tversky loss \cite{salehi2017} are often used, as they help reduce the impact of class imbalance during training \cite{pesek2022}.
+Another important issue is class imbalance, which is common in cloud detection datasets \cite{wright2024}. In most cases, the number of cloud-free pixels is significantly larger than the number of cloud pixels. This can lead to biased training, where the model tends to favor the dominant class and may fail to correctly identify less frequent cloud regions. To address this issue, Dice loss function \cite{milletari2016} is often used, as it helps to reduce the impact of class imbalance during training~\cite{pesek2022}, as described in Section~\ref{sec:loss_functions}.
 
-CNN models are also sensitive to the quality and geographic distribution of training data \cite{emadi2025}. Models trained on limited or region-specific data may not generalize well to unseen conditions or different geographic areas. This motivates the distinction between globally trained models, which are learned from global datasets, and locally trained models, which are optimized for a specific geographic region. This issue is closely related to the problem of domain shift. In remote sensing, data acquired from different satellites often vary in spatial resolution, spectral characteristics, and radiometric properties \cite{zhiwei2022, wright2025}. As a result, models trained on a dataset from one satellite often experience a drop in performance when applied to data from a different sensor \cite{wright2025}. 
+CNN models are also sensitive to the quality and geographic distribution of training data \cite{emadi2025}. Models trained on limited or region-specific data may not generalize well to unseen conditions or different geographic areas. This motivates the distinction between globally trained models, and locally trained models, which are optimized for a specific geographic region. This issue is closely related to the problem of domain shift. In remote sensing, data acquired from different satellites often vary in spatial resolution, spectral characteristics, and radiometric properties \cite{zhiwei2022, wright2025}. As a result, models trained on data from one satellite may experience a drop in performance or even fail entirely when applied to data from a different sensor \cite{wright2025}.
 
-To address these challenges, two main approaches are commonly used in remote sensing applications. The first approach focuses on developing more robust models by training on diverse and representative datasets, often combined with data augmentation techniques to improve generalization across different conditions and sensors. In this context, Wright et al. proposed OmniCloudMask \cite{wright2025}, a sensor-agnostic cloud and cloud-shadow detection model based on the U-Net architecture. Although the model was trained only on Sentinel-2 data, the authors used multiple augmentation techniques, including flipping, rotation, cropping, and, most importantly, mixed-resolution training, together with dynamic Z-score normalization to reduce spectral differences between sensors.  This enabled a model trained on Sentinel-2 data to generalize successfully to Landsat 8 and PlanetScope imagery.
+To address these challenges, two main approaches are commonly used in remote sensing applications. The first approach focuses on developing more robust models by training on diverse and representative datasets, often combined with data augmentation techniques to improve generalization across different conditions and sensors. In this context, Wright et al. proposed OmniCloudMask \cite{wright2025}, a sensor-agnostic cloud and cloud-shadow detection model based on the U-Net architecture. Although the model was trained only on Sentinel-2 data, the authors used multiple augmentation techniques, including flipping, rotation, cropping, and, most importantly, mixed-resolution training, together with dynamic Z-score normalization to reduce spectral differences between sensors.  This enabled a model trained on Sentinel-2 data to generalize successfully to Landsat~8 and PlanetScope imagery.
 
-The second approach is based on transfer learning, which aims to adapt a model trained on a source domain to a different but related target domain, and is particularly effective when source and target domains differ in their data distributions \cite{goodfellow2016}. An example was presented by Mateo-García et al. \cite{garcia2020}, who investigated transferring cloud detection model based on U-Net architecture between Landsat 8 and Proba-V sensors. Their experiments addressed three key questions related to cross-sensor transfer: adaptation from Landsat-8 to Proba-V, transfer from lower-resolution Proba-V to higher-resolution Landsat-8, and the effect of combining source and target domain data on model accuracy. The results confirmed that transfer learning can be effective in both directions and that incorporating limited target-domain data further improves performance, reducing the need for large manually labeled datasets. In the following chapter, the fundamental principles and common techniques of transfer learning are described in more detail.
+The second approach is based on transfer learning, which aims to adapt a model trained on a source domain to a different but related target domain, and is particularly effective when source and target domains differ in their data distributions \cite{goodfellow2016}. An example was presented by Mateo-García et al. \cite{garcia2020}, who investigated transferring cloud detection model based on U-Net architecture between Landsat~8 and Proba-V sensors. Their experiments addressed three key questions related to cross-sensor transfer: adaptation from Landsat~8 to Proba-V, transfer from lower-resolution Proba-V to higher-resolution Landsat~8, and the effect of combining source and target domain data on model accuracy. The results confirmed that transfer learning can be effective in both directions and that incorporating limited target-domain data further improves performance, reducing the need for large manually labeled datasets. In the following chapter, the fundamental principles and common techniques of transfer learning are described in more detail.
 
 \section{Transfer Learning}
 \label{sec:theoretical_tl}
@@ -244,14 +239,11 @@ As introduced in the previous chapter, transfer learning leverages knowledge acq
 
 The most widely adopted formal definition was introduced by Pan and Yang \cite{pan2010}. Given a source domain $\mathcal{D}_S$ with learning task $\mathcal{T}_S$ and a target domain $\mathcal{D}_T$ with learning task $\mathcal{T}_T$, transfer learning aims to help improve the learning of the target predictive function $f_T(\cdot)$ in $\mathcal{D}_T$ using the knowledge in $\mathcal{D}_S$ and $\mathcal{T}_S$, where $\mathcal{D}_S \neq \mathcal{D}_T$, or $\mathcal{T}_S \neq \mathcal{T}_T$. 
 
-A domain is defined as a pair $\mathcal{D} =\{\mathcal{X}, P(X)\}$, consisting of a feature space $\mathcal{X}$ and a marginal probability distribution $P(X)$. The condition $\mathcal{D}_S \neq \mathcal{D}_T$ implies that either the feature spaces differ ($\mathcal{X}_S \neq \mathcal{X}_T$) or the marginal distributions differ ($P_S(X) \neq P_T(X)$). In the context of remote sensing and cloud detection, this corresponds to the situation where two sensors differ in their spectral bands or spatial resolution ($\mathcal{X}_S \neq \mathcal{X}_T$), or where the same spectral features follow different radiometric distributions across sensors ($P_S(X) \neq P_T(X)$), as is often the case between different satellite missions.
+A domain is defined as a pair $\mathcal{D} =\{\mathcal{X}, P(X)\}$, consisting of a feature space $\mathcal{X}$ and a marginal probability distribution $P(X)$. The condition $\mathcal{D}_S \neq \mathcal{D}_T$ implies that the feature spaces differ ($\mathcal{X}_S \neq \mathcal{X}_T$), the marginal distributions differ ($P_S(X) \neq P_T(X)$), or both. In the context of remote sensing and cloud detection, this corresponds to the situation where two sensors differ in their spectral bands or spatial resolution ($\mathcal{X}_S \neq \mathcal{X}_T$), where the same spectral features follow different radiometric distributions across sensors ($P_S(X) \neq P_T(X)$), or both, as may occur when comparing sensors that differ in both their band configurations and calibration.
 
+A task is defined as a pair $\mathcal{T} = \{\mathcal{Y}, P(Y|X)\}$, consisting of a label space $\mathcal{Y}$ and a conditional distribution $P(Y|X)$. The condition $\mathcal{T}_S \neq \mathcal{T}_T$ implies that either the label spaces differ ($\mathcal{Y}_S \neq \mathcal{Y}_T$) or the conditional distributions differ ($P(Y_S|X_S)\neq P(Y_T|X_T)$), or both. In cloud detection, the former arises when the set of predicted classes differs between sensors, for instance, when a cloud-shadow class is present in the source domain, but absent in the target domain. The latter occurs when the relationship between spectral observations and land cover types changes due to geographic or environmental factors. For example, a specific high-reflectance signature may represent a cloud in the source domain but correspond to snow or ice in a high-altitude target domain.
 
-A task is defined as a pair $\mathcal{T} = \{\mathcal{Y}, P(Y|X)\}$, consisting of a label space $\mathcal{Y}$ and a conditional distribution $P(Y|X)$. The condition $\mathcal{T}_S \neq \mathcal{T}_T$ implies that either the label spaces differ ($\mathcal{Y}_S \neq \mathcal{Y}_T$) or the conditional distributions differ ($P(Y_S|X_S)\neq P(Y_T|X_T)$). In cloud detection, the former arises when the set of predicted classes differs between sensors, for instance, when a cloud-shadow class is present in the source domain, but absent in the target domain. The latter occurs when the relationship between spectral observations and land cover types changes due to geographic or environmental factors. For example, a specific high-reflectance signature may represent a cloud in the source domain but correspond to snow or ice in a high-altitude target domain.
-
-
-Pan and Yang \cite{pan2010} categorize transfer learning into three settings based on the relationship between source and target domains and tasks, summarized in Figure~\ref{fig:tl_settings}. In transductive transfer learning, the source and target tasks are the same ($\mathcal{T}_S = \mathcal{T}_T$) while the domains differ ($\mathcal{D}_S \neq \mathcal{D}_T$). No labeled data in the target domain are required. A representative technique is domain adaptation, which aims to reduce the discrepancy between source and target domains so that a model trained on the source can be applied to the target without any labeled target data \cite{farahani2020}. In inductive transfer learning, the target task differs from the source task ($\mathcal{T}_S \neq \mathcal{T}_T$), and labeled data in the target domain are available to help with adaptation \cite{pan2010}. When labeled source data are also available, this setting is commonly realized either by joint training, which combines source and target data into a single training set, or by fine-tuning, which uses the source-domain model as initialization for subsequent training on target data \cite{garcia2020}. In unsupervised transfer learning, no labeled data are available in either domain and the focus is on unsupervised objectives such as clustering or dimensionality reduction \cite{pan2010}.
-
+Pan and Yang \cite{pan2010} categorize transfer learning into three settings based on the relationship between source and target domains and tasks: transductive transfer learning, inductive transfer learning, and unsupervised transfer learning. These settings are summarized in Figure~\ref{fig:tl_settings}.
 
 \begin{figure}[H]
 \centering
@@ -370,8 +362,12 @@ node[pos=0.25, left, font=\scriptsize, draw=none];
 \label{fig:tl_settings}
 \end{figure}
 
+In transductive transfer learning, the source and target tasks are the same ($\mathcal{T}_S = \mathcal{T}_T$), while the domains differ ($\mathcal{D}_S \neq \mathcal{D}_T$). No labeled data in the target domain are required. A representative technique is domain adaptation, which aims to reduce the discrepancy between source and target domains so that a model trained on the source can be applied to the target without any labeled target data \cite{farahani2020}. In inductive transfer learning, the target task differs from the source task ($\mathcal{T}_S \neq \mathcal{T}_T$), and labeled data in the target domain are available to help with adaptation \cite{pan2010}. When labeled source data are also available, this setting is commonly realized either by fine-tuning, which uses the source-domain model as initialization for subsequent training on target data, or by joint training, which combines source and target data into a single training set \cite{garcia2020}. In unsupervised transfer learning, no labeled data are available in either domain and the focus is on unsupervised objectives such as clustering or dimensionality reduction \cite{pan2010}.
 
-In remote sensing, cross-sensor adaptation without any target labels corresponds to the transductive setting, while the availability of labeled target data shifts the problem to the inductive setting. Mateo-García et al. \cite{garcia2020} investigated both settings in the context of cloud detection, transferring a U-Net-based model between Landsat-8 and Proba-V. In the transductive experiments, models were trained on one sensor and evaluated on the other without any target-domain labels. In the inductive experiments, they compared two strategies: joint training, which combined labeled data from both sensors into a single training set, and fine-tuning, which initialized the model with source-domain weights and continued training on target-domain data.
+
+
+
+In remote sensing, cross-sensor adaptation without any target labels corresponds to the transductive setting, while the availability of labeled target data shifts the problem to the inductive setting. Mateo-García et al. \cite{garcia2020} investigated both settings in the context of cloud detection, transferring a U-Net-based model between Landsat-8 and Proba-V. In the transductive experiments, models were trained on one sensor and evaluated on the other without any target-domain labels. In the inductive experiments, they compared both joint training and fine-tuning.
 
 Fine-tuning can be applied either to the whole network or only to selected parts. A common fine-tuning strategy is to freeze selected layers of the pretrained network, meaning their weights are held fixed during training and receive no gradient updates. Yosinski et al.~\cite{yosinski2014} experimentally showed that shallower layers of deep neural networks usually learn more general features that can be transferred across tasks and domains, while deeper layers are more specialized to the original task. Therefore, it is often suggested to freeze earlier layers and adapt only the later layers. This is especially useful when the target dataset is small compared to the number of trainable parameters, as updating fewer weights can help reduce overfitting.
 
@@ -469,7 +465,7 @@ From the confusion matrix, a range of commonly used evaluation metrics can be de
 
 \textbf{Overall Accuracy (OA)} expresses the proportion of correctly classified pixels among all evaluated pixels. In the multiclass case, it is computed as the sum of correctly classified samples on the main diagonal of the confusion matrix divided by the total number of samples:
 \begin{equation}
-\mathrm{OA} = \frac{\sum_i CM_{ii}}{\sum_i \sum_j CM_{ij}}
+\mathrm{OA} = \frac{\sum_i CM_{ii}}{\sum_i \sum_j CM_{ij}},
 \end{equation}
 where $CM_{ij}$ denotes the element of the confusion matrix at row $i$ and column $j$. 
 
@@ -478,10 +474,12 @@ Although OA is intuitive and easy to interpret, it can be misleading in the pres
 \textbf{Balanced Overall Accuracy (BOA)} addresses this limitation by averaging the recall across all classes, giving equal weight to each class regardless of its frequency:
 
 \begin{equation}
-\mathrm{BOA} = \frac{1}{C}\sum_{c=1}^{C}\mathrm{Recall}_c
+\mathrm{BOA} = \frac{1}{C}\sum_{c=1}^{C}\mathrm{Recall}_c,
 \end{equation}
 
-where $C$ denotes the number of classes. Unlike OA, BOA is not biased towards dominant classes and provides a more reliable measure of performance for imbalanced datasets.
+where $C$ denotes the number of classes. 
+
+Unlike OA, BOA is not biased towards dominant classes and provides a more reliable measure of performance for imbalanced datasets.
 
 \textbf{F1-score} combines precision and recall into a single metric using their harmonic mean, giving equal weight to false positives and false negatives. It is therefore particularly useful when working with imbalanced datasets:
 \begin{equation}
@@ -491,9 +489,11 @@ F_1 = \frac{2 \cdot \mathrm{Precision} \cdot \mathrm{Recall}}{\mathrm{Precision}
 \textbf{Mean F1-score (mF1)} is the arithmetic mean of per-class F1-scores:
 
 \begin{equation}
-\mathrm{mF_1} = \frac{1}{C}\sum_{c=1}^{C}F_{1,c}
+\mathrm{mF_1} = \frac{1}{C}\sum_{c=1}^{C}F_{1,c},
 \end{equation}
-where $C$ denotes the number of classes. By averaging over all classes, the mF1 gives equal importance to minority classes, such as cloud shadow.
+where $C$ denotes the number of classes. 
+
+By averaging over all classes, the mF1 gives equal importance to minority classes, such as cloud shadow.
 
 \textbf{Intersection over Union (IoU)}, also known as the Jaccard index, measures the overlap between predicted and reference regions for a given class:
 \begin{equation}
@@ -505,9 +505,11 @@ Unlike the F1-score, which represents a harmonic mean of precision and recall, I
 
 For multiclass segmentation, the IoU is often averaged across all classes and is called the \textbf{mean Intersection over Union (mIoU)}:
 \begin{equation}
-\mathrm{mIoU} = \frac{1}{C}\sum_{c=1}^{C}\mathrm{IoU}_c
+\mathrm{mIoU} = \frac{1}{C}\sum_{c=1}^{C}\mathrm{IoU}_c,
 \end{equation}
-where $C$ denotes the number of classes. By averaging over all classes, mIoU gives equal importance to minority classes, such as cloud shadow, just as mF1.
+where $C$ denotes the number of classes. 
+
+By averaging over all classes, mIoU gives equal importance to minority classes, such as cloud shadow, just as mF1.
 
 In this study, both per-class and overall metrics are reported for all experiments. For each class, the F1-score, Precision, and Recall are reported. At the aggregate level, the mean F1-score (mF1), mean IoU (mIoU), OA, and BOA are reported.
 
@@ -520,7 +522,7 @@ While evaluation metrics are used to assess model performance during testing, th
 The standard choice for multiclass segmentation is \textbf{categorical cross-entropy loss}, which penalizes incorrect class probabilities and encourages the model to assign a high probability to the correct class \cite{goodfellow2016}:
 
 \begin{equation}
-\mathcal{L}_{CE} = - \sum_{c=1}^{C} y_c \log(\hat{y}_c)
+\mathcal{L}_{CE} = - \sum_{c=1}^{C} y_c \log(\hat{y}_c),
 \end{equation}
 
 where $y_c$ is the ground truth label for class $c$ and $\hat{y}_c$ is the predicted probability of that class.
@@ -533,10 +535,4 @@ However, cloud detection datasets are typically highly imbalanced, as the clear 
 \mathcal{L}_{Dice} = 1 - \frac{2\cdot TP}{2\cdot TP + FP + FN}
 \end{equation}
 
-\textbf{Tversky loss} extends Dice loss by introducing separate weights for false positives and false negatives, allowing better control over the trade-off between precision and recall \cite{salehi2017}:
-
-\begin{equation}
-\mathcal{L}_{Tversky} = 1 - \frac{TP}{TP + \alpha \cdot FP + \beta \cdot FN}
-\end{equation}
-
-where $\alpha$ and $\beta$ control the penalty assigned to false positives and false negatives. 
+In this study, Dice loss was selected as the loss function for all experiments.
