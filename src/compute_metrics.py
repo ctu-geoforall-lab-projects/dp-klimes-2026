@@ -125,7 +125,7 @@ def plot_loss_curve(train_steps, val_steps, output_path):
 #  Segmentation metrics
 # ─────────────────────────────────────────────
 
-def compute_metrics(pred_dir, gt_dir, num_classes, ignore_value=255, single_file=None):
+def compute_metrics(pred_dir, gt_dir, num_classes, ignore_value=255, single_file=None, merge_shadow_to_clear=False):
     confusion_matrix = np.zeros((num_classes, num_classes), dtype=np.int64)
 
     if single_file:
@@ -151,6 +151,9 @@ def compute_metrics(pred_dir, gt_dir, num_classes, ignore_value=255, single_file
         valid_mask = gt != ignore_value
         pred = pred[valid_mask]
         gt   = gt[valid_mask]
+
+        if merge_shadow_to_clear:
+            pred[pred == 2] = 0
 
         for true_class in range(num_classes):
             for pred_class in range(num_classes):
@@ -224,20 +227,23 @@ def metrics_to_latex(results, class_names, caption="", label="",
     lines = []
     lines.append(r"\begin{table}[h]")
     lines.append(r"\centering")
-    lines.append(r"\begin{tabular}{lrrrr}")
+    lines.append(r"\begin{tabular}{lrrrrrr}")
     lines.append(r"\hline")
-    lines.append(r"Class & F1 & IoU & OA & BOA \\")
+    lines.append(r"Class & F1 & IoU & Precision & Recall & OA & BOA \\")
     lines.append(r"\hline")
 
     for c in class_names:
         r = results[c]
-        lines.append(f"{c} & {r['f1']:.3f} & {r['iou']:.3f} & -- & -- \\\\")
+        lines.append(
+            f"{c} & {r['f1']:.3f} & {r['iou']:.3f} & "
+            f"{r['precision']:.3f} & {r['recall']:.3f} & -- & -- \\\\"
+        )
 
     lines.append(r"\hline")
     r = results["overall"]
     lines.append(
         f"Overall & {r['mean_f1']:.3f} & {r['mean_iou']:.3f} & "
-        f"{r['accuracy']:.3f} & {r['balanced_accuracy']:.3f} \\\\"
+        f"-- & -- & {r['accuracy']:.3f} & {r['balanced_accuracy']:.3f} \\\\"
     )
     lines.append(r"\hline")
     lines.append(r"\end{tabular}")
@@ -340,6 +346,8 @@ if __name__ == "__main__":
                         help="Class names in order (default: clear cloud shadow)")
     parser.add_argument("--ignore_value", type=int, default=255,
                         help="Ignore value in masks (default: 255)")
+    parser.add_argument("--merge_shadow_to_clear", action="store_true",
+                        help="Remap predicted class 2 (shadow) to class 0 (clear) before evaluation")
     parser.add_argument("--single_file", help="Evaluate a single file only", default=None)
     parser.add_argument("--cm_caption",    default=None, help="Confusion matrix caption (default: none)")
     parser.add_argument("--cm_label",      default="fig:cm",      help="Confusion matrix label")
@@ -362,7 +370,8 @@ if __name__ == "__main__":
 
     # 2. Segmentation metrics
     cm      = compute_metrics(pred_dir, gt_dir, args.num_classes, args.ignore_value,
-                              single_file=args.single_file)
+                              single_file=args.single_file,
+                              merge_shadow_to_clear=args.merge_shadow_to_clear)
     results = metrics_from_confusion_matrix(cm, args.class_names)
 
     print_metrics(results, args.class_names, best_epoch, best_val_loss)
