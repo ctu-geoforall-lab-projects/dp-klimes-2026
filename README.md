@@ -21,5 +21,5 @@ Ing. Ondřej Pešek, Ph.D.
 
 ## Documentation
 
-Documentation for preprocessing pipeline and evaluation scripts is available in [manual.md](docs/MANUAL.md).
+Documentation for preprocessing pipeline and evaluation scripts is available in [manual.md](docs/manual.md).
 
