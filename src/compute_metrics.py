@@ -9,9 +9,7 @@ import tensorflow as tf
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator, TENSORS, SCALARS
 
 
-# ─────────────────────────────────────────────
 #  TensorBoard parsing
-# ─────────────────────────────────────────────
 
 def parse_tensorboard_logs(log_base_dir, val_tag="val_loss", train_tag="train_loss"):
     """
@@ -121,9 +119,7 @@ def plot_loss_curve(train_steps, val_steps, output_path):
     print(f"Loss curve saved: {output_path} / {pdf_path}")
 
 
-# ─────────────────────────────────────────────
 #  Segmentation metrics
-# ─────────────────────────────────────────────
 
 def compute_metrics(pred_dir, gt_dir, num_classes, ignore_value=255, single_file=None, merge_shadow_to_clear=False):
     confusion_matrix = np.zeros((num_classes, num_classes), dtype=np.int64)
@@ -140,13 +136,13 @@ def compute_metrics(pred_dir, gt_dir, num_classes, ignore_value=255, single_file
             continue
 
         pred_ds = gdal.Open(str(pred_path))
-        gt_ds   = gdal.Open(str(gt_path))
+        gt_ds = gdal.Open(str(gt_path))
 
         pred = pred_ds.GetRasterBand(1).ReadAsArray()
-        gt   = gt_ds.GetRasterBand(1).ReadAsArray()
+        gt = gt_ds.GetRasterBand(1).ReadAsArray()
 
         pred_ds = None
-        gt_ds   = None
+        gt_ds = None
 
         valid_mask = gt != ignore_value
         pred = pred[valid_mask]
@@ -178,10 +174,10 @@ def metrics_from_confusion_matrix(cm, class_names=None):
         tn = cm.sum() - tp - fp - fn
 
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-        recall    = tp / (tp + fn) if (tp + fn) > 0 else 0
-        f1        = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
-        iou       = tp / (tp + fp + fn) if (tp + fp + fn) > 0 else 0
-        accuracy  = (tp + tn) / cm.sum() if cm.sum() > 0 else 0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+        iou = tp / (tp + fp + fn) if (tp + fp + fn) > 0 else 0
+        accuracy = (tp + tn) / cm.sum() if cm.sum() > 0 else 0
 
         results[class_names[c]] = {
             "tp": int(tp), "fp": int(fp), "fn": int(fn),
@@ -189,11 +185,11 @@ def metrics_from_confusion_matrix(cm, class_names=None):
             "f1": f1, "iou": iou, "accuracy": accuracy,
         }
 
-    total_correct     = np.diag(cm).sum()
-    total_pixels      = cm.sum()
-    overall_accuracy  = total_correct / total_pixels if total_pixels > 0 else 0
-    mean_f1           = np.mean([results[c]["f1"]     for c in class_names])
-    mean_iou          = np.mean([results[c]["iou"]    for c in class_names])
+    total_correct = np.diag(cm).sum()
+    total_pixels = cm.sum()
+    overall_accuracy = total_correct / total_pixels if total_pixels > 0 else 0
+    mean_f1 = np.mean([results[c]["f1"] for c in class_names])
+    mean_iou = np.mean([results[c]["iou"] for c in class_names])
     balanced_accuracy = np.mean([results[c]["recall"] for c in class_names])
 
     results["overall"] = {
@@ -264,16 +260,16 @@ def metrics_to_latex(results, class_names, caption="", label="",
 
 def confusion_matrix_to_latex(cm, class_names, output_path, normalize=True, caption="", label=""):
     if normalize:
-        cm_plot  = cm.astype(np.float64)
+        cm_plot = cm.astype(np.float64)
         row_sums = cm_plot.sum(axis=1, keepdims=True)
-        cm_plot  = np.divide(cm_plot, row_sums, where=row_sums != 0)
+        cm_plot = np.divide(cm_plot, row_sums, where=row_sums != 0)
         fmt = lambda x: f"{x:.2f}"
     else:
         cm_plot = cm.astype(np.float64)
         fmt = lambda x: str(int(x))
 
-    n          = len(class_names)
-    cell_size  = 1.5
+    n = len(class_names)
+    cell_size = 1.5
     row_counts = cm.sum(axis=1)
 
     lines = []
@@ -287,8 +283,8 @@ def confusion_matrix_to_latex(cm, class_names, output_path, normalize=True, capt
     for i in range(n):
         for j in range(n):
             val = cm_plot[i, j]
-            x   = j * cell_size
-            y   = (n - 1 - i) * cell_size
+            x = j * cell_size
+            y = (n - 1 - i) * cell_size
 
             if val > 0.5:
                 color = f"cellhigh!{min(max(int(val*100), 40), 75)}"
@@ -329,9 +325,7 @@ def confusion_matrix_to_latex(cm, class_names, output_path, normalize=True, capt
     print(f"Saved: {output_path}")
 
 
-# ─────────────────────────────────────────────
 #  CLI
-# ─────────────────────────────────────────────
 
 if __name__ == "__main__":
     import argparse
@@ -355,8 +349,8 @@ if __name__ == "__main__":
     parser.add_argument("--table_label",   default="tab:metrics", help="Metrics table label")
     args = parser.parse_args()
 
-    pred_dir   = Path(args.pred_dir)
-    gt_dir     = Path(args.gt_dir)
+    pred_dir = Path(args.pred_dir)
+    gt_dir = Path(args.gt_dir)
     output_dir = Path(args.output_dir) if args.output_dir else pred_dir
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -369,7 +363,7 @@ if __name__ == "__main__":
         plot_loss_curve(train_steps, val_steps, output_dir / "loss_curve.png")
 
     # 2. Segmentation metrics
-    cm      = compute_metrics(pred_dir, gt_dir, args.num_classes, args.ignore_value,
+    cm = compute_metrics(pred_dir, gt_dir, args.num_classes, args.ignore_value,
                               single_file=args.single_file,
                               merge_shadow_to_clear=args.merge_shadow_to_clear)
     results = metrics_from_confusion_matrix(cm, args.class_names)
