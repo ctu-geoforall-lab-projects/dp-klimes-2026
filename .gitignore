@@ -1,8 +1,7 @@
-# Data and notebooks
+# Data and notes
 data/
 cnn-lib_output/
 server_notes/
-notebooks/
 *.tif
 .idea
 # QGIS projects
