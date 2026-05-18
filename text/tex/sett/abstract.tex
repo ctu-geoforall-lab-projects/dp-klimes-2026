@@ -2,25 +2,84 @@
 %	ABSTRACT PAGE
 %----------------------------------------------------------------------------------------
 
-\begin{abstract}
-\addchaptertocentry{\abstractname} % Add the abstract to the table of contents
-	...\\
-\begin{center}
-	{\large\bfseries{Key words} \par}
-	\bigskip
-	\end{center}
-transfer learning, remote sensing, deep learning, convolutional neural network\\
-\vspace{20pt}
-\begin{center}
-	{\huge\bfseries{Abstrakt} \par}
-	\bigskip
-    \bfseries{\ttitleeng}
-\end{center}
-...\\
-\begin{center}
-	{\large\bfseries{Klíčová slova} \par}
-	\bigskip
-	\end{center}
-...\\
+% \begin{abstract}
+% \addchaptertocentry{\abstractname} % Add the abstract to the table of contents
 
-\end{abstract}
+% Cloud detection is an essential preprocessing step in optical satellite 
+% imagery analysis. Deep learning models trained on one sensor often fail to 
+% generalize to another due to differences in spectral configuration and 
+% radiometric properties, making cross-sensor transfer learning a practically 
+% important but underexplored problem. This thesis systematically investigates 
+% transfer learning strategies for cloud semantic segmentation, focusing on 
+% the transfer from Sentinel-2 to VEN$\mu$S imagery. A U-Net model was 
+% trained on a subset of the CloudSEN12+ dataset and adapted to a VEN$\mu$S 
+% cloud masking dataset using four normalization strategies and four transfer 
+% learning configurations, ranging from zero-shot transductive transfer to 
+% full network fine-tuning. In the transductive setting, dynamic Z-score 
+% normalization proved decisive, enabling strong cross-sensor generalization 
+% without any modification to the model weights. In the inductive setting, 
+% frozen encoder fine-tuning achieved the best overall result, surpassing a 
+% model trained from scratch on VEN$\mu$S data. The results confirm that when 
+% the source and target domains are sufficiently similar, transfer learning 
+% can match or exceed fully supervised target domain solutions, significantly 
+% reducing the effort required to deploy cloud detection for new satellite 
+% missions.
+% \begin{center}
+% 	{\large\bfseries{Key words} \par}
+% 	\bigskip
+% 	\end{center}
+% transfer learning, remote sensing, deep learning, convolutional neural network\\
+% \vspace{20pt}
+% \begin{center}
+% 	{\huge\bfseries{Abstrakt} \par}
+% 	\bigskip
+%     \bfseries{\ttitleeng}
+% \end{center}
+% ...\\
+% \begin{center}
+% 	{\large\bfseries{Klíčová slova} \par}
+% 	\bigskip
+% 	\end{center}
+% ...\\
+
+% \end{abstract}
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT PAGE
+%----------------------------------------------------------------------------------------
+\phantomsection
+\addchaptertocentry{\abstractname}
+\thispagestyle{plain}
+\null\vfil
+\begin{center}
+{\huge\bfseries{Abstract} \par}
+\bigskip
+\end{center}
+Cloud detection is a crucial step in the processing of optical satellite imagery. Deep learning models trained for cloud detection on data from one sensor often fail when applied to a different sensor due to differences in spectral and radiometric properties. Transfer learning techniques can help mitigate this problem. This work investigates transfer learning techniques for cloud semantic segmentation, focusing on the transfer from the Sentinel-2 imagery to the VEN$\mu$S imagery. A model based on the U-Net architecture was trained on a subset of the CloudSEN12+ dataset and subsequently adapted to a cloud detection dataset for the VEN$\mu$S satellite. Four transfer learning configurations were compared, ranging from transductive transfer to full network fine-tuning, along with four normalization strategies. In the transductive experiment, dynamic Z-score normalization achieved the best results, enabling cross-sensor generalization without any modification of the model weights. In the fine-tuning experiments, the best results were achieved using partial adaptation with frozen encoder weights, slightly surpassing the performance of a model trained from scratch on VEN$\mu$S data. The results demonstrate that, when the source and target domains are sufficiently similar, a model adapted through transfer learning can match or even surpass the performance of a model trained exclusively on data from the target domain. These findings suggest that transfer learning can support the deployment of cloud detection models to new sensors while decreasing the need for large, sensor-specific annotated datasets.
+
+\begin{center}
+{\large\bfseries{Key words} \par}
+\bigskip
+\end{center}
+\noindent transfer learning, cloud detection, remote sensing, deep learning, convolutional neural network, semantic segmentation, Sentinel-2, VEN$\mu$S
+
+\vfil\vfil\vfil\null
+
+\clearpage
+\thispagestyle{plain}
+\null\vfil
+
+\begin{center}
+{\huge\bfseries{Abstrakt} \par}
+\bigskip
+\end{center}
+Detekce oblaků je stěžejním krokem při zpracování optických satelitních snímků. Modely hlubokého učení trénované k detekci oblaků na datech z~jednoho senzoru však často selhávají při aplikaci na jiný senzor kvůli rozdílům ve spektrálních a~radiometrických vlastnostech. Techniky přenosového učení mohou pomoci s~řešením tohoto problému. Tato práce zkoumá techniky přenosového učení pro sémantickou segmentaci oblaků se zaměřením na přenos ze snímků Sentinel-2 na snímky VEN$\mu$S. Model založený na architektuře U-Net byl trénován na podmnožině datasetu CloudSEN12+ a následně adaptován na dataset pro detekci oblaků ze satelitu VEN$\mu$S. Byly porovnány čtyři konfigurace přenosového učení, od transduktivního přenosu až po fine-tuning celé sítě, a~zároveň čtyři normalizační strategie. V transduktivním experimentu dosáhla nejlepších výsledků dynamická Z-score normalizace, která umožnila generalizaci mezi senzory bez jakýchkoli úprav vah modelu. Z~fine-tuning experimentů bylo dosaženo nejlepších výsledků za použití částečné adaptace a~zmrazení vah kodéru, přičemž byl dokonce mírně překonán výkon modelu trénovaného výhradně na datech VEN$\mu$S. Výsledky potvrzují, že pokud jsou zdrojová a cílová doména dostatečně podobné, adaptovaný model může za~pomoci technik přenosového učení dosáhnout srovnatelných nebo dokonce lepších výsledků než model trénovaný výhradně na datech cílové domény. Tyto výsledky naznačují, že přenosové učení může usnadnit nasazení modelů pro detekci oblaků na nových senzorech a omezit závislost na rozsáhlých anotovaných datasetech určených pouze pro konkrétní satelit.
+
+\begin{center}
+{\large\bfseries{Klíčová slova} \par}
+\bigskip
+\end{center}
+\noindent přenosové učení, detekce oblaků, dálkový průzkum Země, hluboké učení, konvoluční neuronová síť, sémantická segmentace, Sentinel-2, VEN$\mu$S
+
+\vfil\vfil\vfil\null
+\clearpage

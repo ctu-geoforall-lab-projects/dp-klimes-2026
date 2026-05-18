@@ -1,45 +1,11 @@
 \chapter{Conclusion} \label{chap:conclusion}
-% \begin{itemize}
-%     \item the Introduction of the paper gives the current scientific context
-%     \item the Discussion shows how your data lead to or support the ideas
-%     \item the Conclusion summarizes the ideas in one paragraph
-% \end{itemize}
-% Skeleton:
-% \begin{itemize}
-%     \item Conclusion (one or two main ideas)
-%     \item Outlook (what are you going to do next)  
-% \end{itemize}
 
+This thesis investigated cross-sensor transfer learning for cloud semantic segmentation on satellite imagery, focusing on the transfer of knowledge from Sentinel-2 to VEN$\mu$S imagery. The theoretical background of cross-sensor transfer learning for cloud detection was reviewed, source and target datasets were prepared and preprocessed, and a U-Net model was trained and evaluated under multiple normalization and transfer learning configurations. The results were compared against both a from-scratch deep learning baseline and the MAJA classical cloud detection algorithm.
 
-% \section{Future Work} \label{sec:future_work}
-% Outlook...
-\newpage
-for appendix
-\begin{figure}[H]
-    \centering
+Three research questions concerning the role of radiometric normalization, the required degree of network adaptation, and the competitiveness of transfer learning relative to training from scratch were addressed. These questions were investigated through experiments evaluating multiple normalization and transfer learning configurations.
 
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=0.9\textwidth]{img/s2_loss_raw}
-        \caption{Raw.}
-    \end{subfigure}
+The results show that spectral band alignment alone is not sufficient for cross-sensor transfer. However, dynamic Z-score normalization enables the pretrained model to generalize well to VEN$\mu$S data without any modification to the model weights. Regarding network adaptation, only limited adaptation is required for effective cross-sensor transfer, with output-layer fine-tuning being sufficient. Frozen encoder fine-tuning provides the optimal performance, outperforming both output-layer fine-tuning and full fine-tuning. Overall, all fine-tuning strategies achieved performance comparable to the from-scratch baseline, with frozen encoder fine-tuning surpassing it.
 
-    \vspace{0.5em}
+As part of this work, a modular preprocessing pipeline and evaluation and visualization scripts were developed and are publicly available in the thesis repository,\footnote{\url{https://github.com/ctu-geoforall-lab-projects/dp-klimes-2026}} and contributions were made to the open-source cnn-lib library.\footnote{\url{https://github.com/ctu-geoforall-lab/cnn-lib/commits/main/?author=klimesm&since=2025-12-05&until=2026-05-17}} These contributions extend the functionality of cnn-lib and make the developed methods available to the broader remote sensing research community, where they can be reused and further developed by other researchers.
 
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=0.9\textwidth]{img/s2_loss_fix}
-        \caption{Fixed (S2).}
-    \end{subfigure}
-
-    \vspace{0.5em}
-
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=0.9\textwidth]{text/img/s2_loss_dynamic.pdf}
-        \caption{Dynamic.}
-    \end{subfigure}
-
-    \caption{Training and validation loss curves for Sentinel-2 models under each normalization strategy.}
-    \label{fig:s2_loss}
-\end{figure}
+The main limitations of this study include the regional scope of both the source and target datasets, the focus on a single sensor pair, and the reliance on spectrally aligned input data. Future work may focus on more advanced domain adaptation techniques, more recent transformer-based architectures, and broader evaluation across different sensors and geographic regions. Overall, the results demonstrate that when the source and target domains are sufficiently similar, transfer learning can match or even exceed the performance of a model trained entirely on target domain data. Consequently, this approach could be used to deploy cloud detection models to both emerging sensors and existing missions with limited training data, thereby reducing the need for large, sensor-specific annotated datasets. Furthermore, the framework could be used to generate improved cloud masks for historical scenes within the VEN$\mu$S archive.

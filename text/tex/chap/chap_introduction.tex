@@ -1,13 +1,18 @@
-\chapter{Introduction} \label{chap:introduction}
-% \uv{Introduction section of your paper leads a reader from a well-known to the particular spot}
+\chapter{Introduction} 
+\label{chap:introduction}
 
-% Skeleton:
-% \begin{itemize}
-%     \item background
-%     \item gap
-%     \item proposed method
-%     \item outline
-% \end{itemize}
+Optical satellite imagery is one of the primary sources of data for Earth observation, enabling monitoring of land cover, vegetation, urban development, and environmental change at global scale \cite{singh2025}. As the number of satellite missions grows and sensor resolutions increase, the volume of acquired data is expanding rapidly, making automated processing pipelines essential. Cloud detection is a particularly important prerequisite for virtually any downstream analysis of optical satellite imagery \cite{zhiwei2022}, and its automation is therefore critical. At the same time, the diversity of satellite sensors presents a significant challenge for deep learning methods, which have become widely adopted in many remote sensing tasks \cite{zhu2017, wright2025}. These methods often require large amounts of labeled training data, which are expensive and time-consuming to produce \cite{wang2024}, and models trained on one sensor often do not generalize well to another \cite{wright2025}. Transferring cloud detection knowledge from a well-established sensor to a new one could reduce or even eliminate the need for labeled target domain data, significantly lowering the effort required to develop cloud detection methods for new satellite missions.
 
-% motivace, zasazení do kontextu, o čem práce je, jaké jsou cíle práce, rozvržení práce (outline)
+Transfer learning has been explored for cross-sensor cloud detection in a limited number of works \cite{wright2025, garcia2020}. Existing approaches have either focused on developing sensor-agnostic models through data augmentation and normalization, or applied transfer learning without systematically exploring the range of available adaptation strategies. The combined effect of fine-tuning strategies and normalization approaches in cross-sensor transfer scenarios remains underexplored.
 
+This thesis addresses this gap by investigating cross-sensor transfer learning for cloud semantic segmentation on satellite imagery, with a focus on systematically comparing fine-tuning strategies and normalization approaches for the transfer from Sentinel-2 imagery to VEN$\mu$S (Vegetation and Environment monitoring on a New Micro-Satellite) imagery. Sentinel-2 is a well-established Earth observation mission with large publicly available labeled datasets, while VEN$\mu$S was a smaller research mission with a similar but not identical spectral configuration, making it a representative target. The goals of this thesis are to review and synthesize the theoretical foundations of cross-sensor transfer learning for cloud detection, to prepare and preprocess source and target datasets, to train and evaluate a deep learning model under multiple transfer learning and normalization configurations, and to compare the transfer learning results against a from-scratch deep learning baseline and a classical cloud detection algorithm. The study is guided by three research questions:
+
+\begin{enumerate}
+    \item Can a U-Net model trained on Sentinel-2 data generalize to VEN$\mu$S imagery using only spectral band alignment as a base domain adaptation, and how does additional input-level radiometric normalization     affect this generalization?
+    \item How much of the pretrained network needs to be adapted to achieve effective cross-sensor transfer, and does fine-tuning the full network outperform partial adaptation strategies?
+    \item Can transfer learning from Sentinel-2 achieve performance comparable to a model trained from scratch on VEN$\mu$S data, and if so, what degree of adaptation is required to achieve this?
+\end{enumerate}
+
+Beyond the methodological contribution, the work has direct practical relevance. Although the VEN$\mu$S mission has concluded, its archive of imagery remains a valuable resource for retrospective research, and generating improved cloud masks for all historically acquired scenes would significantly facilitate their use in future studies. The same approach could further be applied to other satellite missions for which annotated cloud detection data are scarce or of limited quality.
+
+The remainder of this thesis is structured as follows. Chapter~\ref{chap:theoretical_background} provides the theoretical background necessary for understanding cloud detection, relevant deep learning and transfer learning techniques, and the evaluation metrics used in this work. In Chapter~\ref{chap:methodology}, the datasets used, preprocessing pipeline, experimental setup, and implementation are described. Chapter~\ref{chap:experiments} presents the experimental results and addresses the three research questions. In Chapter~\ref{chap:discussion}, the findings are interpreted and compared with related work, and limitations and directions for future research are identified. Finally, Chapter~\ref{chap:conclusion} summarizes the main conclusions and contributions of the thesis.
