@@ -3,18 +3,18 @@
 
 This chapter presents the results of all experiments defined in Section~\ref{sec:transfer}. The chapter is organized as follows. Section~\ref{sec:s2_training} reports the results of Sentinel-2 model training, which provides the pretrained model used as the starting point for all transfer learning experiments. Section~\ref{sec:baseline_results} presents the baseline results, including the from-scratch VEN$\mu$S model and MAJA. Sections~\ref{sec:transductive_results} and~\ref{sec:inductive_results} report the results of the transductive and inductive transfer learning experiments. Finally, Section~\ref{sec:comparative_analysis} summarizes the results across all experiments and addresses the research questions defined in Section~\ref{sec:transfer}. 
 
-For each experiment, per-class and overall metrics for all normalization strategies are reported in the main text, while confusion matrices and visual examples of predicted cloud masks are shown for the best performing normalization strategy only. Confusion matrices for all normalization variants and additional visual prediction examples for the best performing normalization strategy are provided in Appendix~\ref{chap:appendix}.
+For each experiment, per-class and overall metrics for all normalization strategies are reported in the main text, while confusion matrices and visual examples of predicted cloud masks are shown for the best performing normalization strategy only. Additional visual prediction examples for the best performing normalization strategy in each experiment are provided in Appendix~\ref{chap:appendix}.
 
 \section{Sentinel-2 Model Training}
 \label{sec:s2_training}
 
-Before transfer learning experiments can be conducted, a U-Net model is trained on the Sentinel-2 dataset for each applicable normalization strategy. Fixed Z-score with VEN$\mu$S statistics is not applicable here, as the model is trained entirely on Sentinel-2 data and VEN$\mu$S statistics have no meaningful interpretation in this context. The resulting three models serve as the initialization point for all subsequent transfer learning experiments. The S2 test set metrics are reported here as a reference for source domain performance.
+Before transfer learning experiments can be conducted, a U-Net model is trained on the Sentinel-2 dataset for each applicable normalization strategy. Fixed Z-score with VEN$\mu$S statistics is not applicable here, as the model is trained entirely on Sentinel-2 data and VEN$\mu$S statistics have no meaningful interpretation in this context. The resulting three models serve as the initialization point for all subsequent transfer learning experiments. The Sentinel-2 test set metrics are reported here as a reference for source domain performance.
 
-The per-class and overall metrics for all three Sentinel-2 models on the S2 test set are summarized in Tables~\ref{tab:s2_perclass} and~\ref{tab:s2_overall}.
+The per-class and overall metrics for all three Sentinel-2 models on the Sentinel-2 test set are summarized in Tables~\ref{tab:s2_perclass} and~\ref{tab:s2_overall}.
 
 \begin{table}[H]
 \centering
-\caption[Per-class metrics for Sentinel-2 models on the S2 test set.]{Per-class metrics for Sentinel-2 models on the S2 test set. Norm.: Normalization strategy. Prec.: Precision. Rec.: Recall.}
+\caption[Per-class metrics for Sentinel-2 models on the Sentinel-2 test set.]{Per-class metrics for Sentinel-2 models on the Sentinel-2 test set. Norm.: Normalization strategy. Prec.: Precision. Rec.: Recall. S2: Sentinel-2.}
 \label{tab:s2_perclass}
 \small
 \begin{tabular}{@{}lrrrrrrrrr@{}}
@@ -37,7 +37,7 @@ Dynamic    & 0.884 & 0.911 & 0.859 & 0.920 & 0.895 & 0.948 & 0.791 & 0.818 & 0.7
 
 \begin{table}[H]
 \centering
-\caption[Overall metrics and training convergence for Sentinel-2 models.]{Overall metrics and training convergence for Sentinel-2 models. Norm.: Normalization strategy. Dice loss: Dice loss computed over the validation split at the best epoch.}
+\caption[Overall metrics and training convergence for Sentinel-2 models.]{Overall metrics and training convergence for Sentinel-2 models. Norm.: Normalization strategy. S2: Sentinel-2. Dice loss: Dice loss computed over the validation split at the best epoch.}
 \label{tab:s2_overall}
 \small
 \begin{tabular}{lrrrrrr}
@@ -57,6 +57,8 @@ The dynamic Z-score normalization produced substantially better results than bot
 
 Shadow detection shows the largest performance gap between normalization strategies. Dynamic Z-score achieves an F1 of 0.791 for shadow, compared to 0.706 for fixed Z-score and 0.534 for raw data. Shadow is consistently the hardest class across all normalizations. In the raw strategy, shadow recall is relatively high at 0.744 while precision is substantially lower at 0.417, suggesting that the model detects shadow regions, but produces predictions that extend beyond the annotated boundaries. This behaviour is likely caused by the spectral similarity of cloud shadows to other dark surfaces, compounded by the fact that shadow annotations were the most difficult to label accurately. This gap narrows with normalization, with dynamic Z-score achieving a more balanced precision of 0.818 and recall of 0.766.
 
+The confusion matrix for the dynamic Z-score model, shown in 
+Figure~\ref{fig:s2_confusion}, further illustrates these patterns. The model performs well on the clear and cloud classes, with recall values of 0.95 and 0.86. Shadow shows the weakest recall at 0.77, with 10\% of true shadow pixels misclassified as clear and 13\% as cloud. The cloud class shows some confusion with clear (11\%), which is expected at cloud boundaries, where the difference between these two classes is hard to distinguish. 
 
 \begin{figure}[h]
 \centering
@@ -99,16 +101,13 @@ Shadow detection shows the largest performance gap between normalization strateg
 \node[font=\small] at (2.25,-0.9) {Predicted label};
 \node[rotate=90, font=\small] at (-2.2,2.25) {True label};
 \end{tikzpicture}
-\caption[Confusion matrix for the S2 model with dynamic Z-score normalization.]{Confusion matrix for the S2 model with dynamic Z-score normalization on the S2 test set. Values are normalized by row.}
+\caption[Confusion matrix for the Sentinel-2 model with dynamic Z-score normalization.]{Confusion matrix for the Sentinel-2 model with dynamic Z-score normalization on the Sentinel-2 test set. Values are normalized by row.}
 \label{fig:s2_confusion}
 \end{figure}
 
-The confusion matrix for the dynamic Z-score model, shown in 
-Figure~\ref{fig:s2_confusion}, further illustrates these patterns. The model performs well on the clear and cloud classes, with recall values of 0.95 and 0.86. Shadow shows the weakest recall at 0.77, with 10\% of true shadow pixels misclassified as clear and 13\% as cloud. The cloud class shows some confusion with clear (11\%), which is expected at cloud boundaries, where the difference between these two classes is hard to distinguish. 
-
 The fixed Z-score model required significantly more epochs to converge (798) compared to raw (294) and dynamic (521), suggesting that global statistics introduce more radiometric variation across patches than per-tile normalization.
 
-Representative examples of S2 model predictions on the test set are shown in Figure~\ref{fig:s2_visual}. The figure illustrates the model's ability to detect both clouds and cloud shadows over multiple land cover types.
+Representative examples of Sentinel-2 model predictions on the test set are shown in Figure~\ref{fig:s2_visual}. The figure illustrates the model's ability to detect both clouds and cloud shadows over multiple land cover types.
 
 \begin{figure}[H]
     \centering
@@ -124,7 +123,7 @@ Representative examples of S2 model predictions on the test set are shown in Fig
         \centering
         \includegraphics[width=\textwidth]{text/img/s2_vis/20190916T064629_20190916T065901_T40QCG_0_0_vis.pdf}
     \end{subfigure}
-    \caption[Representative S2 test set predictions using dynamic Z-score normalization.]{Representative S2 test set predictions using dynamic Z-score normalization.}
+    \caption[Representative Sentinel-2 test set predictions using dynamic Z-score normalization.]{Representative Sentinel-2 test set predictions using dynamic Z-score normalization.}
     \label{fig:s2_visual}
 \end{figure}
 
@@ -179,7 +178,7 @@ Dynamic         & 0.938 & 0.886 & 0.962 & 0.916 & 283 & 0.267 \\
 \end{tabular}
 \end{table}
 
-The from-scratch model achieves strong performance across all normalization strategies, with mF1 values ranging from 0.938 to 0.954. Unlike the S2 model results, the raw strategy achieves the best overall performance, followed closely by fixed Z-score with VEN$\mu$S statistics and dynamic Z-score. This behaviour is likely caused by the geographic concentration of the VEN$\mu$S dataset. As all scenes cover a small, spectrally consistent region of Israel, the radiometric properties are similar across tiles. In this setting, per-tile normalization likely removes useful spectral information rather than harmful radiometric variation, which explains why dynamic Z-score underperforms relative to raw data. Despite achieving the lowest overall metrics, the dynamic Z-score model converges significantly faster at epoch 283, compared to 538 for raw and 596 for fixed Z-score. The differences between normalization strategies are small overall, with a gap of only 1.6 percentage points in mF1 between raw and dynamic, suggesting that for a geographically concentrated dataset with consistent radiometric properties, normalization strategy has less impact than for a dataset covering more diverse geographic regions and surface types.
+The from-scratch model achieves strong performance across all normalization strategies, with mF1 values ranging from 0.938 to 0.954. Unlike the Sentinel-2 model results, the raw strategy achieves the best overall performance, followed closely by fixed Z-score with VEN$\mu$S statistics and dynamic Z-score. This behaviour is likely caused by the geographic concentration of the VEN$\mu$S dataset. As all scenes cover a small, spectrally consistent region of Israel, the radiometric properties are similar across tiles. In this setting, per-tile normalization likely removes useful spectral information rather than harmful radiometric variation, which explains why dynamic Z-score underperforms relative to raw data. Despite achieving the lowest overall metrics, the dynamic Z-score model converges significantly faster at epoch 283, compared to 538 for raw and 596 for fixed Z-score. The differences between normalization strategies are small overall, with a gap of only 1.6 percentage points in mF1 between raw and dynamic, suggesting that for a geographically concentrated dataset with consistent radiometric properties, normalization strategy has less impact than for a dataset covering more diverse geographic regions and surface types.
 
 The cloud-free class consistently outperforms the cloud class across all normalizations, which is consistent with findings reported in the cloud detection literature \cite{pesek2022, wright2025}.
 
@@ -265,13 +264,13 @@ Due to the known limitation of MAJA in overestimating cloud cover over urban and
 \section{Transductive Transfer Learning}
 \label{sec:transductive_results}
 
-This section presents the results of the transductive transfer learning experiment (E0), in which the Sentinel-2 pretrained model is applied directly to VEN$\mu$S data without any modification to the model weights, addressing the first research question defined in Section~\ref{sec:transfer}. Each normalization variant uses the Sentinel-2 pretrained model trained with the corresponding normalization strategy. An exception is the fixed Z-score with VEN$\mu$S statistics variant, for which no corresponding Sentinel-2 pretrained model exists. In this case, the model pretrained with fixed Z-score with Sentinel-2 statistics is used, as it represents the closest available approximation in terms of normalization approach.
+This section presents the results of the transductive transfer learning experiment (E0), in which the Sentinel-2 pretrained model is applied directly to VEN$\mu$S data without any modification to the model weights, addressing the first research question defined in Section~\ref{sec:transfer}. Each normalization variant uses the Sentinel-2 pretrained model trained with the corresponding normalization strategy. An exception is the fixed Z-score with VEN$\mu$S statistics variant, for which no corresponding Sentinel-2 pretrained model exists. In this case, the model pretrained with fixed Z-score with Sentinel-2 statistics is used, as it represents the closest available approximation in terms of normalization approach. Since the pretrained Sentinel-2 model predicts three classes, including cloud shadow, the transductive setting also preserves shadow predictions on VEN$\mu$S data. As the VEN$\mu$S dataset does not contain cloud shadow annotations, this capability cannot be evaluated quantitatively and is assessed through visual inspection only.
 
 The per-class and overall metrics for all four normalization strategies on the VEN$\mu$S test set are summarized in Tables~\ref{tab:e0_perclass} and~\ref{tab:e0_overall}.
 
 \begin{table}[H]
 \centering
-\caption[Per-class metrics for the transductive setting on the VEN$\mu$S test set.]{Per-class metrics for the transductive setting on the VEN$\mu$S test set. Norm.: Normalization strategy. Prec.: Precision. Rec.: Recall.}
+\caption[Per-class metrics for the transductive setting on the VEN$\mu$S test set.]{Per-class metrics for the transductive setting on the VEN$\mu$S test set. Norm.: Normalization strategy. Prec.: Precision. Rec.: Recall. S2: Sentinel-2.}
 \label{tab:e0_perclass}
 \small
 \begin{tabular}{lrrrrrr}
@@ -295,7 +294,7 @@ Dynamic           & 0.874 & 0.793 & 0.973 & 0.963 & 0.993 & 0.936 \\
 \centering
 \caption[Overall metrics for the transductive setting on the VEN$\mu$S 
 test set.]{Overall metrics for the transductive setting on the VEN$\mu$S 
-test set. Norm.: Normalization strategy.}
+test set. Norm.: Normalization strategy. S2: Sentinel-2.}
 \label{tab:e0_overall}
 \small
 \begin{tabular}{lrrrr}
@@ -319,9 +318,9 @@ Fixed Z-score normalization with VEN$\mu$S statistics achieves a substantially b
 
 Dynamic Z-score normalization achieves by far the strongest performance, with an mF1 of 0.919 and mIoU of 0.853. The cloud class achieves an F1 of 0.874 with a well-balanced precision of 0.793 and recall of 0.973, while the cloud-free class achieves an F1 of 0.963. This result demonstrates that per-tile normalization, by standardizing each tile independently from its own pixel statistics, effectively compensates for the radiometric gap between sensors regardless of the absolute value ranges or distribution shapes involved. Notably, the dynamic Z-score result of mF1 0.919 approaches the from-scratch baseline of 0.954, suggesting that in the absence of labeled target domain data, a well-chosen normalization strategy alone can achieve strong cross-sensor transfer performance.
 
-The confusion matrix for the best performing strategy (dynamic Z-score) is shown in Figure~\ref{fig:e0_confusion}. The model shows well-balanced performance across both classes, with slightly stronger recall for the cloud class than for cloud-free.
+The confusion matrix for the best performing strategy (dynamic Z-score) is shown in Figure~\ref{fig:e0_confusion}. Representative visual examples of predictions under dynamic Z-score normalization are shown in Figure~\ref{fig:e0_visual}. The figure illustrates the model's ability to detect clouds under dynamic Z-score normalization across vegetated, urban, agricultural, and arid surfaces, as well as water bodies.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \begin{tikzpicture}
 \definecolor{cellhigh}{RGB}{33,102,172}
@@ -351,8 +350,6 @@ The confusion matrix for the best performing strategy (dynamic Z-score) is shown
 normalization.]{Confusion matrix for the transductive setting (E0) with dynamic Z-score normalization on the VEN$\mu$S test set. Values are normalized by row.}
 \label{fig:e0_confusion}
 \end{figure}
-
-Representative visual examples of predictions under dynamic Z-score normalization are shown in Figure~\ref{fig:e0_visual}. The figure illustrates the model's ability to detect clouds under dynamic Z-score normalization across vegetated, urban, agricultural, and arid surfaces, as well as water bodies.
 
 \begin{figure}[H]
     \centering
@@ -384,7 +381,7 @@ In this experiment, only the output layer is fine-tuned while all encoder and de
 
 \begin{table}[H]
 \centering
-\caption[Per-class metrics for output layer fine-tuning on the VEN$\mu$S test set.]{Per-class metrics for output layer fine-tuning (E1) on the VEN$\mu$S test set. Norm.: Normalization strategy. Prec.: Precision. Rec.: Recall.}
+\caption[Per-class metrics for output layer fine-tuning on the VEN$\mu$S test set.]{Per-class metrics for output layer fine-tuning (E1) on the VEN$\mu$S test set. Norm.: Normalization strategy. Prec.: Precision. Rec.: Recall. S2: Sentinel-2.}
 \label{tab:e1_perclass}
 \small
 \begin{tabular}{lrrrrrr}
@@ -406,7 +403,7 @@ Dynamic           & 0.913 & 0.933 & 0.894 & 0.979 & 0.974 & 0.984 \\
 
 \begin{table}[H]
 \centering
-\caption[Overall metrics and training convergence for output layer fine-tuning.]{Overall metrics and training convergence for output layer fine-tuning (E1) on the VEN$\mu$S test set. Norm.: Normalization strategy. Dice loss: Dice loss computed over the validation split at the best epoch.}
+\caption[Overall metrics and training convergence for output layer fine-tuning.]{Overall metrics and training convergence for output layer fine-tuning (E1) on the VEN$\mu$S test set. Norm.: Normalization strategy. S2: Sentinel-2. Dice loss: Dice loss computed over the validation split at the best epoch.}
 \label{tab:e1_overall}
 \small
 \begin{tabular}{lrrrrrr}
@@ -427,11 +424,11 @@ Output layer fine-tuning achieves meaningful performance across all normalizatio
 
 The strong performance achieved by output layer fine-tuning alone suggests that the feature representations learned by the encoder and decoder on Sentinel-2 data are largely transferable to the VEN$\mu$S domain. This is consistent with the spectral similarity between the two sensors in the shared bands, which means the internal representations of cloud-related spectral patterns are likely to remain meaningful across these sensors, requiring only a remapping of the final class boundaries to adapt to the target domain.
 
-A notable pattern is the high precision and lower recall for the cloud class under raw and fixed S2 normalization, suggesting that the model is conservative in its cloud predictions under these strategies, identifying cloud pixels confidently but missing a larger proportion of them. Dynamic Z-score shows a more balanced precision and recall for the cloud class at 0.933 and 0.894, and also converges significantly faster at epoch 49 compared to 212 for raw, 142 for fixed S2, and 263 for fixed VENµS strategy.
+A notable pattern is the high precision and lower recall for the cloud class under raw and fixed Z-score normalization with Sentinel-2 statistics strategy. suggesting that the model is conservative in its cloud predictions under these strategies, identifying cloud pixels confidently but missing a larger proportion of them. Dynamic Z-score shows a more balanced precision and recall for the cloud class at 0.933 and 0.894, and also converges significantly faster at epoch 49 compared to 212 for raw, 142 for fixed Z-score normalization with Sentinel-2 statistics, and 263 for fixed Z-score normalization with VENµS statistics strategy.
 
-Comparing E1 against the transductive setting, output layer fine-tuning substantially improves performance under raw and fixed S2 normalization, demonstrating that even minimal target domain adaptation has a large impact when the normalization strategy is poorly suited for cross-sensor transfer. Under dynamic Z-score, the improvement is smaller, from 0.919 to 0.946, consistent with the fact that dynamic Z-score already achieved strong performance in the transductive setting.
+Comparing output layer fine-tuning against the transductive setting, output layer fine-tuning substantially improves performance under raw and fixed Sentinel-2 strategy. That demonstrates that even minimal target domain adaptation has a large impact when the normalization strategy is poorly suited for cross-sensor transfer. Under dynamic Z-score normalization, the improvement is smaller, from 0.919 to 0.946, consistent with the fact that dynamic Z-score already achieved strong performance in the transductive setting.
 
-The confusion matrix for the best performing strategy (fixed Z-score with VEN$\mu$S statistics) is shown in Figure~\ref{fig:e1_confusion}.
+The confusion matrix for the best performing strategy (fixed Z-score with VEN$\mu$S statistics) is shown in Figure~\ref{fig:e1_confusion}. Representative visual examples of predictions under fixed Z-score normalization with VEN$\mu$S statistics are shown in Figure~\ref{fig:e1_visual}. 
 
 \begin{figure}[H]
 \centering
@@ -463,8 +460,6 @@ The confusion matrix for the best performing strategy (fixed Z-score with VEN$\m
 \label{fig:e1_confusion}
 \end{figure}
 
-Representative visual examples of predictions under fixed Z-score normalization with VEN$\mu$S statistics are shown in Figure~\ref{fig:e1_visual}. 
-
 \begin{figure}[H]
     \centering
     \begin{subfigure}{\textwidth}
@@ -492,7 +487,7 @@ In this experiment, the encoder weights are frozen while the decoder and output 
 
 \begin{table}[H]
 \centering
-\caption[Per-class metrics for frozen encoder fine-tuning on the VEN$\mu$S test set.]{Per-class metrics for frozen encoder fine-tuning (E2) on the VEN$\mu$S test set. Norm.: Normalization strategy. Prec.: Precision. Rec.: Recall.}
+\caption[Per-class metrics for frozen encoder fine-tuning on the VEN$\mu$S test set.]{Per-class metrics for frozen encoder fine-tuning (E2) on the VEN$\mu$S test set. Norm.: Normalization strategy. Prec.: Precision. Rec.: Recall. S2: Sentinel-2.}
 \label{tab:e2_perclass}
 \small
 \begin{tabular}{lrrrrrr}
@@ -514,7 +509,7 @@ Dynamic           & 0.917 & 0.973 & 0.868 & 0.980 & 0.967 & 0.994 \\
 
 \begin{table}[H]
 \centering
-\caption[Overall metrics and training convergence for frozen encoder fine-tuning.]{Overall metrics and training convergence for frozen encoder fine-tuning (E2) on the VEN$\mu$S test set. Norm.: Normalization strategy. Dice loss: Dice loss computed over the validation split at the best epoch.}
+\caption[Overall metrics and training convergence for frozen encoder fine-tuning.]{Overall metrics and training convergence for frozen encoder fine-tuning (E2) on the VEN$\mu$S test set. Norm.: Normalization strategy. S2: Sentinel-2. Dice loss: Dice loss computed over the validation split at the best epoch.}
 \label{tab:e2_overall}
 \small
 \begin{tabular}{lrrrrrr}
@@ -533,7 +528,11 @@ Dynamic           & 0.949 & 0.904 & 0.968 & 0.931 & 267 & 0.284 \\
 
 Frozen encoder fine-tuning achieves stronger overall performance than output layer fine-tuning, with mF1 values ranging from 0.927 to 0.961. Fixed Z-score with VEN$\mu$S statistics again produces the best result with an mF1 of 0.961 and mIoU of 0.926, followed by dynamic Z-score at 0.949. The improvement over E1 is consistent across normalization strategies, demonstrating that fine-tuning the decoder in addition to the output layer provides meaningful upgrade. This suggests that while the encoder representations learned on Sentinel-2 data are sufficiently general to transfer across sensors, the decoder benefits from adaptation to the spatial and radiometric properties of the VEN$\mu$S domain.
 
-\begin{figure}[H]
+An interesting exception is fixed Z-score normalization with Sentinel-2 statistics, which achieves a lower mF1 of 0.927 in E2 compared to 0.938 in E1, and converges very quickly at epoch 41. This unexpected result suggests that when the input normalization is poorly matched to the target domain, fine-tuning more of the network does not necessarily lead to improvement and may in fact cause the model to overfit to the training data more quickly.
+
+The confusion matrix for the best performing strategy (fixed Z-score with VEN$\mu$S statistics) is shown in Figure~\ref{fig:e2_confusion}. Representative visual examples of predictions using fixed Z-score normalization with VEN$\mu$S statistics are shown in Figure~\ref{fig:e2_visual}.
+
+\begin{figure}[h]
 \centering
 \begin{tikzpicture}
 \definecolor{cellhigh}{RGB}{33,102,172}
@@ -564,9 +563,6 @@ fine-tuning (E2) using fixed Z-score normalization with VEN$\mu$S statistics on 
 \label{fig:e2_confusion}
 \end{figure}
 
-An interesting exception is fixed Z-score normalization with Sentinel-2 statistics, which achieves a lower mF1 of 0.927 in E2 compared to 0.938 in E1, and converges very quickly at epoch 41. This unexpected result suggests that when the input normalization is poorly matched to the target domain, fine-tuning more of the network does not necessarily lead to improvement and may in fact cause the model to overfit to the training data more quickly.
-
-The confusion matrix for the best performing strategy (fixed Z-score with VEN$\mu$S statistics) is shown in Figure~\ref{fig:e2_confusion}. Representative visual examples of predictions using fixed Z-score normalization with VEN$\mu$S statistics are shown in Figure~\ref{fig:e2_visual}.
 
 \begin{figure}[H]
     \centering
@@ -593,7 +589,7 @@ In this experiment, all network weights including the encoder, decoder, and outp
 
 \begin{table}[H]
 \centering
-\caption[Per-class metrics for full fine-tuning on the VEN$\mu$S test set.]{Per-class metrics for full fine-tuning (E3) on the VEN$\mu$S test set. Norm.: Normalization strategy. Prec.: Precision. Rec.: Recall.}
+\caption[Per-class metrics for full fine-tuning on the VEN$\mu$S test set.]{Per-class metrics for full fine-tuning (E3) on the VEN$\mu$S test set. Norm.: Normalization strategy. Prec.: Precision. Rec.: Recall. S2: Sentinel-2.}
 \label{tab:e3_perclass}
 \small
 \begin{tabular}{lrrrrrr}
@@ -615,7 +611,7 @@ Dynamic           & 0.928 & 0.969 & 0.891 & 0.983 & 0.973 & 0.993 \\
 
 \begin{table}[H]
 \centering
-\caption[Overall metrics and training convergence for full fine-tuning.]{Overall metrics and training convergence for full fine-tuning (E3) on the VEN$\mu$S test set. Norm.: Normalization strategy. Dice loss: Dice loss computed over the validation split at the best epoch.}
+\caption[Overall metrics and training convergence for full fine-tuning.]{Overall metrics and training convergence for full fine-tuning (E3) on the VEN$\mu$S test set. Norm.: Normalization strategy. S2: Sentinel-2. Dice loss: Dice loss computed over the validation split at the best epoch.}
 \label{tab:e3_overall}
 \small
 \begin{tabular}{lrrrrrr}
@@ -636,7 +632,9 @@ Full fine-tuning achieves competitive performance across all normalization strat
 
 Notably, full fine-tuning does not consistently outperform frozen encoder fine-tuning. E2 normalized using fixed VEN$\mu$S statistics achieves an mF1 of 0.961, which is higher than the best E3 result of 0.956. This is a counter-intuitive finding, as allowing more parameters to be updated might be expected to yield better results. A possible explanation is that the encoder representations learned on Sentinel-2 data are already well suited for cloud detection in the shared spectral bands, and allowing them to be updated during fine-tuning introduces unnecessary variation that slightly degrades the generalizable features preserved from source domain training.
 
-Raw and fixed S2 normalization show a similar pattern to E2, with E3 achieving slightly better results than E1 under these strategies but still underperforming relative to fixed VENµS and dynamic Z-score. Dynamic Z-score converges significantly faster under full fine-tuning, reaching the best epoch at 51 compared to 229 for fixed VENµS, 107 for fixed S2, and 106 for raw.
+Raw and fixed Sentinel-2 strategy show a similar pattern to E2, with E3 achieving slightly better results than E1 under these strategies but still underperforming relative to fixed VENµS and dynamic Z-score. Dynamic Z-score converges significantly faster under full fine-tuning, reaching the best epoch at 51 compared to 229 for fixed VENµS, 107 for fixed Sentinel-2, and 106 for raw.
+
+The confusion matrix for the best performing strategy (dynamic Z-score) is shown in Figure~\ref{fig:e3_confusion}. Representative visual examples of predictions under dynamic Z-score normalization are shown in Figure~\ref{fig:e3_visual}.
 
 \begin{figure}[H]
 \centering
@@ -669,7 +667,6 @@ by row.}
 \label{fig:e3_confusion}
 \end{figure}
 
-The confusion matrix for the best performing strategy (dynamic Z-score) is shown in Figure~\ref{fig:e3_confusion}. Representative visual examples of predictions under dynamic Z-score normalization are shown in Figure~\ref{fig:e3_visual}.
 
 \begin{figure}[H]
     \centering
@@ -692,7 +689,7 @@ The confusion matrix for the best performing strategy (dynamic Z-score) is shown
 \section{Summary of Results}
 \label{sec:comparative_analysis}
 
-This section summarizes the results across all experiments and addresses the three research questions defined in Section~\ref{sec:transfer}. Table~\ref{tab:comparative} summarizes the best result achieved in each experiment, and Figure~\ref{fig:comparative_bar} shows the mF1 scores across all experiments and normalization strategies.
+This section summarizes the results across all experiments and addresses the three research questions defined in Section~\ref{sec:transfer}. Table~\ref{tab:comparative} summarizes the best results achieved in each experiment, and Figure~\ref{fig:comparative_bar} shows the mF1 scores across all experiments and normalization strategies.
 
 \begin{table}[H]
 \centering
@@ -755,18 +752,15 @@ E3 & Dynamic          & 0.956 & 0.916 & 0.972 & 0.942 \\
 \addplot[fill=guired!50, draw=black] 
     coordinates {(B2,0.938) (E0,0.919) (E1,0.946) (E2,0.949) (E3,0.956)};
 
-\legend{Raw, Fixed (S2), Fixed (VEN$\mu$S), Dynamic}
+\legend{Raw, Fixed (Sentinel-2), Fixed (VEN$\mu$S), Dynamic}
 \end{axis}
 \end{tikzpicture}
-\caption[mF1 scores across all experiments and normalization strategies.]{mF1 
-scores across all experiments and normalization strategies on the VEN$\mu$S 
-test set. Fixed (S2) is not applicable to B2 and is therefore not shown for 
-that experiment.}
+\caption[mF1 scores across all experiments and normalization strategies.]{mF1 scores across all experiments and normalization strategies on the VEN$\mu$S test set. Fixed (Sentinel-2) is not applicable to B2 and is therefore not shown for that experiment.}
 \label{fig:comparative_bar}
 \end{figure}
 
-Addressing the first research question, the transductive experiment demonstrates that spectral band alignment alone is insufficient for effective cross-sensor transfer, with raw normalization achieving an mF1 of only 0.436. The large radiometric gap between the two sensors is largely attributable to the difference in product level. The Sentinel-2 training data consists of Level~1C top-of-atmosphere reflectances, while VEN$\mu$S Level~2 products provide atmospherically corrected surface reflectances, resulting in substantially different value ranges. However, with dynamic Z-score normalization, the transductive model achieves an mF1 of 0.919, demonstrating that input-level radiometric normalization has a decisive impact on zero-shot cross-sensor generalization. This result shows that a well-chosen normalization strategy can largely bridge the radiometric gap between sensors without any modification to the model weights.
+Addressing the first research question, the transductive experiment demonstrates that spectral band alignment alone is insufficient for effective cross-sensor transfer, with raw normalization achieving an mF1 of only 0.436. The large radiometric gap between the two sensors is largely attributable to the difference in product level. The Sentinel-2 training data consist of Level~1C top-of-atmosphere reflectances, while VEN$\mu$S Level~2 products provide atmospherically corrected surface reflectances, resulting in substantially different value ranges. However, with dynamic Z-score normalization, the transductive model achieves an mF1 of 0.919, demonstrating that input-level radiometric normalization has a decisive impact on zero-shot cross-sensor generalization. This result shows that a well-chosen normalization strategy can largely bridge the radiometric gap between sensors without any modification to the model weights.
 
-Regarding the second research question, frozen encoder fine-tuning achieves the strongest performance among all inductive strategies, reaching an mF1 of 0.961 and surpassing both output-layer fine-tuning (0.952) and full fine-tuning (0.956). The best performing strategy demonstrates that fine-tuning the decoder together with the output layer provides the optimal degree of network adaptation for cross-sensor transfer between these two sensors. However, even output layer fine-tuning alone achieves an mF1 of 0.952, which is just below the from-scratch baseline of 0.954. The result suggests that even minimal adaptation is sufficient for effective cross-sensor transfer between these two sensors. Full fine-tuning of the entire network does not provide additional benefit and slightly reduces performance compared to frozen encoder fine-tuning, though the difference is small at 0.005 mF1.
+Regarding the second research question, frozen encoder fine-tuning achieves the strongest performance among all inductive strategies, reaching an mF1 of 0.961 and surpassing both output-layer fine-tuning (0.952) and full fine-tuning (0.956). The best-performing strategy demonstrates that fine-tuning the decoder together with the output layer provides the optimal degree of network adaptation for cross-sensor transfer between these two sensors. However, even output layer fine-tuning alone achieves an mF1 of 0.952, which is just below the from-scratch baseline of 0.954. The result suggests that even minimal adaptation is sufficient for effective cross-sensor transfer between these two sensors. Full fine-tuning of the entire network does not provide additional benefit and slightly reduces performance compared to frozen encoder fine-tuning, though the difference is small at 0.005 mF1.
 
 Addressing the third research question, all inductive experiments achieve performance comparable to the from-scratch baseline of mF1 0.954. Even the weakest inductive result, achieved by output layer fine-tuning without normalization, reaches an mF1 of 0.923, only 3.1 percentage points below the baseline. The best result, achieved by frozen encoder fine-tuning with fixed Z-score normalization using VEN$\mu$S statistics, reaches an mF1 of 0.961, surpassing the from-scratch baseline by 0.007 mF1 points. This demonstrates that transfer learning from Sentinel-2 can match, and in some cases even slightly exceed, the performance of a model trained entirely on VEN$\mu$S data, reducing the need for large amounts of manually labeled target domain data. MAJA, evaluated visually only due to its known limitation of overestimating cloud cover, clearly underperforms all deep learning approaches.

@@ -146,7 +146,7 @@ In addition to the shared steps, the two datasets require sensor-specific prepro
 \subsection{Sentinel-2 Preprocessing}
 \label{sec:s2_preprocessing}
 
-The initial stage of Sentinel-2 preprocessing involved applying a geographic filter. Since CloudSEN12+ provides global coverage, only those patches that intersected the bounding boxes of the selected countries were kept. To achieve this, the spatial extent of each patch was checked against a collection of country bounding boxes loaded from a GeoPackage file. This step produced a list of patches selected for subsequent processing.
+The initial stage of Sentinel-2 preprocessing involved applying a geographic filter. Since CloudSEN12+ provides global coverage, only patches intersecting selected countries in the Middle East and North Africa region (Libya, Egypt, Israel, Lebanon, Syria, Jordan, Iraq, and Saudi Arabia) were retained. To achieve this, the spatial extent of each patch was checked against country bounding boxes, and only patches intersecting the selected countries were retained for further processing.
 
 In the second step, the seven spectral bands selected for cross-sensor transfer, as described in Section~\ref{sec:band_selection}, were extracted from each patch. Since CloudSEN12+ stores the annotation mask as a separate band within the same file, the labels were extracted and saved as independent files during this step. The original four-class annotation scheme was remapped to three classes by merging the thin cloud class into the thick cloud class, resulting in cloud, clear, and cloud shadow labels. All 13 spectral bands in CloudSEN12+ are provided at a uniform spatial resolution of 10~m, so no resampling was required.
 
@@ -159,12 +159,12 @@ Similarly to Sentinel-2 preprocessing, the first step involved extracting the se
 
 A key difference from the Sentinel-2 preprocessing is the presence of nodata pixels in VEN$\mu$S scenes. In the annotation masks, nodata regions were filled with the ignore value of 255, which was later used to exclude these pixels from loss computation during training, as described in Section~\ref{sec:dataset_generation}.
 
-Unlike the Sentinel-2 dataset, no manual quality review was necessary for the VEN$\mu$S scenes, as all nine scenes were found to be of sufficient annotation quality.
+Unlike the Sentinel-2 dataset, no manual quality review was performed for the VEN$\mu$S scenes, as an initial inspection indicated sufficient annotation quality across all scenes.
 
 \subsection{Dataset Generation}
 \label{sec:dataset_generation}
 
-Following sensor-specific preprocessing, data from both datasets went through a set of modifications in order to create training datasets to be used in the U-Net model. All images were tiled into $512 \times 512$ pixel tiles, which serve as the input for the U-Net model. Although U-Net is a fully convolutional architecture capable of processing inputs of variable spatial dimensions, the repeated pooling operations in the encoder require input dimensions to be divisible by $2^d$, where $d$ is the number of pooling layers. For a standard U-Net with five pooling layers, this means input dimensions must be divisible by 32. Since 509 is not divisible by 32, padding is required. A tile size of $512 \times 512$ pixels was selected as the smallest valid dimension larger than 509. A tile size of $256 \times 256$ pixels was also tested, but initial experiments showed that larger tiles provide better spatial context for accurate identification of cloud edges.
+Following sensor-specific preprocessing, data from both datasets went through a set of modifications in order to create training datasets to be used in the U-Net model. All data were tiled into $512 \times 512$ pixel tiles, which serve as the input for the U-Net model. Although U-Net is a fully convolutional architecture capable of processing inputs of variable spatial dimensions, the repeated pooling operations in the encoder require input dimensions to be divisible by $2^d$, where $d$ is the number of pooling layers. For a standard U-Net with five pooling layers, this means input dimensions must be divisible by 32. Since 509 is not divisible by 32, padding is required. A tile size of $512 \times 512$ pixels was selected as the smallest valid dimension larger than 509. A tile size of $256 \times 256$ pixels was also tested, but initial experiments showed that larger tiles provide better spatial context for accurate identification of cloud edges.
 
 For CloudSEN12+ patches, which have a native size of $509 \times 509$ pixels, reflective padding of 3 pixels was applied to the right and bottom edges to reach the required $512 \times 512$ pixel dimensions. Reflective padding was chosen over zero padding to avoid introducing artificial boundaries that could affect model predictions near tile edges. For VENµS scenes, which have a native size of $2048 \times 2048$ pixels, tiling was performed using a non-overlapping grid.
 
@@ -192,7 +192,7 @@ Training set (augmented)        & 392  & 372 \\
 \bottomrule
 \multicolumn{3}{l}{\footnotesize Augmented training 
 set obtained by rotations of 90\textdegree, 180\textdegree, and 270\textdegree.}\\
-\multicolumn{3}{l}{\footnotesize — indicates step 
+\multicolumn{3}{l}{Dash (\footnotesize —) indicates steps 
 not applicable for VEN$\mu$S.}\\
 \end{tabular}
 \end{table}
@@ -200,7 +200,7 @@ not applicable for VEN$\mu$S.}\\
 \subsection{Normalization Strategies}
 \label{sec:normalization}
 
-Normalization is an important preprocessing step in many deep learning applications~\cite{lei2020}. It helps to reduce the influence of different value ranges in the input data, supporting faster convergence and better generalization. In cross-sensor transfer learning, normalization is particularly relevant as inputs from different sensors can have different value distributions, with values from the target sensor potentially falling outside the range seen during training~\cite{wright2025}. Four normalization strategies are investigated in this study. Normalization statistics are always computed from the training split only, as using validation or test data would create data leakage.
+Normalization is an important preprocessing step in many deep learning applications~\cite{lei2020}. It helps to reduce the influence of different value ranges in the input data, supporting faster convergence and better generalization. In cross-sensor transfer learning, normalization is particularly relevant as inputs from different sensors can have different value distributions, with values from the target sensor potentially falling outside the range seen during training~\cite{wright2025}. Normalization statistics are always computed from the training split only, as using validation or test data would create data leakage. Four normalization strategies are investigated in this study.
 
 The first strategy uses \textbf{raw} data without any normalization. The original reflectance values are passed directly to the model, preserving the full radiometric information but exposing the model to the full cross-sensor radiometric differences during transfer learning.
 
@@ -215,14 +215,15 @@ where $x_b$ is the original pixel value in band $b$, $\mu_b$ is the mean, and $\
 
 In \textbf{fixed Z-score normalization with Sentinel-2 statistics}, $\mu_b$ and $\sigma_b$ are computed from the Sentinel-2 training set, excluding nodata pixels. The same statistics are then applied to both the Sentinel-2 and VEN$\mu$S data. This approach maps both datasets into the same radiometric space defined by the Sentinel-2 training distribution, which is particularly relevant for the transductive transfer setting, where the model is trained on Sentinel-2 data and evaluated on VEN$\mu$S data without any target domain adaptation.
 
-In \textbf{fixed Z-score normalization with VEN$\mu$S statistics}, $\mu_b$ and $\sigma_b$ are computed from the VEN$\mu$S training split only, excluding nodata pixels, and applied to VEN$\mu$S data. This approach maps the VEN$\mu$S data into a radiometric space defined by its own sensor and atmospheric correction characteristics, making it the natural choice for the inductive and from-scratch settings where the model is trained and evaluated entirely within the target domain.
+In \textbf{fixed Z-score normalization with VEN$\mu$S statistics}, $\mu_b$ and $\sigma_b$ are computed from the VEN$\mu$S training set only, excluding nodata pixels, and are then used to normalize VEN$\mu$S data. This approach maps the VEN$\mu$S data into a radiometric space defined by the sensor-specific statistics and atmospheric correction characteristics, making it the natural choice for the inductive and from-scratch settings where the model is trained and evaluated entirely within the target domain.
 
 In \textbf{dynamic Z-score normalization}, proposed by Wright et al.\ \cite{wright2025}, $\mu_b$ and $\sigma_b$ are computed independently for each individual tile from its own valid pixels, excluding nodata values. Unlike fixed normalization strategies that use dataset-wide statistics, this approach normalizes each tile independently to have zero mean and unit standard deviation per band, regardless of the sensor, processing level, or acquisition conditions. This makes it particularly suitable for cross-sensor transfer learning as it effectively eliminates radiometric differences between sensors without requiring any prior knowledge of the target sensor's statistics. The four normalization strategies are summarized in Table~\ref{tab:normalization}.
 
 \begin{table}[H]
 \centering
-\caption{Summary of normalization strategies used in 
-this study.}
+\caption[Summary of normalization strategies used in 
+this study.]{Summary of normalization strategies used in 
+this study. S2: Sentinel-2}
 \label{tab:normalization}
 \small
 \begin{tabular}{llll}
@@ -231,9 +232,9 @@ this study.}
 \textbf{Applied to} & \textbf{Scope} \\
 \midrule
 Raw & — & S2, VEN$\mu$S & — \\
-Fixed Z-score (S2) & S2 training set & S2, VEN$\mu$S & 
+Fixed Z-score (S2 statistics) & S2 training set & S2, VEN$\mu$S & 
 Global \\
-Fixed Z-score (VEN$\mu$S) & VEN$\mu$S training set & 
+Fixed Z-score (VEN$\mu$S statistics) & VEN$\mu$S training set & 
 VEN$\mu$S & Global \\
 Dynamic Z-score & Per tile & S2, VEN$\mu$S & Per tile \\
 \bottomrule
@@ -243,10 +244,10 @@ Dynamic Z-score & Per tile & S2, VEN$\mu$S & Per tile \\
 \subsection{Preprocessing Pipeline}
 \label{sec:pipeline}
 
-The preprocessing steps described in this chapter were implemented as a modular Python pipeline consisting of five scripts each implementing one preprocessing step, a master script orchestrating the full pipeline execution, and a sensor-specific JSON configuration file that specifies dataset paths, band indices, class remapping, and normalization parameters. The manual quality review step is implemented as an interactive Jupyter notebook, allowing visual inspection of each patch and assignment of quality labels. The full pipeline structure is illustrated in Figure~\ref{fig:pipeline}.
+The preprocessing steps described in this chapter were implemented as a modular Python pipeline consisting of a shared set of scripts used for both Sentinel-2 and VEN$\mu$S data, a master script orchestrating the full pipeline execution, and a sensor-specific JSON configuration file specifying dataset paths, band indices, class remapping, and normalization parameters. The manual quality review step is implemented as an interactive Jupyter notebook, enabling visual inspection of each patch and assignment of quality labels. The full pipeline structure is illustrated in Figure~\ref{fig:pipeline}. Further implementation details are provided in Section~\ref{sec:implementation}.
 
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \begin{tikzpicture}[
     node distance=0.55cm,
@@ -389,11 +390,11 @@ Two baselines are included. MAJA \cite{hagolle2010} serves as a classical refere
 
 \subsubsection{Transductive Transfer Learning}
 
-In the transductive setting, the Sentinel-2 pretrained model is applied directly to VEN$\mu$S data without any modification to the model weights, as defined in Section~\ref{sec:theoretical_tl}. This setting corresponds to the scenario where no labeled target domain data are available, and the source model must generalize directly to the target domain, addressing the first research question. In all transductive experiments, a base level of domain adaptation is achieved through the selection of spectrally equivalent bands, as described in Section~\ref{sec:band_selection}, which reduces the feature space mismatch between the two sensors. When no normalization is applied beyond this, the experiment evaluates the extent to which spectral alignment alone is sufficient for cross-sensor transfer. When normalization is additionally applied, it constitutes a further step of input-level domain adaptation, progressively reducing the radiometric gap between sensors. The transductive setting also preserves the full 3-class output of the Sentinel-2 model, including cloud shadow, which cannot be maintained in any fine-tuning setting due to the absence of shadow annotations in the VEN$\mu$S dataset. In evaluation, shadow predictions are collapsed into the cloud-free class, as described in Section~\ref{sec:evaluation}. All four normalization strategies are evaluated in this setting. An exception applies to the fixed Z-score with VEN$\mu$S statistics variant, for which no corresponding Sentinel-2 pretrained model exists. In this case, the model pretrained with fixed Z-score with Sentinel-2 statistics is used, introducing an additional source of inconsistency between training and inference normalization for this variant.
+In the transductive setting, the Sentinel-2 pretrained model is applied directly to VEN$\mu$S data without any modification to the model weights, as defined in Section~\ref{sec:theoretical_tl}. This setting corresponds to the scenario where no labeled target domain data are available, and the source model must generalize directly to the target domain, addressing the first research question. In all transductive experiments, a base level of domain adaptation is achieved through the selection of spectrally equivalent bands, as described in Section~\ref{sec:band_selection}, which reduces the feature space mismatch between the two sensors. When no normalization is applied beyond this, the experiment evaluates the extent to which spectral alignment alone is sufficient for cross-sensor transfer. When normalization is additionally applied, it constitutes a further step of input-level domain adaptation, progressively reducing the radiometric gap between sensors. The transductive setting also preserves the full 3-class output of the Sentinel-2 model, including cloud shadow, which cannot be maintained in any fine-tuning setting due to the absence of shadow annotations in the VEN$\mu$S dataset. In evaluation, shadow predictions are collapsed into the cloud-free class, as described in Section~\ref{sec:evaluation}. All four normalization strategies are evaluated in this setting. The fixed Z-score normalization with VEN$\mu$S statistics is an exception, as no corresponding Sentinel-2 pretrained model exists for this configuration. In this case, the model pretrained using fixed Z-score normalization with Sentinel-2 statistics is used, introducing an additional source of inconsistency between training and inference normalization for this variant.
 
 \subsubsection{Inductive Transfer Learning}
 
-In the inductive setting, the pretrained model is adapted to VEN$\mu$S data using labeled target domain samples, as defined in Section~\ref{sec:theoretical_tl}. This setting addresses the second and third research questions by investigating how much of the network needs to be updated for effective transfer, and whether adapted models can match the from-scratch baseline. Three fine-tuning strategies are investigated, differing in the degree of network adaptation. All inductive experiments are initialized from the best Sentinel-2 checkpoint, defined as the epoch with the lowest validation loss during Sentinel-2 training. Since no cloud shadow annotations are available in the VEN$\mu$S dataset, the 3-class output layer is replaced with a randomly initialized 2-class output layer in all inductive experiments, and evaluation is performed on cloud and cloud-free classes only.
+In the inductive setting, the pretrained model is adapted to VEN$\mu$S data using labeled target domain samples, as defined in Section~\ref{sec:theoretical_tl}. This setting addresses the second and third research questions by investigating how much of the network needs to be updated for effective transfer, and whether adapted models can match the from-scratch baseline and MAJA. Three fine-tuning strategies are investigated, differing in the degree of network adaptation. All inductive experiments are initialized from the best Sentinel-2 checkpoint, defined as the epoch with the lowest validation loss during Sentinel-2 training. Since no cloud shadow annotations are available in the VEN$\mu$S dataset, the 3-class output layer is replaced with a randomly initialized 2-class output layer in all inductive experiments, and evaluation is performed on cloud and cloud-free classes only.
 
 The first strategy fine-tunes only the output layer, leaving all encoder and decoder weights frozen. This represents the minimal adaptation case and tests whether the feature representations learned on Sentinel-2 data are directly transferable to VEN$\mu$S, requiring only a remapping of the class boundaries. The second strategy freezes the encoder and fine-tunes the decoder together with the output layer. This investigates whether the encoder representations generalize sufficiently across sensors while the decoder requires adaptation to the radiometric and spatial properties of the target domain. The third strategy fine-tunes the full network by allowing all layers to adapt to the target domain. Together, these three strategies enable a systematic comparison of how much of the network needs to be updated for effective cross-sensor transfer. All four normalization strategies are evaluated for each fine-tuning variant.
 
@@ -425,7 +426,7 @@ VEN$\mu$S experiments produce 2-class output.}\\
 
 \begin{table}[H]
 \centering
-\caption{Normalization strategies applied to each experiment.}
+\caption[Normalization strategies applied to each experiment.]{Normalization strategies applied to each experiment.}
 \label{tab:normalization_applicability}
 \small
 \begin{tabular}{lcccc}
@@ -441,7 +442,7 @@ E1 (Output layer)    & \cmark & \cmark & \cmark & \cmark \\
 E2 (Frozen encoder)  & \cmark & \cmark & \cmark & \cmark \\
 E3 (Full fine-tune)  & \cmark & \cmark & \cmark & \cmark \\
 \bottomrule
-\multicolumn{5}{l}{\footnotesize Fixed (S2): statistics computed from S2 
+\multicolumn{5}{l}{\footnotesize Fixed (S2): statistics computed from Sentinel-2 
 training set}\\
 \multicolumn{5}{l}{\footnotesize Fixed (VEN$\mu$S): statistics computed 
 from VEN$\mu$S training set.}\\
@@ -450,36 +451,24 @@ from valid pixels.}\\
 \end{tabular}
 \end{table}
 
-% Although a lower learning rate is commonly recommended for fine-tuning to 
-% avoid catastrophic forgetting \cite{goodfellow2016}, a learning rate of 
-% $10^{-3}$ was retained for all fine-tuning experiments. The rationale for 
-% this choice is discussed in Section~\ref{sec:results_finetuning}.
-
-% Prior to finalizing the training configuration, several hyperparameter settings were explored. Tversky loss was evaluated as an alternative to Dice loss, but it did not consistently lead to better results and was therefore not adopted. Multiple batch sizes were evaluated, with smaller batch sizes producing less stable training and lower performance. A batch size of 16 was selected, as it provided the best trade-off between training stability and GPU memory constraints. Tile sizes of both $256 \times 256$ and $512 \times 512$ pixels were tested, with the larger tile size providing better spatial context for identifying cloud boundaries, as discussed in Section~\ref{sec:dataset_generation}.
-
-
-
 \section{Evaluation}
 \label{sec:evaluation}
 
 Model performance is evaluated on testing datasets from both sensors. The Sentinel-2 test set consists of ten patches selected during preprocessing, as described in Section~\ref{sec:dataset_generation}, and is used to assess source domain performance. The VEN$\mu$S test set consists of ten tiles and serves as the primary benchmark for evaluating cross-sensor transfer learning performance.
 
-For all experiments except the transductive setting, evaluation is performed on two classes: cloud and cloud-free. In the transductive setting, the Sentinel-2 trained model produces 3-class predictions including cloud shadow. Since the VEN$\mu$S ground truth contains no shadow annotations, shadow predictions are collapsed into the cloud-free class prior to evaluation, as described in Section~\ref{sec:transfer}.
+For all experiments, evaluation is performed on two classes: cloud and cloud-free. In the transductive setting, the Sentinel-2 trained model produces 3-class predictions including cloud shadow. Since the VEN$\mu$S ground truth contains no shadow annotations, shadow predictions are collapsed into the cloud-free class prior to evaluation, as described in Section~\ref{sec:transfer}.
 
 Performance is measured by comparing predicted pixel labels against the ground truth annotations using a confusion matrix, from which evaluation metrics are derived, as described in Section~\ref{sec:evaluation_metrics}. Multiple metrics are reported to provide a complete picture of model performance, as different metrics emphasize different aspects of segmentation quality, and different studies use different primary metrics, making direct comparison across works easier when all are reported. Both confusion matrices and evaluation metrics are reported for all experiments. 
-
-Both per-class and overall metrics are reported. Per-class F1-score, Recall and Precision provide insight into model performance on each individual class. At the overall level, mean F1-score (mF1), mean Intersection over Union (mIoU), Overall Accuracy (OA), and Balanced Overall Accuracy (BOA) are reported. BOA is included alongside OA as it accounts for class imbalance by averaging recall across classes, making it more reliable when class distributions are uneven, as is typically the case in cloud detection datasets where clear pixels dominate.
-
 
 \section{Implementation}
 \label{sec:implementation}
 
-The software developed as part of this thesis consists of three components: a~preprocessing pipeline, extensions to cnn-lib, and evaluation and visualisation scripts. The preprocessing pipeline and evaluation and visualisation scripts are publicly available in the thesis repository.\footnote{\url{https://github.com/ctu-geoforall-lab-projects/dp-klimes-2026}} The cnn-lib library is maintained in a separate repository.\footnote{\url{https://github.com/ctu-geoforall-lab/cnn-lib}}
+The software developed as part of this thesis consists of three components: a~preprocessing pipeline, extensions to cnn-lib, and evaluation and visualization scripts. The preprocessing pipeline and evaluation and visualization scripts are publicly available in the thesis repository.\footnote{\url{https://github.com/ctu-geoforall-lab-projects/dp-klimes-2026}} The cnn-lib library is maintained in a separate repository.\footnote{\url{https://github.com/ctu-geoforall-lab/cnn-lib}}
 
 The preprocessing pipeline implements all steps described in Section~\ref{sec:preprocessing} as a modular set of Python scripts and an interactive Jupyter notebook for manual quality review, configured through sensor-specific JSON files, as described in Section~\ref{sec:pipeline}.
 
 The cnn-lib library, used for model training, transfer learning, and inference throughout this study, was extended during this thesis with a padding implementation supporting multiple padding types, layer freezing by name pattern, tolerance for weight shape mismatches between source and target domains, ignore value functionality for excluding padded regions from loss computation. In addition, several bugs affecting training stability and evaluation correctness were identified and fixed.
 
-The evaluation and visualisation scripts compute per-class and overall metrics from model predictions and generate confusion matrices and visual prediction examples as reported in Chapter~\ref{chap:experiments}.
+The evaluation and visualization scripts compute per-class and overall metrics from model predictions and generate confusion matrices and visual prediction examples as reported in Chapter~\ref{chap:experiments}.
 
-Claude,\footnote{\url{https://www.anthropic.com}} a large language model developed by Anthropic, was used as a supportive tool during the preparation of this thesis for programming assistance and code debugging, stylistic refinement and text reformulation.
+Claude,\footnote{\url{https://www.anthropic.com}} a large language model developed by Anthropic, was used as a supportive tool during the preparation of this thesis for programming assistance and code debugging, stylistic refinement, and text reformulation.
