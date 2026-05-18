@@ -6,7 +6,6 @@ Transfer learning for cloud semantic segmentation on satellite imagery
 ## Description
 
 
-
 ## Student
 
 Bc. Matěj Klimeš
@@ -19,3 +18,8 @@ Ing. Ondřej Pešek, Ph.D.
 
 
 ## Defence
+
+## Documentation
+
+Documentation for preprocessing pipeline and evaluation scripts is available in [manual.md](docs/MANUAL.md).
+
